@@ -12,6 +12,8 @@ import 'services/socket_notification_service.dart';
 import 'services/notification_service.dart';
 import 'package:medifinder/services/notification_permission_service.dart';
 
+import 'package:google_fonts/google_fonts.dart';
+
 final SocketNotificationService socketNotificationService =
     SocketNotificationService();
 
@@ -47,6 +49,28 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
+
+      theme: ThemeData(
+        useMaterial3: true,
+
+        textTheme: GoogleFonts.poppinsTextTheme(),
+
+        inputDecorationTheme: InputDecorationTheme(
+          hintStyle: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+        ),
+
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            textStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          ),
+        ),
+
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(textStyle: GoogleFonts.poppins()),
+        ),
+      ),
+
       home: langsungKeHasil ? const Home() : const Login(),
     );
   }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:medifinder/page/home.dart';
+import 'package:medifinder/page/register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
 import 'package:medifinder/services/auth_service.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -18,7 +20,7 @@ class _LoginState extends State<Login> {
   bool _isPasswordHidden = true;
 
   SharedPreferences? prefs;
-  Logger logger = Logger(printer: PrettyPrinter());
+  Logger logger = Logger();
 
   @override
   void initState() {
@@ -36,188 +38,278 @@ class _LoginState extends State<Login> {
       username.text = saved1;
       password.text = saved2;
     });
-
-    logger.i("Loaded username: $saved1, password: $saved2");
   }
 
   Future<void> _saveInfo() async {
     await prefs!.setString('username', username.text);
     await prefs!.setString('password', password.text);
+  }
 
-    logger.i("Saved username: ${username.text}, password: ${password.text}");
+  Widget _modernField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+  }) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: hint,
+        prefixIcon: Icon(icon, color: Colors.grey),
+        filled: true,
+        fillColor: const Color(0xFFF3F4F6),
+        contentPadding: const EdgeInsets.symmetric(vertical: 18),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
+  Widget _modernPasswordField() {
+    return TextField(
+      obscureText: _isPasswordHidden,
+      controller: password,
+      decoration: InputDecoration(
+        hintText: "Password",
+        prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _isPasswordHidden ? Icons.visibility : Icons.visibility_off,
+          ),
+          onPressed: () {
+            setState(() {
+              _isPasswordHidden = !_isPasswordHidden;
+            });
+          },
+        ),
+        filled: true,
+        fillColor: const Color(0xFFF3F4F6),
+        contentPadding: const EdgeInsets.symmetric(vertical: 18),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0F756B),
-      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Text(
-                //   "Sign In",
-                //   style: GoogleFonts.poppins(
-                //     fontSize: 50,
-                //     fontWeight: FontWeight.bold,r
-                //     color: Colors.white,
-                //   ),
-                // ),
-                
-                      const SizedBox(height: 10),
-                // CARD LOGIN
-                Container(
-                  width: 400,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                        color: Colors.black.withOpacity(0.1),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // =========== LOGO DI DALAM CARD ===========
-                      // TITLE
-                      Container(
-                        width: 180,
-                        height: 110,
-                        margin: const EdgeInsets.only(bottom: 20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 60),
+
+              /// LOGO CONTAINER ROUNDED RECTANGLE
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 18,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(50), // sudut tumpul
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 20,
+                      color: Colors.black.withOpacity(0.15),
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Image.asset('assets/images/Logo-remove.png', height: 55),
+              ),
+
+              const SizedBox(height: 24),
+
+              Text(
+                "Selamat Datang 👋",
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+
+              const SizedBox(height: 6),
+
+              Text(
+                "Masuk untuk melanjutkan",
+                style: GoogleFonts.poppins(fontSize: 14, color: Colors.white70),
+              ),
+
+              const SizedBox(height: 50),
+
+              /// FLOATING CARD
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(32),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 30,
+                      spreadRadius: 5,
+                      color: Colors.black.withOpacity(0.15),
+                      offset: const Offset(0, 15),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    /// USERNAME
+                    _modernField(
+                      controller: username,
+                      hint: "Username",
+                      icon: Icons.person_outline,
+                    ),
+
+                    const SizedBox(height: 18),
+
+                    /// PASSWORD
+                    _modernPasswordField(),
+
+                    const SizedBox(height: 30),
+
+                    /// LOGIN BUTTON
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.yellow[700],
+                          shape: const StadiumBorder(),
+                          elevation: 0,
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.asset(
-                            'assets/images/Logo.png',
-                            fit: BoxFit.contain,
+                        child: Text(
+                          "Login",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
                         ),
                       ),
+                    ),
 
-                      const SizedBox(height: 10),
+                    const SizedBox(height: 28),
 
-                      // USERNAME FIELD
-                      TextField(
-                        controller: username,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          filled: true,
-                          fillColor: const Color(0xFFE0E7EF),
-                          hintText: "Username",
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // PASSWORD FIELD
-                      TextField(
-                        controller: password,
-                        obscureText: _isPasswordHidden,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          filled: true,
-                          fillColor: const Color(0xFFE0E7EF),
-                          hintText: "Password",
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isPasswordHidden
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isPasswordHidden = !_isPasswordHidden;
-                              });
-                            },
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            thickness: 1,
+                            color: Colors.grey.shade300,
                           ),
                         ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // LOGIN BUTTON
-                      SizedBox(
-                        width: 400,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // login manual
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.yellow[700],
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Text(
-                            "Login",
+                            "atau",
                             style: GoogleFonts.poppins(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              fontSize: 12,
+                              color: Colors.grey,
                             ),
                           ),
                         ),
-                      ),
+                        Expanded(
+                          child: Divider(
+                            thickness: 1,
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
+                      ],
+                    ),
 
-                      const SizedBox(height: 10),
+                    const SizedBox(height: 28),
 
-                      // GOOGLE LOGIN BUTTON
-                      SizedBox(
-                        width: 400,
-                        child: ElevatedButton.icon(
-                          onPressed: () async {
+                    /// GOOGLE BUTTON
+                    SizedBox(
+                      width: double.infinity,
+                      height: 54,
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          try {
                             final user = await AuthService().signInWithGoogle();
+
                             if (user != null) {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(builder: (_) => const Home()),
                               );
                             }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Login Google gagal: $e")),
+                            );
+                          }
+                        },
+                        icon: SvgPicture.asset(
+                          "assets/icons/google_logo.svg",
+                          width: 20,
+                          height: 20,
+                        ),
+                        label: Text(
+                          "Login dengan Google",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          shape: const StadiumBorder(),
+                          side: BorderSide(color: Colors.grey.shade300),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+
+                    /// REGISTER LINK
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Belum punya akun?",
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const Register(),
+                              ),
+                            );
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: const BorderSide(color: Colors.black26),
-                            ),
-                          ),
-                          icon: const Icon(
-                            Icons.g_mobiledata,
-                            color: Colors.red,
-                            size: 28,
-                          ),
-                          label: Text(
-                            "Login dengan Google",
+                          child: Text(
+                            "Daftar",
                             style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              color: Colors.black87,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF0F756B),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: 50),
+            ],
           ),
         ),
       ),

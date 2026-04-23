@@ -14,24 +14,55 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # 1. Checkout repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
+      # 2. Setup Flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
 
-      - run: flutter pub get
-      - run: flutter test
-      - run: flutter build apk --release
+      # 3. Install dependencies
+      - name: Install Dependencies
+        run: flutter pub get
 
-      - uses: actions/upload-artifact@v4
+      # 4. Run tests
+      - name: Run Tests
+        run: flutter test
+
+      # 5. Build APK
+      - name: Build APK
+        run: flutter build apk --release
+
+      # 6. Upload artifact
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: build/app/outputs/flutter-apk/app-release.apk
 
+      # 7. Create GitHub Release (hanya saat tag)
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           name: Release ${{ github.ref_name }}
           files: build/app/outputs/flutter-apk/app-release.apk
+
+      # 8. Notify Telegram (Success)
+      - name: 📢 Notify Telegram (Success)
+        if: success()
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+          -d text="✅ Build APK berhasil untuk commit ${{ github.sha }}"
+
+      # 9. Notify Telegram (Failed)
+      - name: ❌ Notify Telegram (Failed)
+        if: failure()
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+          -d text="❌ Build gagal di GitHub Actions"

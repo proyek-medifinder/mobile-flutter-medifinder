@@ -36,7 +36,6 @@ jobs:
       - name: Build APK
         run: flutter build apk --release --split-per-abi
 
-
       # 6. Upload artifact
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
@@ -44,36 +43,29 @@ jobs:
           name: app-release
           path: build/app/outputs/flutter-apk/*.apk
 
-      # 7. Create GitHub Release (hanya saat tag)
+      # 7. Create GitHub Release (saat tag)
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           name: Release ${{ github.ref_name }}
-          files: build/app/outputs/flutter-apk/app-release.apk
+          files: build/app/outputs/flutter-apk/*.apk
 
-      # 8. Notify Telegram (Success)
-      - name: 📢 Notify Telegram (Success)
-        if: success()
-        run: |
-          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
-          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="✅ Build APK berhasil untuk commit ${{ github.sha }}"
-
-      # 9. Notify Telegram (Failed)
-      - name: ❌ Notify Telegram (Failed)
-        if: failure()
-        run: |
-          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
-          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="❌ Build gagal di GitHub Actions"
-    
-      - name: Send APK to Telegram
+      # 8. Kirim APK + notif (success)
+      - name: Send APK + Notification
         if: success()
         run: |
           for file in build/app/outputs/flutter-apk/*.apk; do
             curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument \
             -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
             -F document=@$file \
-            -F caption="📦 APK berhasil di-build 🚀"
+            -F caption="✅ Build BERHASIL 🚀\nCommit: ${{ github.sha }}\nBranch: ${{ github.ref_name }}"
           done
+
+      # 9. Kirim notif gagal
+      - name: Notify Failed
+        if: failure()
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+          -d text="❌ Build GAGAL 🚨\nCommit: ${{ github.sha }}\nBranch: ${{ github.ref_name }}"

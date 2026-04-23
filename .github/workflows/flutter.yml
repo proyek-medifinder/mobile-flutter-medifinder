@@ -34,14 +34,15 @@ jobs:
 
       # 5. Build APK
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release --split-per-abi
+
 
       # 6. Upload artifact
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/*.apk
 
       # 7. Create GitHub Release (hanya saat tag)
       - name: Create Release
@@ -67,10 +68,12 @@ jobs:
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
           -d text="❌ Build gagal di GitHub Actions"
     
-      - name: 📤 Send APK to Telegram
+      - name: Send APK to Telegram
         if: success()
         run: |
-          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument \
-          -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -F document=@build/app/outputs/flutter-apk/app-release.apk \
-          -F caption="📦 APK terbaru berhasil di-build 🚀"
+          for file in build/app/outputs/flutter-apk/*.apk; do
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument \
+            -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -F document=@$file \
+            -F caption="📦 APK berhasil di-build 🚀"
+          done

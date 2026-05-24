@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:medifinder/page/login.dart';
+import 'package:medifinder/theme/app_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Register extends StatefulWidget {
@@ -156,7 +157,7 @@ class _RegisterState extends State<Register> {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F756B),
+      backgroundColor: AppUi.primary,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -174,17 +175,7 @@ class _RegisterState extends State<Register> {
                         horizontal: 30,
                         vertical: 18,
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(50),
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 20,
-                            color: Colors.black.withOpacity(0.15),
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
+                      decoration: AppUi.panelDecoration(radius: 999),
                       child: Image.asset(
                         'assets/images/Logo-remove.png',
                         height: 55,
@@ -198,8 +189,8 @@ class _RegisterState extends State<Register> {
                       'Buat Akun Baru',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
                     ),
@@ -224,18 +215,7 @@ class _RegisterState extends State<Register> {
                         horizontal: 24,
                         vertical: 32,
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(32),
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 30,
-                            spreadRadius: 5,
-                            color: Colors.black.withOpacity(0.15),
-                            offset: const Offset(0, 15),
-                          ),
-                        ],
-                      ),
+                      decoration: AppUi.panelDecoration(radius: 32),
                       child: Form(
                         key: _formKey,
                         child: Column(
@@ -246,7 +226,7 @@ class _RegisterState extends State<Register> {
                               style: GoogleFonts.poppins(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xFF0F756B),
+                                color: AppUi.primary,
                               ),
                             ),
 
@@ -380,9 +360,9 @@ class _RegisterState extends State<Register> {
                                 onPressed:
                                     _isSubmitting ? null : _handleRegister,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.yellow[700],
-                                  disabledBackgroundColor: Colors.yellow[700]
-                                      ?.withOpacity(0.6),
+                                  backgroundColor: AppUi.accent,
+                                  disabledBackgroundColor:
+                                      AppUi.accent.withOpacity(0.6),
                                   shape: const StadiumBorder(),
                                   elevation: 0,
                                 ),
@@ -442,7 +422,7 @@ class _RegisterState extends State<Register> {
                                     'Login',
                                     style: GoogleFonts.poppins(
                                       fontWeight: FontWeight.w600,
-                                      color: const Color(0xFF0F756B),
+                                      color: AppUi.primary,
                                     ),
                                   ),
                                 ),

@@ -27,15 +27,14 @@ void main() async {
   socketNotificationService.connect();
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? username = prefs.getString('username');
-  String? password = prefs.getString('password');
-  bool hasAllData = username != null && password != null;
+  String? authToken = prefs.getString('auth_token');
+  bool hasAuthToken = authToken != null && authToken.isNotEmpty;
 
   final bool sudahLoginGoogle = FirebaseAuth.instance.currentUser != null;
 
   runApp(
     ProviderScope(
-      child: MyApp(langsungKeHasil: hasAllData || sudahLoginGoogle),
+      child: MyApp(langsungKeHasil: hasAuthToken || sudahLoginGoogle),
     ),
   );
 }

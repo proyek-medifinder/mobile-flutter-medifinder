@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:medifinder/config/api_config.dart';
 import 'package:medifinder/page/widgets/apotek_card.dart';
 import 'package:medifinder/page/widgets/page_intro_card.dart';
 import 'package:medifinder/providers.dart';
+import 'package:medifinder/theme/app_ui.dart';
+import 'package:medifinder/utils/apotek_mapper.dart';
 
 class ObatTab extends ConsumerStatefulWidget {
   const ObatTab({super.key});
@@ -21,6 +22,50 @@ class _ObatTabState extends ConsumerState<ObatTab> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<List<_ApotekSearchResult>> _searchObat(
+    List<dynamic> listApotek,
+    String keyword,
+  ) async {
+    final api = ref.read(productApiProvider);
+    final results = await Future.wait(
+      listApotek.map((item) async {
+        final apotek = item as Map<String, dynamic>;
+        final viewData = ApotekViewData.fromMap(apotek);
+
+        if (viewData.id.isEmpty) {
+          return null;
+        }
+
+        final obatList = await api.getObatByApotek(
+          apotekId: viewData.id,
+          name: keyword,
+        );
+
+        if (obatList.isEmpty) {
+          return null;
+        }
+
+        final merged = Map<String, dynamic>.from(apotek);
+        merged['obats'] = obatList;
+
+        final detailData = ApotekViewData.fromMap(merged);
+        final tags = detailData.medicines
+            .map((obat) => obat.name)
+            .where((name) => name.isNotEmpty)
+            .toSet()
+            .toList();
+
+        return _ApotekSearchResult(
+          raw: merged,
+          viewData: detailData,
+          tags: tags,
+        );
+      }),
+    );
+
+    return results.whereType<_ApotekSearchResult>().toList();
   }
 
   @override
@@ -60,88 +105,80 @@ class _ObatTabState extends ConsumerState<ObatTab> {
           ),
           const SizedBox(height: 20),
           apotekAsync.when(
-            loading:
-                () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 32),
-                  child: Center(
-                    child: CircularProgressIndicator(color: Colors.white),
-                  ),
-                ),
-            error:
-                (err, st) => _emptyState(
-                  icon: Icons.error_outline_rounded,
-                  title: 'Data obat belum bisa dimuat',
-                  subtitle: 'Coba lagi nanti. Detail error: $err',
-                ),
+            loading: () => const Padding(
+              padding: EdgeInsets.symmetric(vertical: 32),
+              child: Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+            ),
+            error: (err, st) => _emptyState(
+              icon: Icons.error_outline_rounded,
+              title: 'Data obat belum bisa dimuat',
+              subtitle: 'Coba lagi nanti. Detail error: $err',
+            ),
             data: (listApotek) {
               if (_keyword.isEmpty) {
                 return _emptyState(
                   icon: Icons.vaccines_rounded,
                   title: 'Mulai pencarian obat',
-                  subtitle: 'Masukkan nama obat untuk melihat apotek yang menyediakannya.',
+                  subtitle:
+                      'Masukkan nama obat untuk melihat apotek yang menyediakannya.',
                 );
               }
 
-              final lower = _keyword.toLowerCase();
-              final filtered =
-                  listApotek.where((item) {
-                    final apotek = item as Map<String, dynamic>;
-                    final obats = apotek['obats'] as List<dynamic>? ?? [];
-                    return obats.any((o) {
-                      final namaObat =
-                          (o['nama_obat'] ?? '').toString().toLowerCase();
-                      return namaObat.contains(lower);
-                    });
-                  }).toList();
-
-              if (filtered.isEmpty) {
-                return _emptyState(
-                  icon: Icons.search_off_rounded,
-                  title: 'Obat belum ditemukan',
-                  subtitle: 'Coba nama lain atau cek ejaan obat yang kamu cari.',
-                );
-              }
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _resultBadge('${filtered.length} apotek menyediakan obat ini'),
-                  const SizedBox(height: 14),
-                  ...filtered.map((item) {
-                    final apotek = item as Map<String, dynamic>;
-                    final String? fotoPath = apotek['foto_apotek'];
-                    final obats = apotek['obats'] as List<dynamic>? ?? [];
-                    final matchedTags =
-                        obats
-                            .where((o) {
-                              final namaObat =
-                                  (o['nama_obat'] ?? '')
-                                      .toString()
-                                      .toLowerCase();
-                              return namaObat.contains(lower);
-                            })
-                            .map((o) => (o['nama_obat'] ?? '').toString())
-                            .where((nama) => nama.isNotEmpty)
-                            .toSet()
-                            .toList();
-
-                    return ApotekCard(
-                      namaApotek: apotek['nama_apotek']?.toString() ?? '-',
-                      alamat:
-                          apotek['alamat']?.toString() ??
-                          'Alamat tidak tersedia',
-                      statusBuka: apotek['status_buka']?.toString() ?? '',
-                      jamOperasional:
-                          apotek['jam_operasional']?.toString() ?? '',
-                      gambarUrl:
-                          (fotoPath != null && fotoPath.isNotEmpty)
-                              ? ApiConfig.storageUrl(fotoPath)
-                              : null,
-                      idApotek: apotek['id_apotek']?.toString() ?? '',
-                      tags: matchedTags,
+              return FutureBuilder<List<_ApotekSearchResult>>(
+                future: _searchObat(listApotek, _keyword),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32),
+                      child: Center(
+                        child: CircularProgressIndicator(color: Colors.white),
+                      ),
                     );
-                  }),
-                ],
+                  }
+
+                  if (snapshot.hasError) {
+                    return _emptyState(
+                      icon: Icons.error_outline_rounded,
+                      title: 'Pencarian obat gagal',
+                      subtitle: 'Detail error: ${snapshot.error}',
+                    );
+                  }
+
+                  final results = snapshot.data ?? const [];
+
+                  if (results.isEmpty) {
+                    return _emptyState(
+                      icon: Icons.search_off_rounded,
+                      title: 'Obat belum ditemukan',
+                      subtitle:
+                          'Coba nama lain atau cek ejaan obat yang kamu cari.',
+                    );
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _resultBadge(
+                        '${results.length} apotek menyediakan obat ini',
+                      ),
+                      const SizedBox(height: 14),
+                      ...results.map((result) {
+                        return ApotekCard(
+                          namaApotek: result.viewData.name,
+                          alamat: result.viewData.address,
+                          statusBuka: result.viewData.status,
+                          jamOperasional: result.viewData.hours,
+                          gambarUrl: result.viewData.imageUrl,
+                          idApotek: result.viewData.id,
+                          tags: result.tags,
+                          apotekData: result.raw,
+                        );
+                      }),
+                    ],
+                  );
+                },
               );
             },
           ),
@@ -176,10 +213,7 @@ class _ObatTabState extends ConsumerState<ObatTab> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.14),
-        borderRadius: BorderRadius.circular(24),
-      ),
+      decoration: AppUi.glassDecoration(radius: 24),
       child: Column(
         children: [
           Icon(icon, color: Colors.white, size: 42),
@@ -203,4 +237,16 @@ class _ObatTabState extends ConsumerState<ObatTab> {
       ),
     );
   }
+}
+
+class _ApotekSearchResult {
+  const _ApotekSearchResult({
+    required this.raw,
+    required this.viewData,
+    required this.tags,
+  });
+
+  final Map<String, dynamic> raw;
+  final ApotekViewData viewData;
+  final List<String> tags;
 }

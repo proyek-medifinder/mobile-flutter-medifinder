@@ -15,8 +15,7 @@ class AuthService {
         idToken: tokens.idToken,
       );
 
-      final userCredential =
-          await _auth.signInWithCredential(credential);
+      final userCredential = await _auth.signInWithCredential(credential);
       return userCredential.user;
     } on GoogleSignInException catch (e) {
       if (e.code == GoogleSignInExceptionCode.canceled) return null;

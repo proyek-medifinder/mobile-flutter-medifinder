@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:medifinder/page/widgets/page_intro_card.dart';
+import 'package:medifinder/theme/app_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileTab extends StatefulWidget {
@@ -40,7 +41,11 @@ class _ProfileTabState extends State<ProfileTab> {
     isGoogleLogin = googleUser != null;
 
     if (!isGoogleLogin) {
-      _usernameController.text = prefs.getString('username') ?? '';
+      _usernameController.text =
+          prefs.getString('full_name') ??
+          prefs.getString('username') ??
+          prefs.getString('email') ??
+          '';
       _passwordController.text = prefs.getString('password') ?? '';
     }
 
@@ -63,6 +68,7 @@ class _ProfileTabState extends State<ProfileTab> {
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('username', u);
+    await prefs.setString('full_name', u);
     await prefs.setString('password', p);
 
     if (!mounted) return;
@@ -74,7 +80,11 @@ class _ProfileTabState extends State<ProfileTab> {
   Future<void> _removeCredentials() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('username');
+    await prefs.remove('full_name');
+    await prefs.remove('email');
     await prefs.remove('password');
+    await prefs.remove('auth_token');
+    await prefs.remove('auth_provider');
 
     _usernameController.clear();
     _passwordController.clear();
@@ -150,37 +160,20 @@ class _ProfileTabState extends State<ProfileTab> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(22),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x1F000000),
-                  blurRadius: 18,
-                  offset: Offset(0, 10),
-                ),
-              ],
-            ),
+            decoration: AppUi.panelDecoration(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   isGoogleLogin ? 'Informasi akun' : 'Pengaturan akun',
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: AppUi.sectionTitleStyle(),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   isGoogleLogin
                       ? 'Data di bawah berasal dari akun Google yang sedang digunakan.'
                       : 'Simpan perubahan agar data login lokal tetap terbarui.',
-                  style: GoogleFonts.poppins(
-                    color: Colors.black54,
-                    fontSize: 13,
-                    height: 1.5,
-                  ),
+                  style: AppUi.sectionSubtitleStyle(),
                 ),
                 const SizedBox(height: 20),
                 if (isGoogleLogin) ...[
@@ -225,10 +218,10 @@ class _ProfileTabState extends State<ProfileTab> {
                         child: ElevatedButton(
                           onPressed: _saveProfile,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0F756B),
-                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            backgroundColor: AppUi.primary,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(18),
                             ),
                           ),
                           child: Text(
@@ -246,9 +239,9 @@ class _ProfileTabState extends State<ProfileTab> {
                         child: OutlinedButton(
                           onPressed: _removeCredentials,
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(18),
                             ),
                             side: const BorderSide(color: Colors.red),
                           ),
@@ -277,7 +270,7 @@ class _ProfileTabState extends State<ProfileTab> {
       label,
       style: GoogleFonts.poppins(
         fontSize: 14,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
         color: Colors.black87,
       ),
     );
@@ -288,15 +281,20 @@ class _ProfileTabState extends State<ProfileTab> {
       hintText: hint,
       suffixIcon: suffixIcon,
       filled: true,
-      fillColor: const Color(0xFFF7F7F7),
+      fillColor: AppUi.mutedSurface,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide.none,
       ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(color: AppUi.primary, width: 1.2),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     );
   }
 
@@ -305,8 +303,8 @@ class _ProfileTabState extends State<ProfileTab> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F7),
-        borderRadius: BorderRadius.circular(18),
+        color: AppUi.mutedSurface,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,7 +323,7 @@ class _ProfileTabState extends State<ProfileTab> {
             style: GoogleFonts.poppins(
               fontSize: 15,
               color: Colors.black87,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],

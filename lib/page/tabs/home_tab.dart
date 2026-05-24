@@ -2,10 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:medifinder/config/api_config.dart';
 import 'package:medifinder/page/widgets/apotek_card.dart';
 import 'package:medifinder/page/widgets/page_intro_card.dart';
 import 'package:medifinder/providers.dart';
+import 'package:medifinder/theme/app_ui.dart';
+import 'package:medifinder/utils/apotek_mapper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeTab extends ConsumerStatefulWidget {
@@ -37,6 +38,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
       username =
           firebaseUser?.displayName ??
           firebaseUser?.email ??
+          prefs.getString('full_name') ??
+          prefs.getString('email') ??
           prefs.getString('username') ??
           'User';
       isLoading = false;
@@ -91,11 +94,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
           const SizedBox(height: 24),
           Text(
             'Daftar Apotek yang tersedia',
-            style: GoogleFonts.poppins(
-              fontSize: 23,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
+            style: AppUi.sectionTitleStyle(color: Colors.white),
           ),
           const SizedBox(height: 6),
           Text(
@@ -133,21 +132,16 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                 children:
                     listApotek.map((item) {
                       final apotek = item as Map<String, dynamic>;
-                      final String? fotoPath = apotek['foto_apotek'];
+                      final viewData = ApotekViewData.fromMap(apotek);
 
                       return ApotekCard(
-                        namaApotek: apotek['nama_apotek']?.toString() ?? '-',
-                        alamat:
-                            apotek['alamat']?.toString() ??
-                            'Alamat tidak tersedia',
-                        statusBuka: apotek['status_buka']?.toString() ?? '',
-                        jamOperasional:
-                            apotek['jam_operasional']?.toString() ?? '',
-                        gambarUrl:
-                            (fotoPath != null && fotoPath.isNotEmpty)
-                                ? ApiConfig.storageUrl(fotoPath)
-                                : null,
-                        idApotek: apotek['id_apotek'].toString(),
+                        namaApotek: viewData.name,
+                        alamat: viewData.address,
+                        statusBuka: viewData.status,
+                        jamOperasional: viewData.hours,
+                        gambarUrl: viewData.imageUrl,
+                        idApotek: viewData.id,
+                        apotekData: apotek,
                       );
                     }).toList(),
               );
@@ -184,10 +178,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.14),
-        borderRadius: BorderRadius.circular(24),
-      ),
+      decoration: AppUi.glassDecoration(radius: 24),
       child: Column(
         children: [
           Icon(icon, color: Colors.white, size: 40),

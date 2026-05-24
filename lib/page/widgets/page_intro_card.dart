@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:medifinder/theme/app_ui.dart';
 
 class PageIntroCard extends StatelessWidget {
   final String title;
@@ -19,31 +20,28 @@ class PageIntroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.14),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.12)),
-      ),
+      padding: const EdgeInsets.all(22),
+      decoration: AppUi.glassDecoration(radius: 26),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 52,
-            height: 52,
+            width: 54,
+            height: 54,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.16),
-              borderRadius: BorderRadius.circular(16),
+              color: Colors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(18),
             ),
-            child: Icon(icon, color: Colors.white, size: 28),
+            child: Icon(icon, color: Colors.white, size: 27),
           ),
           const SizedBox(height: 16),
           Text(
             title,
             style: GoogleFonts.poppins(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 18,
               fontWeight: FontWeight.w700,
+              height: 1.2,
             ),
           ),
           const SizedBox(height: 8),
@@ -51,7 +49,7 @@ class PageIntroCard extends StatelessWidget {
             subtitle,
             style: GoogleFonts.poppins(
               color: Colors.white70,
-              fontSize: 14,
+              fontSize: 13,
               height: 1.5,
             ),
           ),

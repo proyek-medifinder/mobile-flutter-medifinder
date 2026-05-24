@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:medifinder/config/api_config.dart';
 import 'package:medifinder/page/widgets/apotek_card.dart';
 import 'package:medifinder/page/widgets/page_intro_card.dart';
 import 'package:medifinder/providers.dart';
+import 'package:medifinder/theme/app_ui.dart';
+import 'package:medifinder/utils/apotek_mapper.dart';
 
 class SearchTab extends ConsumerStatefulWidget {
   const SearchTab({super.key});
@@ -86,8 +87,7 @@ class _SearchTabState extends ConsumerState<SearchTab> {
               final filtered =
                   listApotek.where((item) {
                     final map = item as Map<String, dynamic>;
-                    final nama =
-                        (map['nama_apotek'] ?? '').toString().toLowerCase();
+                    final nama = ApotekViewData.fromMap(map).name.toLowerCase();
                     return nama.contains(lower);
                   }).toList();
 
@@ -106,21 +106,16 @@ class _SearchTabState extends ConsumerState<SearchTab> {
                   const SizedBox(height: 14),
                   ...filtered.map((item) {
                     final apotek = item as Map<String, dynamic>;
-                    final String? fotoPath = apotek['foto_apotek'];
+                    final viewData = ApotekViewData.fromMap(apotek);
 
                     return ApotekCard(
-                      namaApotek: apotek['nama_apotek']?.toString() ?? '-',
-                      alamat:
-                          apotek['alamat']?.toString() ??
-                          'Alamat tidak tersedia',
-                      statusBuka: apotek['status_buka']?.toString() ?? '',
-                      jamOperasional:
-                          apotek['jam_operasional']?.toString() ?? '',
-                      gambarUrl:
-                          (fotoPath != null && fotoPath.isNotEmpty)
-                              ? ApiConfig.storageUrl(fotoPath)
-                              : null,
-                      idApotek: apotek['id_apotek']?.toString() ?? '',
+                      namaApotek: viewData.name,
+                      alamat: viewData.address,
+                      statusBuka: viewData.status,
+                      jamOperasional: viewData.hours,
+                      gambarUrl: viewData.imageUrl,
+                      idApotek: viewData.id,
+                      apotekData: apotek,
                     );
                   }),
                 ],
@@ -158,10 +153,7 @@ class _SearchTabState extends ConsumerState<SearchTab> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.14),
-        borderRadius: BorderRadius.circular(24),
-      ),
+      decoration: AppUi.glassDecoration(radius: 24),
       child: Column(
         children: [
           Icon(icon, color: Colors.white, size: 42),

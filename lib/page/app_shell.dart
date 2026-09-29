@@ -129,7 +129,7 @@ class _AppShellState extends State<AppShell> {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.18),
+                          color: Colors.white.withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: const Icon(Icons.local_hospital, color: Colors.white),
@@ -255,7 +255,7 @@ class _AppShellState extends State<AppShell> {
           ),
           if (_isLoggingOut)
             Container(
-              color: Colors.black.withOpacity(0.18),
+              color: Colors.black.withValues(alpha: 0.18),
               child: Center(
                 child: Container(
                   width: 180,

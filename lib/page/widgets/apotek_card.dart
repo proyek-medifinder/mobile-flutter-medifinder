@@ -26,148 +26,213 @@ class ApotekCard extends StatelessWidget {
     this.apotekData,
   });
 
+  void _navigateToDetail(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DetailApotek1(
+          idApotek: idApotek,
+          initialData: apotekData != null
+              ? ApotekViewData.fromMap(apotekData!)
+              : null,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 18),
-      decoration: AppUi.panelDecoration(radius: 26),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
-            child:
-                gambarUrl != null
-                    ? SizedBox(
-                      height: 182,
-                      width: double.infinity,
-                      child: Image.network(
-                        gambarUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return _placeholder();
-                        },
-                      ),
-                    )
-                    : _placeholder(),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (tags.isNotEmpty) ...[
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children:
-                        tags
-                            .take(3)
-                            .map(
-                              (tag) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFE8F5F3),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                child: Text(
-                                  tag,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppUi.primary,
-                                  ),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                  ),
-                  const SizedBox(height: 14),
-                ],
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        namaApotek,
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                          height: 1.25,
-                        ),
-                      ),
-                    ),
-                    if (statusBuka.isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppUi.statusColor(statusBuka).withOpacity(0.14),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          statusBuka,
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppUi.statusColor(statusBuka),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                _infoRow(Icons.location_on_rounded, alamat),
-                if (jamOperasional.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  _infoRow(Icons.access_time_rounded, jamOperasional),
-                ],
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => DetailApotek1(
-                            idApotek: idApotek,
-                            initialData:
-                                apotekData != null
-                                    ? ApotekViewData.fromMap(apotekData!)
-                                    : null,
-                          ),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppUi.accent,
-                      foregroundColor: Colors.black,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                    ),
-                    child: Text(
-                      'Kunjungi Apotek',
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: AppUi.panelDecoration(radius: 24).copyWith(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(24),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => _navigateToDetail(context),
+          splashColor: AppUi.primary.withValues(alpha: 0.08),
+          highlightColor: AppUi.primary.withValues(alpha: 0.04),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // --- GAMBAR ---
+              SizedBox(
+                height: 185,
+                width: double.infinity,
+                child: gambarUrl != null && gambarUrl!.isNotEmpty
+                    ? Image.network(
+                        gambarUrl!,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            color: const Color(0xFFF3F4F6),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                                strokeWidth: 2.5,
+                                color: AppUi.primary,
+                              ),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) => _placeholder(),
+                      )
+                    : _placeholder(),
+              ),
+
+              // --- DETAIL & STATUS ---
+              Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // TAGS
+                    if (tags.isNotEmpty) ...[
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: tags.take(3).map((tag) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE8F5F3),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              tag,
+                              style: GoogleFonts.poppins(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: AppUi.primary,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+
+                    // NAMA APOTEK & STATUS BUKA
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            namaApotek,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                              height: 1.3,
+                            ),
+                          ),
+                        ),
+                        if (statusBuka.isNotEmpty) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppUi.statusColor(statusBuka).withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: AppUi.statusColor(statusBuka),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  statusBuka,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppUi.statusColor(statusBuka),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    // ALAMAT & JAM OPERASIONAL
+                    _infoRow(Icons.location_on_rounded, alamat),
+                    if (jamOperasional.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      _infoRow(Icons.access_time_filled_rounded, jamOperasional),
+                    ],
+
+                    const SizedBox(height: 18),
+
+                    // TOMBOL AKSI
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => _navigateToDetail(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppUi.accent,
+                          foregroundColor: Colors.black,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Kunjungi Apotek',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13.5,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            const Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 18,
+                              color: Colors.black87,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -177,22 +242,23 @@ class ApotekCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 28,
-          height: 28,
+          padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
             color: const Color(0xFFE8F5F3),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, size: 16, color: AppUi.primary),
+          child: Icon(icon, size: 15, color: AppUi.primary),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 10),
         Expanded(
           child: Text(
             text,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: GoogleFonts.poppins(
-              fontSize: 13,
+              fontSize: 12.5,
               color: Colors.black87,
-              height: 1.5,
+              height: 1.45,
             ),
           ),
         ),
@@ -202,11 +268,27 @@ class ApotekCard extends StatelessWidget {
 
   Widget _placeholder() {
     return Container(
-      height: 182,
+      height: 185,
       width: double.infinity,
       color: const Color(0xFFE5E7EB),
-      child: const Center(
-        child: Icon(Icons.image_not_supported, size: 42, color: Colors.black45),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.local_pharmacy_rounded,
+            size: 42,
+            color: Colors.black.withValues(alpha: 0.25),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Gambar Tidak Tersedia',
+            style: GoogleFonts.poppins(
+              fontSize: 11,
+              color: Colors.black45,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -29,7 +29,7 @@ class PageIntroCard extends StatelessWidget {
             width: 54,
             height: 54,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
+              color: Colors.white.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(18),
             ),
             child: Icon(icon, color: Colors.white, size: 27),

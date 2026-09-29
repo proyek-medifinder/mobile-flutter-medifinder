@@ -26,7 +26,8 @@ class _SearchTabState extends ConsumerState<SearchTab> {
 
   @override
   Widget build(BuildContext context) {
-    final apotekAsync = ref.watch(apotekListProvider);
+    // Gunakan apotekViewDataListProvider yang sudah di-mapping
+    final apotekAsync = ref.watch(apotekViewDataListProvider);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
@@ -36,13 +37,13 @@ class _SearchTabState extends ConsumerState<SearchTab> {
           PageIntroCard(
             title: 'Cari Apotek',
             subtitle:
-                'Temukan apotek berdasarkan nama, lalu buka detailnya untuk melihat informasi lengkap.',
+                'Temukan apotek berdasarkan nama atau alamat, lalu buka detailnya untuk melihat informasi lengkap.',
             icon: Icons.search_rounded,
             child: TextField(
               controller: _searchController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Ketik nama apotek...',
+                hintText: 'Ketik nama atau lokasi apotek...',
                 hintStyle: GoogleFonts.poppins(color: Colors.white70),
                 prefixIcon: const Icon(Icons.search, color: Colors.white),
                 filled: true,
@@ -74,21 +75,21 @@ class _SearchTabState extends ConsumerState<SearchTab> {
                   title: 'Data belum bisa dimuat',
                   subtitle: 'Coba beberapa saat lagi. Detail error: $err',
                 ),
-            data: (listApotek) {
+            data: (List<ApotekViewData> listApotek) {
               if (_keyword.isEmpty) {
                 return _emptyState(
                   icon: Icons.travel_explore_rounded,
                   title: 'Mulai pencarian apotek',
-                  subtitle: 'Masukkan nama apotek untuk melihat hasil yang cocok.',
+                  subtitle: 'Masukkan kata kunci untuk melihat hasil yang cocok.',
                 );
               }
 
               final lower = _keyword.toLowerCase();
               final filtered =
-                  listApotek.where((item) {
-                    final map = item as Map<String, dynamic>;
-                    final nama = ApotekViewData.fromMap(map).name.toLowerCase();
-                    return nama.contains(lower);
+                  listApotek.where((apotek) {
+                    final namaMatches = apotek.name.toLowerCase().contains(lower);
+                    final alamatMatches = apotek.address.toLowerCase().contains(lower);
+                    return namaMatches || alamatMatches;
                   }).toList();
 
               if (filtered.isEmpty) {
@@ -104,10 +105,7 @@ class _SearchTabState extends ConsumerState<SearchTab> {
                 children: [
                   _resultBadge('${filtered.length} apotek ditemukan'),
                   const SizedBox(height: 14),
-                  ...filtered.map((item) {
-                    final apotek = item as Map<String, dynamic>;
-                    final viewData = ApotekViewData.fromMap(apotek);
-
+                  ...filtered.map((viewData) {
                     return ApotekCard(
                       namaApotek: viewData.name,
                       alamat: viewData.address,
@@ -115,7 +113,7 @@ class _SearchTabState extends ConsumerState<SearchTab> {
                       jamOperasional: viewData.hours,
                       gambarUrl: viewData.imageUrl,
                       idApotek: viewData.id,
-                      apotekData: apotek,
+                      apotekData: viewData.raw,
                     );
                   }),
                 ],
@@ -131,7 +129,7 @@ class _SearchTabState extends ConsumerState<SearchTab> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.14),
+        color: Colors.white.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(

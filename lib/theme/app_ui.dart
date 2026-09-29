@@ -32,14 +32,14 @@ class AppUi {
     return BoxDecoration(
       gradient: LinearGradient(
         colors: [
-          Colors.white.withOpacity(0.18),
-          Colors.white.withOpacity(0.10),
+          Colors.white.withValues(alpha: 0.18),
+          Colors.white.withValues(alpha: 0.10),
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
       borderRadius: BorderRadius.circular(radius),
-      border: Border.all(color: Colors.white.withOpacity(0.12)),
+      border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
     );
   }
 

@@ -381,7 +381,7 @@ class _LoginState extends State<Login> {
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: AppUi.accent,
                                               disabledBackgroundColor:
-                                                  AppUi.accent.withOpacity(0.6),
+                                                  AppUi.accent.withValues(alpha: 0.6),
                                               shape: const StadiumBorder(),
                                               elevation: 0,
                                             ),
@@ -512,7 +512,7 @@ class _LoginState extends State<Login> {
           ),
           if (isBusy)
             Container(
-              color: Colors.black.withOpacity(0.18),
+              color: Colors.black.withValues(alpha: 0.18),
               child: Center(
                 child: Container(
                   width: 180,

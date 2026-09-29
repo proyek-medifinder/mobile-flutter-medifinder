@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:medifinder/config/api_config.dart';
 import 'package:medifinder/page/login.dart';
 import 'package:medifinder/theme/app_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +22,19 @@ class _RegisterState extends State<Register> {
   final confirmPassword = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  // Dio instance untuk memanggil API backend
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: ApiConfig.authHost,
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 15),
+      headers: const {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    ),
+  );
+
   bool _isPasswordHidden = true;
   bool _isConfirmHidden = true;
   bool _isSubmitting = false;
@@ -31,6 +46,7 @@ class _RegisterState extends State<Register> {
     email.dispose();
     password.dispose();
     confirmPassword.dispose();
+    _dio.close();
     super.dispose();
   }
 
@@ -130,27 +146,76 @@ class _RegisterState extends State<Register> {
       _isSubmitting = true;
     });
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('full_name', fullName.text.trim());
-    await prefs.setString('username', username.text.trim());
-    await prefs.setString('email', email.text.trim());
-    await prefs.setString('password', password.text.trim());
+    try {
+      // 1. Panggil API backend untuk membuat akun
+      final response = await _dio.post(
+        '/register',
+        data: {
+          'name': fullName.text.trim(),
+          'email': email.text.trim(),
+          'password': password.text.trim(),
+        },
+      );
 
-    if (!mounted) return;
+      // Cek apakah respons berhasil (status 201)
+      if (response.statusCode != 201 && response.statusCode != 200) {
+        final errorMsg = (response.data is Map)
+            ? (response.data['error'] ?? response.data['message'] ?? 'Registrasi gagal')
+            : 'Registrasi gagal';
+        throw Exception(errorMsg.toString());
+      }
 
-    setState(() {
-      _isSubmitting = false;
-    });
+      // 2. Simpan data lokal agar form login terisi otomatis
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('full_name', fullName.text.trim());
+      await prefs.setString('username', username.text.trim());
+      await prefs.setString('email', email.text.trim());
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Akun berhasil disimpan. Silakan login.')),
-    );
+      if (!mounted) return;
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const Login()),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Akun berhasil dibuat! Silakan login.'),
+          backgroundColor: Color(0xFF0F756B),
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const Login()),
+      );
+    } on DioException catch (e) {
+      if (!mounted) return;
+
+      String errMsg = 'Registrasi gagal. Coba lagi.';
+      final data = e.response?.data;
+      if (data is Map) {
+        errMsg = (data['error'] ?? data['message'] ?? errMsg).toString();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errMsg),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -362,7 +427,7 @@ class _RegisterState extends State<Register> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppUi.accent,
                                   disabledBackgroundColor:
-                                      AppUi.accent.withOpacity(0.6),
+                                      AppUi.accent.withValues(alpha: 0.6),
                                   shape: const StadiumBorder(),
                                   elevation: 0,
                                 ),

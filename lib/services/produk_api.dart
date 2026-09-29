@@ -21,6 +21,29 @@ class ProductApi {
     return [];
   }
 
+  Future<List<dynamic>> getNearbyApotek({
+    required double lat,
+    required double lng,
+    double radius = 50.0,
+  }) async {
+    final Response res = await client.dio.get(
+      '${ApiConfig.apiBase}/apotek/nearby',
+      queryParameters: {
+        'lat': lat,
+        'lng': lng,
+        'radius': radius,
+      },
+    );
+    final data = res.data;
+
+    if (data is Map && data['data'] is List) {
+      return List<dynamic>.from(data['data']);
+    } else if (data is List) {
+      return List<dynamic>.from(data);
+    }
+    return [];
+  }
+
   Future<List<dynamic>> getObatByApotek({
     required String apotekId,
     String name = '',

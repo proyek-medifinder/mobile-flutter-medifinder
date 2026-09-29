@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Aplikasi memerlukan izin lokasi untuk menemukan apotek terdekat di sekitar Anda.</string>
 </dict>
 </plist>

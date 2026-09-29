@@ -129,6 +129,7 @@ class ApotekViewData {
     // Nilai asli jam_buka & jam_tutup dari DB (null = belum diatur)
     this.jamBukaRaw,
     this.jamTutupRaw,
+    this.distance,
   });
 
   final String id;
@@ -146,6 +147,9 @@ class ApotekViewData {
   /// Nilai asli dari DB (null = admin belum mengisi jam operasional)
   final String? jamBukaRaw;
   final String? jamTutupRaw;
+
+  /// Jarak dalam kilometer (dari endpoint /apotek/nearby)
+  final double? distance;
 
   /// Getter untuk memeriksa apakah apotek sedang buka.
   /// Mengikuti logika web frontend:
@@ -242,6 +246,12 @@ class ApotekViewData {
       // null = admin belum mengisi → anggap buka 24 jam (sesuai web)
       jamBukaRaw: jamBuka,
       jamTutupRaw: jamTutup,
+      distance: () {
+        final d = map['distance'] ?? map['Distance'] ?? map['jarak'];
+        if (d is num) return d.toDouble();
+        if (d is String) return double.tryParse(d);
+        return null;
+      }(),
     );
   }
 }

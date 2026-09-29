@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:medifinder/page/widgets/apotek_card.dart';
 import 'package:medifinder/page/widgets/page_intro_card.dart';
 import 'package:medifinder/providers.dart';
+import 'package:medifinder/services/location_service.dart';
 import 'package:medifinder/theme/app_ui.dart';
 import 'package:medifinder/utils/apotek_mapper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,6 +39,25 @@ class _HomeTabState extends ConsumerState<HomeTab>
       duration: const Duration(milliseconds: 300),
     );
     _loadUsername();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _detectLocation();
+    });
+  }
+
+  Future<void> _detectLocation() async {
+    ref.read(isLocationLoadingProvider.notifier).setLoading(true);
+    try {
+      final loc = await LocationService.fetchUserLocation();
+      if (mounted) {
+        ref.read(userLocationProvider.notifier).setLocation(loc);
+      }
+    } catch (_) {
+      // Abaikan error lokasi
+    } finally {
+      if (mounted) {
+        ref.read(isLocationLoadingProvider.notifier).setLoading(false);
+      }
+    }
   }
 
   @override
@@ -80,6 +100,8 @@ class _HomeTabState extends ConsumerState<HomeTab>
   Widget build(BuildContext context) {
     // Gunakan semua apotek, filter dilakukan di sisi client
     final apotekAsync = ref.watch(apotekViewDataListProvider);
+    final userLocation = ref.watch(userLocationProvider);
+    final isLocationLoading = ref.watch(isLocationLoadingProvider);
     final googlePhoto = _firebaseUser?.photoURL;
 
     if (isLoading) {
@@ -126,16 +148,21 @@ class _HomeTabState extends ConsumerState<HomeTab>
             ),
           ),
 
+          // --- USER LOCATION BAR (SESUAI FITUR WEB) ---
+          _buildLocationCard(userLocation, isLocationLoading),
+
           const SizedBox(height: 24),
 
           // --- SECTION TITLE ---
           Text(
-            'Daftar Apotek',
+            userLocation != null ? 'Apotek Terdekat' : 'Daftar Apotek',
             style: AppUi.sectionTitleStyle(color: Colors.white),
           ),
           const SizedBox(height: 6),
           Text(
-            'Pilih apotek berdasarkan status operasionalnya.',
+            userLocation != null
+                ? 'Menampilkan apotek di sekitar wilayah terdeteksi.'
+                : 'Pilih apotek berdasarkan status operasionalnya.',
             style: GoogleFonts.poppins(fontSize: 13, color: Colors.white70),
           ),
 
@@ -196,11 +223,93 @@ class _HomeTabState extends ConsumerState<HomeTab>
                       gambarUrl: viewData.imageUrl,
                       idApotek: viewData.id,
                       apotekData: viewData.raw,
+                      distance: viewData.distance,
                     );
                   }).toList(),
                 ),
               );
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Location Card (Sesuai Fitur Web) ─────────────────────────────────────────
+
+  Widget _buildLocationCard(UserLocation? userLocation, bool isLocationLoading) {
+    return Container(
+      margin: const EdgeInsets.only(top: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.18),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: AppUi.primary.withValues(alpha: 0.25),
+              shape: BoxShape.circle,
+            ),
+            child: isLocationLoading
+                ? const Padding(
+                    padding: EdgeInsets.all(10),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Icon(
+                    Icons.near_me_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Lokasi Anda',
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white70,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  isLocationLoading
+                      ? 'Mendeteksi lokasi GPS...'
+                      : (userLocation != null
+                          ? userLocation.addressName
+                          : 'Lokasi belum aktif. Ketuk untuk deteksi.'),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: isLocationLoading ? null : _detectLocation,
+            icon: Icon(
+              userLocation != null ? Icons.refresh_rounded : Icons.my_location_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+            tooltip: 'Perbarui Lokasi',
           ),
         ],
       ),

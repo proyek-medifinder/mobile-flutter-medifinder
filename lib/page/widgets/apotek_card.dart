@@ -13,6 +13,7 @@ class ApotekCard extends StatelessWidget {
   final String idApotek;
   final List<String> tags;
   final Map<String, dynamic>? apotekData;
+  final double? distance;
 
   const ApotekCard({
     super.key,
@@ -24,6 +25,7 @@ class ApotekCard extends StatelessWidget {
     required this.idApotek,
     this.tags = const [],
     this.apotekData,
+    this.distance,
   });
 
   void _navigateToDetail(BuildContext context) {
@@ -184,8 +186,18 @@ class ApotekCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
 
-                    // ALAMAT & JAM OPERASIONAL
+                    // ALAMAT, JARAK & JAM OPERASIONAL
                     _infoRow(Icons.location_on_rounded, alamat),
+                    if (distance != null) ...[
+                      const SizedBox(height: 8),
+                      _infoRow(
+                        Icons.near_me_rounded,
+                        '${distance!.toStringAsFixed(2)} km dari lokasi Anda',
+                        iconColor: AppUi.primary,
+                        textColor: AppUi.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ],
                     if (jamOperasional.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       _infoRow(Icons.access_time_filled_rounded, jamOperasional),
@@ -237,17 +249,23 @@ class ApotekCard extends StatelessWidget {
     );
   }
 
-  Widget _infoRow(IconData icon, String text) {
+  Widget _infoRow(
+    IconData icon,
+    String text, {
+    Color? iconColor,
+    Color? textColor,
+    FontWeight? fontWeight,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
-            color: const Color(0xFFE8F5F3),
+            color: (iconColor ?? AppUi.primary).withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, size: 15, color: AppUi.primary),
+          child: Icon(icon, size: 15, color: iconColor ?? AppUi.primary),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -257,7 +275,8 @@ class ApotekCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.poppins(
               fontSize: 12.5,
-              color: Colors.black87,
+              color: textColor ?? Colors.black87,
+              fontWeight: fontWeight ?? FontWeight.normal,
               height: 1.45,
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:medifinder/page/login.dart';
+import 'package:medifinder/page/tabs/chatbot_tab.dart';
 import 'package:medifinder/page/tabs/home_tab.dart';
 import 'package:medifinder/page/tabs/obat_tab.dart';
 import 'package:medifinder/page/tabs/profile_tab.dart';
@@ -26,6 +27,7 @@ class _AppShellState extends State<AppShell> {
   final List<Widget> _pages = const [
     HomeTab(),
     SearchTab(),
+    ChatbotTab(),
     ObatTab(),
     ProfileTab(),
   ];
@@ -182,8 +184,28 @@ class _AppShellState extends State<AppShell> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.medication_rounded),
-                title: Text('Cari Obat', style: GoogleFonts.poppins()),
+                leading: const Icon(Icons.smart_toy_rounded, color: AppUi.primary),
+                title: Row(
+                  children: [
+                    Text('MediBot AI', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F5F3),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        'AI',
+                        style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: AppUi.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 selected: _currentIndex == 2,
                 selectedTileColor: const Color(0xFFE8F5F3),
                 shape: RoundedRectangleBorder(
@@ -195,8 +217,8 @@ class _AppShellState extends State<AppShell> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.person_rounded),
-                title: Text('Profil', style: GoogleFonts.poppins()),
+                leading: const Icon(Icons.medication_rounded),
+                title: Text('Cari Obat', style: GoogleFonts.poppins()),
                 selected: _currentIndex == 3,
                 selectedTileColor: const Color(0xFFE8F5F3),
                 shape: RoundedRectangleBorder(
@@ -205,6 +227,19 @@ class _AppShellState extends State<AppShell> {
                 onTap: () {
                   Navigator.pop(context);
                   setState(() => _currentIndex = 3);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.person_rounded),
+                title: Text('Profil', style: GoogleFonts.poppins()),
+                selected: _currentIndex == 4,
+                selectedTileColor: const Color(0xFFE8F5F3),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _currentIndex = 4);
                 },
               ),
               const Spacer(),
@@ -317,14 +352,29 @@ class _AppShellState extends State<AppShell> {
             _currentIndex = index;
           });
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search_rounded), label: 'Cari'),
+        items: [
+          const BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
+          const BottomNavigationBarItem(icon: Icon(Icons.search_rounded), label: 'Cari'),
           BottomNavigationBarItem(
+            icon: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              decoration: BoxDecoration(
+                color: _currentIndex == 2 ? AppUi.primary : const Color(0xFFE8F5F3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.smart_toy_rounded,
+                color: _currentIndex == 2 ? Colors.white : AppUi.primary,
+                size: 20,
+              ),
+            ),
+            label: 'MediBot',
+          ),
+          const BottomNavigationBarItem(
             icon: Icon(Icons.medication_rounded),
             label: 'Obat',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profil'),
+          const BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profil'),
         ],
       ),
     );

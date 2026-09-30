@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medifinder/services/api_client.dart';
 import 'package:medifinder/services/location_service.dart';
 import 'package:medifinder/services/produk_api.dart';
+import 'package:medifinder/services/chatbot_service.dart';
 import 'package:medifinder/utils/apotek_mapper.dart';
 
 // State lokasi user saat ini
@@ -82,4 +83,10 @@ final apotekDetailProvider =
     FutureProvider.family<Map<String, dynamic>, String>((ref, id) async {
   final api = ref.watch(productApiProvider);
   return api.getApotekById(id);
+});
+
+// 7. Provider Chatbot Service
+final chatbotServiceProvider = Provider<ChatbotApiService>((ref) {
+  final client = ref.watch(apiClientProvider);
+  return ChatbotApiService(client);
 });

@@ -24,7 +24,7 @@ class ProductApi {
   Future<List<dynamic>> getNearbyApotek({
     required double lat,
     required double lng,
-    double radius = 50.0,
+    double radius = 5.0,
   }) async {
     final Response res = await client.dio.get(
       '${ApiConfig.apiBase}/apotek/nearby',

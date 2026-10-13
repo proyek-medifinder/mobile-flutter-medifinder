@@ -69,11 +69,19 @@ bool cekApakahBuka(String? jamOperasional, {bool jamBukaNullDiDB = false}) {
 }
 
 class ObatViewData {
-  const ObatViewData({required this.name, required this.stock, this.imageUrl});
+  const ObatViewData({
+    required this.name,
+    required this.stock,
+    this.imageUrl,
+    this.price,
+    this.description,
+  });
 
   final String name;
   final int stock;
   final String? imageUrl;
+  final double? price;
+  final String? description;
 
   factory ObatViewData.fromMap(Map<String, dynamic> map) {
     final imagePath = _firstString(map, const [
@@ -85,8 +93,24 @@ class ObatViewData {
       'Foto',
       'image',
       'image_url',
+      'ImageURL',
       'foto',
     ]);
+
+    final deskripsi = _firstString(map, const [
+      'deskripsi',
+      'Deskripsi',
+      'description',
+      'Description',
+      'keterangan',
+    ]);
+
+    final price = () {
+      final val = map['harga'] ?? map['Harga'] ?? map['price'];
+      if (val is num) return val.toDouble();
+      if (val is String) return double.tryParse(val);
+      return null;
+    }();
 
     return ObatViewData(
       name:
@@ -109,6 +133,8 @@ class ObatViewData {
           ]) ??
           0,
       imageUrl: _resolveImage(imagePath),
+      price: price,
+      description: deskripsi,
     );
   }
 }

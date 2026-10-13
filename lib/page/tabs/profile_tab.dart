@@ -602,11 +602,160 @@ class _ProfileTabState extends State<ProfileTab> {
           ),
           const SizedBox(height: 12),
           _actionCardTile(
+            icon: Icons.help_outline_rounded,
+            title: 'Pusat Bantuan & FAQ',
+            subtitle: 'Panduan pencarian apotek dan konsultasi AI.',
+            color: const Color(0xFF0F756B),
+            onTap: _showFaqDialog,
+          ),
+          const SizedBox(height: 12),
+          _actionCardTile(
+            icon: Icons.info_outline_rounded,
+            title: 'Tentang MediFinder',
+            subtitle: 'Versi 1.0.0 • Sistem Informasi Apotek Terpadu',
+            color: const Color(0xFF0284C7),
+            onTap: _showAboutDialog,
+          ),
+          const SizedBox(height: 12),
+          _actionCardTile(
             icon: Icons.logout_rounded,
             title: 'Keluar / Logout Akun',
             subtitle: 'Selesaikan sesi dan keluar dari aplikasi Medifinder.',
             color: Colors.redAccent,
             onTap: _handleLogout,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showFaqDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8F5F3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.help_rounded, color: AppUi.primary, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Bantuan & FAQ',
+              style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _faqItem(
+                'Bagaimana cara mencari apotek terdekat?',
+                'Pastikan GPS aktif. Halaman Beranda akan otomatis menyortir apotek terdekat berdasarkan lokasi Anda.',
+              ),
+              const Divider(height: 20),
+              _faqItem(
+                'Apakah MediBot AI dapat memberikan resep?',
+                'MediBot memberikan rekomendasi obat bebas (OTC) dan pertolongan pertama. Untuk obat keras atau kondisi darurat, konsultasikan langsung ke dokter.',
+              ),
+              const Divider(height: 20),
+              _faqItem(
+                'Bagaimana status buka apotek ditentukan?',
+                'Status buka dan tutup ditentukan berdasarkan jam operasional harian apotek yang terdaftar di sistem.',
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppUi.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Tutup', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _faqItem(String q, String a) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          q,
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.black87),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          a,
+          style: GoogleFonts.poppins(fontSize: 12, color: Colors.black54, height: 1.4),
+        ),
+      ],
+    );
+  }
+
+  void _showAboutDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE0F2FE),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.info_rounded, color: Color(0xFF0284C7), size: 22),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Tentang MediFinder',
+              style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'MediFinder Mobile',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Versi 1.0.0 (Build 2026)',
+              style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Aplikasi pencari apotek terdekat, ketersediaan obat, rute navigasi, dan asisten AI cerdas untuk kemudahan akses fasilitas kesehatan Anda.',
+              style: GoogleFonts.poppins(fontSize: 12.5, color: Colors.black54, height: 1.45),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppUi.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Tutup', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
           ),
         ],
       ),

@@ -49,10 +49,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-
       theme: ThemeData(
         useMaterial3: true,
-
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0F756B),
+          primary: const Color(0xFF0F756B),
+          secondary: const Color(0xFF10B981),
+        ),
+        scaffoldBackgroundColor: const Color(0xFFF7FBF9),
         textTheme: GoogleFonts.poppinsTextTheme(),
 
         inputDecorationTheme: InputDecorationTheme(

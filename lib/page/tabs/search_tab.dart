@@ -18,15 +18,28 @@ class _SearchTabState extends ConsumerState<SearchTab> {
   String _keyword = '';
   final TextEditingController _searchController = TextEditingController();
 
+  static const List<String> _quickSearches = [
+    '24 Jam',
+    'Kimia Farma',
+    'K-24',
+    'Apotek',
+  ];
+
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
 
+  void _applyQuickSearch(String text) {
+    _searchController.text = text;
+    setState(() {
+      _keyword = text.trim();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Gunakan apotekViewDataListProvider yang sudah di-mapping
     final apotekAsync = ref.watch(apotekViewDataListProvider);
 
     return SingleChildScrollView(
@@ -34,86 +47,211 @@ class _SearchTabState extends ConsumerState<SearchTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ── INTRO & SEARCH BAR ─────────────────────────────────────────────
           PageIntroCard(
             title: 'Cari Apotek',
             subtitle:
-                'Temukan apotek berdasarkan nama atau alamat, lalu buka detailnya untuk melihat informasi lengkap.',
+                'Temukan apotek berdasarkan nama atau jalan dengan pencarian cepat.',
             icon: Icons.search_rounded,
-            child: TextField(
-              controller: _searchController,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: 'Ketik nama atau lokasi apotek...',
-                hintStyle: GoogleFonts.poppins(color: Colors.white70),
-                prefixIcon: const Icon(Icons.search, color: Colors.white),
-                filled: true,
-                fillColor: const Color(0xFF0A5A52),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _keyword = value.trim();
-                });
-              },
-            ),
-          ),
-          const SizedBox(height: 20),
-          apotekAsync.when(
-            loading:
-                () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 32),
-                  child: Center(
-                    child: CircularProgressIndicator(color: Colors.white),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Clean White Search Input
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.10),
+                        blurRadius: 14,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    style: GoogleFonts.poppins(
+                      color: Colors.black87,
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Ketik nama apotek atau lokasi...',
+                      hintStyle: GoogleFonts.poppins(
+                        color: Colors.black38,
+                        fontSize: 13,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search_rounded,
+                        color: Color(0xFF0F756B),
+                      ),
+                      suffixIcon: _keyword.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(
+                                Icons.cancel_rounded,
+                                color: Colors.black45,
+                                size: 19,
+                              ),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _keyword = '');
+                              },
+                            )
+                          : null,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _keyword = value.trim();
+                      });
+                    },
                   ),
                 ),
-            error:
-                (err, st) => _emptyState(
-                  icon: Icons.error_outline_rounded,
-                  title: 'Data belum bisa dimuat',
-                  subtitle: 'Coba beberapa saat lagi. Detail error: $err',
-                ),
-            data: (List<ApotekViewData> listApotek) {
-              if (_keyword.isEmpty) {
-                return _emptyState(
-                  icon: Icons.travel_explore_rounded,
-                  title: 'Mulai pencarian apotek',
-                  subtitle: 'Masukkan kata kunci untuk melihat hasil yang cocok.',
-                );
-              }
 
+                const SizedBox(height: 14),
+
+                // Popular search tag chips
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      'Cari cepat:',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white.withValues(alpha: 0.75),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    ..._quickSearches.map((tag) {
+                      final isSelected =
+                          _keyword.toLowerCase() == tag.toLowerCase();
+                      return InkWell(
+                        onTap: () => _applyQuickSearch(tag),
+                        borderRadius: BorderRadius.circular(999),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 11,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Colors.white
+                                : Colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(
+                              color: isSelected
+                                  ? Colors.white
+                                  : Colors.white.withValues(alpha: 0.25),
+                            ),
+                          ),
+                          child: Text(
+                            tag,
+                            style: GoogleFonts.poppins(
+                              color: isSelected
+                                  ? const Color(0xFF0F756B)
+                                  : Colors.white,
+                              fontSize: 11,
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // ── LIST DATA ──────────────────────────────────────────────────────
+          apotekAsync.when(
+            loading: () => const Padding(
+              padding: EdgeInsets.symmetric(vertical: 32),
+              child: Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+            ),
+            error: (err, st) => _emptyState(
+              icon: Icons.error_outline_rounded,
+              title: 'Data belum bisa dimuat',
+              subtitle: 'Coba beberapa saat lagi. Detail error: $err',
+            ),
+            data: (List<ApotekViewData> listApotek) {
               final lower = _keyword.toLowerCase();
-              final filtered =
-                  listApotek.where((apotek) {
-                    final namaMatches = apotek.name.toLowerCase().contains(lower);
-                    final alamatMatches = apotek.address.toLowerCase().contains(lower);
-                    return namaMatches || alamatMatches;
-                  }).toList();
+              final filtered = _keyword.isEmpty
+                  ? listApotek
+                  : listApotek.where((apotek) {
+                      final namaMatches =
+                          apotek.name.toLowerCase().contains(lower);
+                      final alamatMatches =
+                          apotek.address.toLowerCase().contains(lower);
+                      return namaMatches || alamatMatches;
+                    }).toList();
 
               if (filtered.isEmpty) {
                 return _emptyState(
                   icon: Icons.search_off_rounded,
                   title: 'Apotek tidak ditemukan',
-                  subtitle: 'Coba kata kunci lain yang lebih spesifik.',
+                  subtitle:
+                      'Tidak ada apotek dengan kata kunci "$_keyword". Coba kata kunci lainnya.',
                 );
               }
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _resultBadge('${filtered.length} apotek ditemukan'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _resultBadge(
+                        _keyword.isEmpty
+                            ? 'Semua Apotek (${filtered.length})'
+                            : '${filtered.length} apotek ditemukan',
+                      ),
+                      if (_keyword.isNotEmpty)
+                        TextButton.icon(
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _keyword = '');
+                          },
+                          icon: const Icon(
+                            Icons.refresh_rounded,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          label: Text(
+                            'Reset Filter',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                   const SizedBox(height: 14),
                   ...filtered.map((viewData) {
                     return ApotekCard(
                       namaApotek: viewData.name,
                       alamat: viewData.address,
-                      statusBuka: viewData.status,
+                      statusBuka: viewData.isBuka ? 'Buka' : 'Tutup',
                       jamOperasional: viewData.hours,
                       gambarUrl: viewData.imageUrl,
                       idApotek: viewData.id,
                       apotekData: viewData.raw,
+                      distance: viewData.distance,
                     );
                   }),
                 ],
@@ -129,8 +267,9 @@ class _SearchTabState extends ConsumerState<SearchTab> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.14),
+        color: Colors.white.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
       ),
       child: Text(
         label,
@@ -150,12 +289,19 @@ class _SearchTabState extends ConsumerState<SearchTab> {
   }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(28),
       decoration: AppUi.glassDecoration(radius: 24),
       child: Column(
         children: [
-          Icon(icon, color: Colors.white, size: 42),
-          const SizedBox(height: 14),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: Colors.white, size: 36),
+          ),
+          const SizedBox(height: 16),
           Text(
             title,
             textAlign: TextAlign.center,

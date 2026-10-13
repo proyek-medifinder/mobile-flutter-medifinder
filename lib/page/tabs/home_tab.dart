@@ -15,7 +15,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum FilterMode { semua, buka, tutup }
 
 class HomeTab extends ConsumerStatefulWidget {
-  const HomeTab({super.key});
+  final ValueChanged<int>? onNavigateTab;
+
+  const HomeTab({super.key, this.onNavigateTab});
 
   @override
   ConsumerState<HomeTab> createState() => _HomeTabState();
@@ -590,10 +592,14 @@ class _HomeTabState extends ConsumerState<HomeTab>
               ),
             ),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ChatbotPage()),
-              );
+              if (widget.onNavigateTab != null) {
+                widget.onNavigateTab!(2);
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ChatbotPage()),
+                );
+              }
             },
             child: Text(
               'Tanya',

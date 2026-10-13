@@ -442,82 +442,221 @@ class DetailApotek1 extends ConsumerWidget {
             crossAxisCount: crossAxisCount,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: 0.82,
+            childAspectRatio: constraints.maxWidth > 500 ? 0.72 : 0.63,
           ),
           itemBuilder: (context, index) {
             final obat = medicines[index];
             final inStock = obat.stock > 0;
 
-            return Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppUi.mutedSurface,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          obat.imageUrl != null
-                              ? Image.network(
-                                obat.imageUrl!,
-                                fit: BoxFit.cover,
-                                errorBuilder:
-                                    (_, __, ___) => _miniPlaceholder(),
-                              )
-                              : _miniPlaceholder(),
-                          Positioned(
-                            top: 6,
-                            right: 6,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color:
-                                    inStock
-                                        ? const Color(0xFF10B981)
-                                        : const Color(0xFFEF4444),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                inStock ? 'Stok: ${obat.stock}' : 'Habis',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
+            return InkWell(
+              borderRadius: BorderRadius.circular(18),
+              onTap: () => _showObatDetail(context, obat),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppUi.mutedSurface,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            obat.imageUrl != null
+                                ? Image.network(
+                                  obat.imageUrl!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder:
+                                      (_, __, ___) => _miniPlaceholder(),
+                                )
+                                : _miniPlaceholder(),
+                            Positioned(
+                              top: 6,
+                              right: 6,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      inStock
+                                          ? const Color(0xFF10B981)
+                                          : const Color(0xFFEF4444),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  inStock ? 'Stok: ${obat.stock}' : 'Habis',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    obat.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                    const SizedBox(height: 8),
+                    Text(
+                      obat.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
-                ],
+                    if (obat.price != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        'Rp ${obat.price!.toStringAsFixed(0)}',
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF0E7067),
+                        ),
+                      ),
+                    ],
+                    if (obat.description != null && obat.description!.isNotEmpty) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        obat.description!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          color: Colors.black54,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             );
           },
         );
       },
+    );
+  }
+
+  void _showObatDetail(BuildContext context, ObatViewData obat) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            if (obat.imageUrl != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 180,
+                  child: Image.network(
+                    obat.imageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _heroPlaceholder(),
+                  ),
+                ),
+              ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    obat.name,
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: obat.stock > 0 ? const Color(0xFFECFDF5) : const Color(0xFFFEF2F2),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: obat.stock > 0 ? const Color(0xFF10B981) : const Color(0xFFEF4444),
+                    ),
+                  ),
+                  child: Text(
+                    obat.stock > 0 ? 'Stok: ${obat.stock}' : 'Habis',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: obat.stock > 0 ? const Color(0xFF047857) : const Color(0xFFB91C1C),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (obat.price != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                'Rp ${obat.price!.toStringAsFixed(0)}',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF0E7067),
+                ),
+              ),
+            ],
+            const SizedBox(height: 14),
+            Text(
+              'Deskripsi',
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              (obat.description != null && obat.description!.isNotEmpty)
+                  ? obat.description!
+                  : 'Tidak ada deskripsi tersedia untuk obat ini.',
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                color: Colors.black54,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
     );
   }
 

@@ -8,7 +8,9 @@ import 'package:medifinder/theme/app_ui.dart';
 import 'package:medifinder/utils/apotek_mapper.dart';
 
 class ObatTab extends ConsumerStatefulWidget {
-  const ObatTab({super.key});
+  final ValueChanged<int>? onNavigateTab;
+
+  const ObatTab({super.key, this.onNavigateTab});
 
   @override
   ConsumerState<ObatTab> createState() => _ObatTabState();
@@ -18,10 +20,27 @@ class _ObatTabState extends ConsumerState<ObatTab> {
   String _keyword = '';
   final TextEditingController _searchController = TextEditingController();
 
+  static const List<Map<String, String>> _popularCategories = [
+    {'label': 'Paracetamol', 'icon': '💊'},
+    {'label': 'Flu & Batuk', 'icon': '🤧'},
+    {'label': 'Maag', 'icon': '⚡'},
+    {'label': 'Vitamin C', 'icon': '🍊'},
+    {'label': 'Antiseptik', 'icon': '🩹'},
+    {'label': 'Ibuprofen', 'icon': '🌡️'},
+    {'label': 'Minyak Kayu Putih', 'icon': '🌿'},
+  ];
+
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _applyQuickSearch(String text) {
+    _searchController.text = text;
+    setState(() {
+      _keyword = text.trim();
+    });
   }
 
   Future<List<_ApotekSearchResult>> _searchObat(
@@ -77,113 +96,386 @@ class _ObatTabState extends ConsumerState<ObatTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ── INTRO CARD & SEARCH INPUT ──────────────────────────────────────
           PageIntroCard(
-            title: 'Cari Obat',
+            title: 'Katalog Obat',
             subtitle:
-                'Masukkan nama obat dan lihat apotek mana saja yang menyediakannya.',
+                'Cari ketersediaan obat dan temukan apotek mana saja yang menyediakannya.',
             icon: Icons.medication_rounded,
-            child: TextField(
-              controller: _searchController,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: 'Ketik nama obat...',
-                hintStyle: GoogleFonts.poppins(color: Colors.white70),
-                prefixIcon: const Icon(Icons.search, color: Colors.white),
-                filled: true,
-                fillColor: const Color(0xFF0A5A52),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Clean White Search Input
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.10),
+                        blurRadius: 14,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    style: GoogleFonts.poppins(
+                      color: Colors.black87,
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Ketik nama obat (cth: Paracetamol)...',
+                      hintStyle: GoogleFonts.poppins(
+                        color: Colors.black38,
+                        fontSize: 13,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search_rounded,
+                        color: Color(0xFF0F756B),
+                      ),
+                      suffixIcon: _keyword.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(
+                                Icons.cancel_rounded,
+                                color: Colors.black45,
+                                size: 19,
+                              ),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _keyword = '');
+                              },
+                            )
+                          : null,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _keyword = value.trim();
+                      });
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 14),
+
+                // Popular Medicine Category Chips
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      'Pilihan:',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white.withValues(alpha: 0.75),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    ..._popularCategories.map((item) {
+                      final label = item['label']!;
+                      final icon = item['icon']!;
+                      final isSelected =
+                          _keyword.toLowerCase() == label.toLowerCase();
+                      return InkWell(
+                        onTap: () => _applyQuickSearch(label),
+                        borderRadius: BorderRadius.circular(999),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 11,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Colors.white
+                                : Colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(
+                              color: isSelected
+                                  ? Colors.white
+                                  : Colors.white.withValues(alpha: 0.25),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(icon, style: const TextStyle(fontSize: 12)),
+                              const SizedBox(width: 5),
+                              Text(
+                                label,
+                                style: GoogleFonts.poppins(
+                                  color: isSelected
+                                      ? const Color(0xFF0F756B)
+                                      : Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // ── HASIL PENCARIAN ATAU TIPS EDUKASI ──────────────────────────────
+          if (_keyword.isEmpty)
+            _buildEmptyGuidance()
+          else
+            apotekAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 36),
+                child: Center(
+                  child: CircularProgressIndicator(color: Colors.white),
                 ),
               ),
-              onChanged: (value) {
-                setState(() {
-                  _keyword = value.trim();
-                });
+              error: (err, st) => _emptyState(
+                icon: Icons.error_outline_rounded,
+                title: 'Data obat belum bisa dimuat',
+                subtitle: 'Coba lagi nanti. Detail error: $err',
+              ),
+              data: (listApotek) {
+                return FutureBuilder<List<_ApotekSearchResult>>(
+                  future: _searchObat(listApotek, _keyword),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 36),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                'Mencari apotek penyedia "$_keyword"...',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white70,
+                                  fontSize: 12.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (snapshot.hasError) {
+                      return _emptyState(
+                        icon: Icons.error_outline_rounded,
+                        title: 'Pencarian obat gagal',
+                        subtitle: 'Detail error: ${snapshot.error}',
+                      );
+                    }
+
+                    final results = snapshot.data ?? const [];
+
+                    if (results.isEmpty) {
+                      return _emptyState(
+                        icon: Icons.search_off_rounded,
+                        title: 'Obat belum ditemukan',
+                        subtitle:
+                            'Belum ada apotek terdaftar yang mencantumkan "$_keyword". Coba kata kunci atau nama generik lainnya.',
+                      );
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _resultBadge(
+                              '${results.length} apotek menyediakan "$_keyword"',
+                            ),
+                            TextButton.icon(
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _keyword = '');
+                              },
+                              icon: const Icon(
+                                Icons.refresh_rounded,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                              label: Text(
+                                'Reset',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        ...results.map((result) {
+                          return ApotekCard(
+                            namaApotek: result.viewData.name,
+                            alamat: result.viewData.address,
+                            statusBuka:
+                                result.viewData.isBuka ? 'Buka' : 'Tutup',
+                            jamOperasional: result.viewData.hours,
+                            gambarUrl: result.viewData.imageUrl,
+                            idApotek: result.viewData.id,
+                            tags: result.tags,
+                            apotekData: result.raw,
+                            distance: result.viewData.distance,
+                          );
+                        }),
+                      ],
+                    );
+                  },
+                );
               },
             ),
-          ),
-          const SizedBox(height: 20),
-          apotekAsync.when(
-            loading: () => const Padding(
-              padding: EdgeInsets.symmetric(vertical: 32),
-              child: Center(
-                child: CircularProgressIndicator(color: Colors.white),
-              ),
-            ),
-            error: (err, st) => _emptyState(
-              icon: Icons.error_outline_rounded,
-              title: 'Data obat belum bisa dimuat',
-              subtitle: 'Coba lagi nanti. Detail error: $err',
-            ),
-            data: (listApotek) {
-              if (_keyword.isEmpty) {
-                return _emptyState(
-                  icon: Icons.vaccines_rounded,
-                  title: 'Mulai pencarian obat',
-                  subtitle:
-                      'Masukkan nama obat untuk melihat apotek yang menyediakannya.',
-                );
-              }
-
-              return FutureBuilder<List<_ApotekSearchResult>>(
-                future: _searchObat(listApotek, _keyword),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 32),
-                      child: Center(
-                        child: CircularProgressIndicator(color: Colors.white),
-                      ),
-                    );
-                  }
-
-                  if (snapshot.hasError) {
-                    return _emptyState(
-                      icon: Icons.error_outline_rounded,
-                      title: 'Pencarian obat gagal',
-                      subtitle: 'Detail error: ${snapshot.error}',
-                    );
-                  }
-
-                  final results = snapshot.data ?? const [];
-
-                  if (results.isEmpty) {
-                    return _emptyState(
-                      icon: Icons.search_off_rounded,
-                      title: 'Obat belum ditemukan',
-                      subtitle:
-                          'Coba nama lain atau cek ejaan obat yang kamu cari.',
-                    );
-                  }
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _resultBadge(
-                        '${results.length} apotek menyediakan obat ini',
-                      ),
-                      const SizedBox(height: 14),
-                      ...results.map((result) {
-                        return ApotekCard(
-                          namaApotek: result.viewData.name,
-                          alamat: result.viewData.address,
-                          statusBuka: result.viewData.status,
-                          jamOperasional: result.viewData.hours,
-                          gambarUrl: result.viewData.imageUrl,
-                          idApotek: result.viewData.id,
-                          tags: result.tags,
-                          apotekData: result.raw,
-                        );
-                      }),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildEmptyGuidance() {
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(22),
+          decoration: AppUi.glassDecoration(radius: 24),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.medication_liquid_rounded,
+                  color: Colors.white,
+                  size: 38,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'Mulai Eksplorasi Obat',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Ketik nama obat atau pilih salah satu kategori di atas untuk mengecek stok di seluruh apotek mitra.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  color: Colors.white70,
+                  fontSize: 12.5,
+                  height: 1.45,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Banner AI Advice
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEAB308).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Center(
+                  child: Text('🤖', style: TextStyle(fontSize: 22)),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Bingung Memilih Obat?',
+                      style: GoogleFonts.poppins(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF1E293B),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Konsultasikan gejala penyakit ke MediBot AI.',
+                      style: GoogleFonts.poppins(
+                        fontSize: 11.5,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0F756B),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () {
+                  widget.onNavigateTab?.call(2);
+                },
+                child: Text(
+                  'Tanya AI',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -191,8 +483,9 @@ class _ObatTabState extends ConsumerState<ObatTab> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.14),
+        color: Colors.white.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
       ),
       child: Text(
         label,
@@ -212,12 +505,19 @@ class _ObatTabState extends ConsumerState<ObatTab> {
   }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(28),
       decoration: AppUi.glassDecoration(radius: 24),
       child: Column(
         children: [
-          Icon(icon, color: Colors.white, size: 42),
-          const SizedBox(height: 14),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: Colors.white, size: 38),
+          ),
+          const SizedBox(height: 16),
           Text(
             title,
             textAlign: TextAlign.center,

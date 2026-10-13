@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:medifinder/page/login.dart';
 import 'package:medifinder/page/widgets/page_intro_card.dart';
+import 'package:medifinder/services/auth_service.dart';
 import 'package:medifinder/theme/app_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -177,21 +179,32 @@ class _ProfileTabState extends State<ProfileTab> {
 
     if (confirm != true) return;
 
-    // Sign out Firebase
-    if (isGoogleLogin) {
-      await FirebaseAuth.instance.signOut();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      if (FirebaseAuth.instance.currentUser != null) {
+        await AuthService().signOut();
+      }
+
+      await prefs.remove('username');
+      await prefs.remove('email');
+      await prefs.remove('full_name');
+      await prefs.remove('password');
+      await prefs.remove('auth_token');
+      await prefs.remove('auth_provider');
+
+      if (!mounted) return;
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const Login()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Gagal keluar dari akun: $e', isError: true);
+      }
     }
-
-    // Clear saved local auth state
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('auth_token');
-    await prefs.remove('auth_provider');
-
-    if (!mounted) return;
-    _showSnackBar('Berhasil keluar dari akun');
-
-    // Arahkan ke halaman login jika rute tersedia (misal '/login')
-    // Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
   }
 
   void _showSnackBar(String message, {bool isError = false}) {

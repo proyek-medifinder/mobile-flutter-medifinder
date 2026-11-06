@@ -1,899 +1,316 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:medifinder/page/widgets/appearance_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:medifinder/page/login.dart';
-import 'package:medifinder/page/widgets/page_intro_card.dart';
-import 'package:medifinder/services/auth_service.dart';
+import 'package:medifinder/page/edit_profile.dart';
+import 'package:medifinder/page/widgets/clinical_widgets.dart';
+import 'package:medifinder/page/widgets/logout_dialog.dart';
+import 'package:medifinder/page/widgets/auth/forgot_password_sheet.dart';
+import 'package:medifinder/services/auth_api_service.dart';
 import 'package:medifinder/theme/app_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
-
   @override
   State<ProfileTab> createState() => _ProfileTabState();
 }
 
 class _ProfileTabState extends State<ProfileTab> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  bool isLoading = true;
-  bool _obscurePassword = true;
-  bool _showSavedPassword = false;
-  User? googleUser;
-  bool isGoogleLogin = false;
-
-  // Selected Section Tab (0: Info/Form, 1: Keamanan & Sesi)
-  int _activeTab = 0;
-
+  String _name = '', _email = '';
+  String? _photo;
+  bool _google = false, _loading = true;
   @override
   void initState() {
     super.initState();
-    _loadProfileInfo();
+    _load();
   }
 
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadProfileInfo() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    googleUser = FirebaseAuth.instance.currentUser;
-    isGoogleLogin = googleUser != null;
-
-    if (!isGoogleLogin) {
-      _usernameController.text =
-          prefs.getString('full_name') ??
-          prefs.getString('username') ??
-          prefs.getString('email') ??
-          '';
-      _passwordController.text = prefs.getString('password') ?? '';
-    }
-
+  Future<void> _load() async {
+    final p = await SharedPreferences.getInstance();
     if (!mounted) return;
-    setState(() => isLoading = false);
+    setState(() {
+      _name =
+          p.getString('display_name') ?? p.getString('full_name') ?? 'Pengguna';
+      _email = p.getString('email') ?? '';
+      _photo = p.getString('profile_picture');
+      _google = p.getString('auth_provider') == 'google';
+      _loading = false;
+    });
   }
 
-  Future<void> _saveProfile() async {
-    final String u = _usernameController.text.trim();
-    final String p = _passwordController.text;
-
-    if (u.isEmpty || p.isEmpty) {
-      _showSnackBar('Username dan Password tidak boleh kosong', isError: true);
-      return;
-    }
-
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('username', u);
-    await prefs.setString('full_name', u);
-    await prefs.setString('password', p);
-
-    if (!mounted) return;
-    _showSnackBar('Profil lokal berhasil disimpan!');
-  }
-
-  Future<void> _removeCredentials() async {
-    final bool? confirm = await showDialog<bool>(
-      context: context,
-      builder:
-          (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: Text(
-              'Hapus Data Lokal?',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
-            ),
-            content: Text(
-              'Tindakan ini akan menghapus username dan password lokal yang tersimpan di perangkat ini.',
-              style: GoogleFonts.poppins(fontSize: 13),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(
-                  'Batal',
-                  style: GoogleFonts.poppins(color: Colors.grey),
-                ),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(
-                  'Ya, Hapus',
-                  style: GoogleFonts.poppins(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
+  Future<void> _edit() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const EditProfilePage()),
     );
-
-    if (confirm != true) return;
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('username');
-    await prefs.remove('full_name');
-    await prefs.remove('email');
-    await prefs.remove('password');
-    await prefs.remove('auth_token');
-    await prefs.remove('auth_provider');
-
-    _usernameController.clear();
-    _passwordController.clear();
-
-    if (!mounted) return;
-    _showSnackBar('Username & Password lokal berhasil dihapus');
-    setState(() {});
+    await _load();
   }
 
-  Future<void> _handleLogout() async {
-    final bool? confirm = await showDialog<bool>(
-      context: context,
-      builder:
-          (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: Text(
-              'Keluar dari Aplikasi',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
-            ),
-            content: Text(
-              'Apakah kamu yakin ingin keluar dari akun ini?',
-              style: GoogleFonts.poppins(fontSize: 13),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(
-                  'Batal',
-                  style: GoogleFonts.poppins(color: Colors.grey),
-                ),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(
-                  'Keluar',
-                  style: GoogleFonts.poppins(color: Colors.white),
-                ),
-              ),
-            ],
+  void _info(String title, String body) => showDialog(
+    context: context,
+    builder:
+        (ctx) => AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: Text(body, style: AppUi.text(fontSize: 13)),
           ),
-    );
-
-    if (confirm != true) return;
-
-    try {
-      final prefs = await SharedPreferences.getInstance();
-
-      if (FirebaseAuth.instance.currentUser != null) {
-        await AuthService().signOut();
-      }
-
-      await prefs.remove('username');
-      await prefs.remove('email');
-      await prefs.remove('full_name');
-      await prefs.remove('password');
-      await prefs.remove('auth_token');
-      await prefs.remove('auth_provider');
-
-      if (!mounted) return;
-
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const Login()),
-        (route) => false,
-      );
-    } catch (e) {
-      if (mounted) {
-        _showSnackBar('Gagal keluar dari akun: $e', isError: true);
-      }
-    }
-  }
-
-  void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Tutup'),
+            ),
+          ],
         ),
-        backgroundColor: isError ? Colors.redAccent : const Color(0xFF0A5A52),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+  );
+  Widget _tile(
+    IconData icon,
+    String title,
+    String subtitle,
+    VoidCallback onTap, {
+    bool arrow = true,
+  }) => ListTile(
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    leading: Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: AppUi.colors(context).softTeal,
+        borderRadius: BorderRadius.circular(14),
       ),
-    );
-  }
-
+      child: Icon(icon, color: AppUi.colors(context).primaryText, size: 22),
+    ),
+    title: Text(
+      title,
+      style: AppUi.text(fontSize: 14, fontWeight: FontWeight.w600),
+    ),
+    subtitle:
+        subtitle.isEmpty
+            ? null
+            : Text(
+              subtitle,
+              style: AppUi.text(
+                fontSize: 12,
+                color: AppUi.colors(context).secondary,
+              ),
+            ),
+    trailing:
+        arrow
+            ? Icon(
+              Icons.chevron_right_rounded,
+              size: 21,
+              color: AppUi.colors(context).secondary,
+            )
+            : null,
+    onTap: onTap,
+  );
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: Colors.white),
-      );
-    }
-
+    if (_loading) return const Center(child: CircularProgressIndicator());
     return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Header Hero Card dengan Tombol Logout
-          _buildProfileHeroHeader(),
-          const SizedBox(height: 20),
-
-          // 2. Tab Segment Selector
-          _buildTabSegmentSelector(),
-          const SizedBox(height: 18),
-
-          // 3. Dynamic Section Panel
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            child:
-                _activeTab == 0
-                    ? _buildAccountDetailsPanel()
-                    : _buildSecurityPanel(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // --- WIDGET COMPONENTS ---
-
-  Widget _buildProfileHeroHeader() {
-    final displayName =
-        isGoogleLogin
-            ? (googleUser?.displayName ?? 'Pengguna Google')
-            : _usernameController.text.ifEmpty('Pengguna Medifinder');
-
-    final emailOrStatus =
-        isGoogleLogin
-            ? (googleUser?.email ?? 'Akun Terverifikasi')
-            : 'Akun Lokal Aktif';
-
-    return PageIntroCard(
-      title: 'Profil Pengguna',
-      subtitle:
-          isGoogleLogin
-              ? 'Terhubung dengan Google. Data profil tersinkronisasi secara otomatis.'
-              : 'Kelola data kredensial dan preferensi akun lokal Medifinder kamu.',
-      icon: Icons.person_rounded,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: AppUi.glassDecoration(radius: 20),
-        child: Row(
-          children: [
-            Stack(
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(20, 22, 20, 28),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppUi.primary, AppUi.primaryDark],
+              ),
+            ),
+            child: Row(
               children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.white.withValues(alpha: 0.25),
-                  backgroundImage:
-                      isGoogleLogin && googleUser?.photoURL != null
-                          ? NetworkImage(googleUser!.photoURL!)
-                          : null,
-                  child:
-                      (!isGoogleLogin || googleUser?.photoURL == null)
-                          ? const Icon(
-                            Icons.person_rounded,
-                            color: Colors.white,
-                            size: 34,
-                          )
-                          : null,
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      color:
-                          isGoogleLogin
-                              ? const Color(0xFF4285F4)
-                              : const Color(0xFF10B981),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 1.5),
-                    ),
-                    child: Icon(
-                      isGoogleLogin
-                          ? Icons.g_mobiledata_rounded
-                          : Icons.lock_outline_rounded,
-                      size: 13,
-                      color: Colors.white,
-                    ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'AKUN MEDIFINDER',
+                        style: AppUi.text(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFFA2F8EB),
+                        ),
+                      ),
+                      Text(
+                        'Profil Saya',
+                        style: AppUi.text(
+                          fontSize: 23,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
+                ),
+                IconButton.filledTonal(
+                  tooltip: 'Edit profil',
+                  onPressed: _edit,
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.white.withValues(alpha: .16),
+                  ),
+                  icon: const Icon(Icons.edit_outlined, color: Colors.white),
                 ),
               ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    displayName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    emailOrStatus,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white.withValues(alpha: 0.8),
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            // Tombol Logout Cepat di Header
-            IconButton(
-              onPressed: _handleLogout,
-              tooltip: 'Keluar Akun',
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.white.withValues(alpha: 0.2),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              icon: const Icon(
-                Icons.logout_rounded,
-                color: Colors.white,
-                size: 18,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTabSegmentSelector() {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: _segmentButton(
-              title: 'Informasi Akun',
-              icon: Icons.badge_outlined,
-              isActive: _activeTab == 0,
-              onTap: () => setState(() => _activeTab = 0),
-            ),
           ),
-          Expanded(
-            child: _segmentButton(
-              title: 'Keamanan & Sesi',
-              icon: Icons.shield_outlined,
-              isActive: _activeTab == 1,
-              onTap: () => setState(() => _activeTab = 1),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _segmentButton({
-    required String title,
-    required IconData icon,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: isActive ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow:
-              isActive
-                  ? [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                  : [],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isActive ? AppUi.primary : Colors.white70,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              title,
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: isActive ? AppUi.primary : Colors.white70,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAccountDetailsPanel() {
-    return Container(
-      key: const ValueKey(0),
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: AppUi.panelDecoration(radius: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            isGoogleLogin ? 'Detail Akun Google' : 'Ubah Data Akun',
-            style: AppUi.sectionTitleStyle(),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            isGoogleLogin
-                ? 'Informasi ini tertaut langsung dengan profil Google Anda.'
-                : 'Perbarui username dan password lokal secara berkala.',
-            style: AppUi.sectionSubtitleStyle(),
-          ),
-          const SizedBox(height: 20),
-          if (isGoogleLogin) ...[
-            _infoTile(
-              Icons.person_outline_rounded,
-              'Nama Lengkap',
-              googleUser?.displayName ?? 'Belum Diatur',
-            ),
-            const SizedBox(height: 12),
-            _infoTile(
-              Icons.email_outlined,
-              'Alamat Email',
-              googleUser?.email ?? '-',
-            ),
-            const SizedBox(height: 12),
-            _infoTile(
-              Icons.verified_user_outlined,
-              'Tipe Pengautentikasi',
-              'Google OAuth 2.0',
-            ),
-          ] else ...[
-            _inputLabel('Username'),
-            const SizedBox(height: 6),
-            TextField(
-              controller: _usernameController,
-              decoration: _inputDecoration(
-                'Masukkan username baru',
-                icon: Icons.alternate_email_rounded,
-              ),
-            ),
-            const SizedBox(height: 16),
-            _inputLabel('Password'),
-            const SizedBox(height: 6),
-            TextField(
-              controller: _passwordController,
-              obscureText: _obscurePassword, // PASSWORD TERSEMBUNYI BY DEFAULT
-              decoration: _inputDecoration(
-                'Masukkan password baru',
-                icon: Icons.key_rounded,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword
-                        ? Icons.visibility_off_rounded
-                        : Icons.visibility_rounded,
-                    color: Colors.black54,
-                  ),
-                  onPressed:
-                      () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _saveProfile,
-                icon: const Icon(Icons.save_rounded, size: 18),
-                label: Text(
-                  'Simpan Perubahan',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppUi.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSecurityPanel() {
-    final String hiddenPassword =
-        _passwordController.text.isEmpty
-            ? 'Belum Diatur'
-            : (_showSavedPassword ? _passwordController.text : '••••••••');
-
-    return Container(
-      key: const ValueKey(1),
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: AppUi.panelDecoration(radius: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Keamanan & Sesi', style: AppUi.sectionTitleStyle()),
-          const SizedBox(height: 6),
-          Text(
-            'Kelola kredensial tersimpan dan status sesi akun Anda.',
-            style: AppUi.sectionSubtitleStyle(),
-          ),
-          const SizedBox(height: 20),
-          if (!isGoogleLogin) ...[
-            _infoTileWithAction(
-              icon: Icons.lock_outline_rounded,
-              label: 'Password Tersimpan',
-              value: hiddenPassword,
-              actionIcon:
-                  _showSavedPassword
-                      ? Icons.visibility_off_rounded
-                      : Icons.visibility_rounded,
-              onActionTap:
-                  () =>
-                      setState(() => _showSavedPassword = !_showSavedPassword),
-            ),
-            const SizedBox(height: 12),
-          ],
-          _actionCardTile(
-            icon: Icons.cleaning_services_rounded,
-            title: 'Hapus Kredensial Lokal',
-            subtitle: 'Bersihkan username dan password tersimpan di memori.',
-            color: Colors.orange.shade800,
-            onTap: _removeCredentials,
-          ),
-          const SizedBox(height: 12),
-          _actionCardTile(
-            icon: Icons.help_outline_rounded,
-            title: 'Pusat Bantuan & FAQ',
-            subtitle: 'Panduan pencarian apotek dan konsultasi AI.',
-            color: const Color(0xFF0F756B),
-            onTap: _showFaqDialog,
-          ),
-          const SizedBox(height: 12),
-          _actionCardTile(
-            icon: Icons.info_outline_rounded,
-            title: 'Tentang MediFinder',
-            subtitle: 'Versi 1.0.0 • Sistem Informasi Apotek Terpadu',
-            color: const Color(0xFF0284C7),
-            onTap: _showAboutDialog,
-          ),
-          const SizedBox(height: 12),
-          _actionCardTile(
-            icon: Icons.logout_rounded,
-            title: 'Keluar / Logout Akun',
-            subtitle: 'Selesaikan sesi dan keluar dari aplikasi Medifinder.',
-            color: Colors.redAccent,
-            onTap: _handleLogout,
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showFaqDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE8F5F3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.help_rounded, color: AppUi.primary, size: 22),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              'Bantuan & FAQ',
-              style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _faqItem(
-                'Bagaimana cara mencari apotek terdekat?',
-                'Pastikan GPS aktif. Halaman Beranda akan otomatis menyortir apotek terdekat berdasarkan lokasi Anda.',
-              ),
-              const Divider(height: 20),
-              _faqItem(
-                'Apakah MediBot AI dapat memberikan resep?',
-                'MediBot memberikan rekomendasi obat bebas (OTC) dan pertolongan pertama. Untuk obat keras atau kondisi darurat, konsultasikan langsung ke dokter.',
-              ),
-              const Divider(height: 20),
-              _faqItem(
-                'Bagaimana status buka apotek ditentukan?',
-                'Status buka dan tutup ditentukan berdasarkan jam operasional harian apotek yang terdaftar di sistem.',
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppUi.primary,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Tutup', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _faqItem(String q, String a) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          q,
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.black87),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          a,
-          style: GoogleFonts.poppins(fontSize: 12, color: Colors.black54, height: 1.4),
-        ),
-      ],
-    );
-  }
-
-  void _showAboutDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE0F2FE),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.info_rounded, color: Color(0xFF0284C7), size: 22),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              'Tentang MediFinder',
-              style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'MediFinder Mobile',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 15),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Versi 1.0.0 (Build 2026)',
-              style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Aplikasi pencari apotek terdekat, ketersediaan obat, rute navigasi, dan asisten AI cerdas untuk kemudahan akses fasilitas kesehatan Anda.',
-              style: GoogleFonts.poppins(fontSize: 12.5, color: Colors.black54, height: 1.45),
-            ),
-          ],
-        ),
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppUi.primary,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Tutup', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _actionCardTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    VoidCallback? onTap,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppUi.mutedSurface,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: Colors.black.withValues(alpha: 0.04)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(icon, color: color, size: 22),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (onTap != null)
-                const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 14,
-                  color: Colors.black38,
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _inputLabel(String label) {
-    return Text(
-      label,
-      style: GoogleFonts.poppins(
-        fontSize: 13,
-        fontWeight: FontWeight.w700,
-        color: Colors.black87,
-      ),
-    );
-  }
-
-  InputDecoration _inputDecoration(
-    String hint, {
-    IconData? icon,
-    Widget? suffixIcon,
-  }) {
-    return InputDecoration(
-      hintText: hint,
-      prefixIcon:
-          icon != null ? Icon(icon, size: 20, color: Colors.black45) : null,
-      suffixIcon: suffixIcon,
-      filled: true,
-      fillColor: AppUi.mutedSurface,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppUi.primary, width: 1.5),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-    );
-  }
-
-  Widget _infoTile(IconData icon, String label, String value) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppUi.mutedSurface,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: AppUi.primary),
-          const SizedBox(width: 12),
-          Expanded(
+          Padding(
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  label,
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    color: Colors.black54,
+                ContentPanel(
+                  child: Row(
+                    children: [
+                      AccountAvatar(photo: _photo, radius: 32),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _name,
+                              style: AppUi.text(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              _email,
+                              style: AppUi.text(
+                                fontSize: 13,
+                                color: AppUi.colors(context).secondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  value,
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w600,
+                const SizedBox(height: 24),
+                const SectionHeading('Informasi Akun'),
+                ContentPanel(
+                  padding: 0,
+                  child: _tile(
+                    Icons.badge_outlined,
+                    'Data Diri',
+                    'Nama tampilan dan informasi akun',
+                    _edit,
                   ),
                 ),
+                const SizedBox(height: 24),
+                const SectionHeading('Tampilan'),
+                ContentPanel(
+                  padding: 0,
+                  child: _tile(
+                    Icons.brightness_6_outlined,
+                    'Tema Aplikasi',
+                    'Terang, gelap, atau ikuti sistem',
+                    () => showAppearancePicker(context),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const SectionHeading('Keamanan & Sesi'),
+                ContentPanel(
+                  padding: 0,
+                  child: Column(
+                    children: [
+                      _tile(
+                        Icons.lock_outline_rounded,
+                        'Kata Sandi & Akun Terhubung',
+                        _google
+                            ? 'Terhubung melalui Google'
+                            : 'Masuk menggunakan email',
+                        () {
+                          if (_google) {
+                            _info(
+                              'Akun Google',
+                              'Anda masuk melalui Google. Kelola kata sandi dan keamanan akun melalui pengaturan akun Google Anda.',
+                            );
+                          } else {
+                            showForgotPasswordSheet(
+                              context,
+                              api: AuthApiService(),
+                              email: _email,
+                            );
+                          }
+                        },
+                      ),
+                      const Divider(height: 1, indent: 20, endIndent: 20),
+                      _tile(
+                        Icons.cleaning_services_outlined,
+                        'Bersihkan Cache Gambar',
+                        'Memuat ulang gambar apotek dan obat',
+                        () {
+                          PaintingBinding.instance.imageCache.clear();
+                          PaintingBinding.instance.imageCache.clearLiveImages();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Cache gambar telah dibersihkan.'),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const SectionHeading('Bantuan & Informasi'),
+                ContentPanel(
+                  padding: 0,
+                  child: Column(
+                    children: [
+                      _tile(
+                        Icons.help_outline_rounded,
+                        'Panduan MediFinder',
+                        'Apotek, stok obat, dan MediBot',
+                        () => _info(
+                          'Panduan MediFinder',
+                          'Cari Apotek: telusuri nama atau alamat dan gunakan filter buka.\n\nCari Obat: cari nama obat untuk melihat stok dan harga dari apotek.\n\nMediBot: pilih usia pasien sebelum mengirim keluhan. Informasi AI bersifat edukatif; konsultasikan keputusan medis kepada tenaga kesehatan.\n\nHubungi apotek untuk memastikan ketersediaan sebelum berkunjung.',
+                        ),
+                      ),
+                      const Divider(height: 1, indent: 20, endIndent: 20),
+                      _tile(
+                        Icons.privacy_tip_outlined,
+                        'Privasi Perangkat',
+                        'Sesi, lokasi, dan riwayat percakapan',
+                        () => _info(
+                          'Privasi Perangkat',
+                          'Lokasi perangkat digunakan dengan izin untuk mencari apotek terdekat. Pesan MediBot dikirim ke layanan AI melalui backend aplikasi.\n\nSesi login dan riwayat MediBot disimpan di perangkat. Keluar menghapus sesi akun; hapus percakapan melalui tombol mulai ulang di MediBot. Jangan memasukkan data pribadi yang tidak diperlukan.',
+                        ),
+                      ),
+                      const Divider(height: 1, indent: 20, endIndent: 20),
+                      _tile(
+                        Icons.info_outline_rounded,
+                        'MediFinder Mobile',
+                        'Versi 1.0.0',
+                        () => _info(
+                          'MediFinder Mobile',
+                          'Temukan informasi obat dan apotek di sekitar Anda.',
+                        ),
+                        arrow: false,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => logoutAccount(context),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: AppUi.colors(context).surface,
+                      foregroundColor: AppUi.colors(context).error,
+                      side: BorderSide.none,
+                      minimumSize: const Size(48, 56),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                    ),
+                    icon: const Icon(Icons.logout_rounded, size: 20),
+                    label: const Text('Keluar dari Akun'),
+                  ),
+                ),
+                const SizedBox(height: 12),
               ],
             ),
           ),
@@ -901,57 +318,4 @@ class _ProfileTabState extends State<ProfileTab> {
       ),
     );
   }
-
-  Widget _infoTileWithAction({
-    required IconData icon,
-    required String label,
-    required String value,
-    required IconData actionIcon,
-    required VoidCallback onActionTap,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: AppUi.mutedSurface,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: AppUi.primary),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    color: Colors.black54,
-                  ),
-                ),
-                Text(
-                  value,
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            onPressed: onActionTap,
-            icon: Icon(actionIcon, color: Colors.black54, size: 20),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-extension on String {
-  String ifEmpty(String fallback) => isEmpty ? fallback : this;
 }

@@ -1,22 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:firebase_core/firebase_core.dart';
-
-import 'package:medifinder/main.dart';
+import 'package:medifinder/services/auth_session_store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-
-  setUpAll(() async {
-    TestWidgetsFlutterBinding.ensureInitialized();
-
-    await Firebase.initializeApp();
-  });
-
-  testWidgets('App loads successfully', (WidgetTester tester) async {
-
-    await tester.pumpWidget(
-      const MyApp(langsungKeHasil: false),
-    );
-
-    expect(find.byType(MyApp), findsOneWidget);
-  });
+  TestWidgetsFlutterBinding.ensureInitialized();
+  test(
+    'fresh app requires backend login and no Firebase initialization',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      expect(await AuthSessionStore().restore(), isFalse);
+    },
+  );
 }

@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_blank" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "destructive-red": "#DC2626", "on-tertiary": "#ffffff", "status-closed": "#C0392B", "secondary": "#006c49", "on-surface": "#191c1e", "on-tertiary-container": "#ffe5b9", "on-error": "#ffffff", "on-primary": "#ffffff", "scaffold-base": "#F7FBF9", "secondary-fixed": "#6ffbbe", "inverse-on-surface": "#f0f1f3", "on-secondary": "#ffffff", "surface-variant": "#e1e2e4", "surface-dim": "#d9dadc", "status-open": "#1B8A5A", "tertiary-fixed": "#ffdea3", "primary": "#005b52", "on-surface-variant": "#3e4947", "secondary-container": "#6cf8bb", "surface-white": "#FFFFFF", "on-tertiary-fixed": "#261900", "on-primary-fixed": "#00201d", "on-secondary-fixed": "#002113", "surface-container-low": "#f2f4f6", "on-secondary-fixed-variant": "#005236", "on-error-container": "#93000a", "on-primary-fixed-variant": "#005049", "inverse-surface": "#2e3132", "line-border": "#E5E7EB", "surface-container-highest": "#e1e2e4", "primary-fixed": "#9cf2e5", "on-tertiary-fixed-variant": "#5d4200", "primary-container": "#0f756b", "error-container": "#ffdad6", "background": "#f8f9fb", "on-primary-container": "#a2f8eb", "outline-variant": "#bdc9c6", "surface-container": "#edeef0", "surface-tint": "#006a61", "surface-bright": "#f8f9fb", "tertiary": "#684b00", "on-background": "#191c1e", "surface-container-lowest": "#ffffff", "outline": "#6e7977", "surface": "#f8f9fb", "teal-light": "#14B8A6", "secondary-fixed-dim": "#4edea3", "tertiary-fixed-dim": "#fabc2a", "error": "#ba1a1a", "primary-fixed-dim": "#80d6c9", "tertiary-container": "#876200", "primary-dark": "#0A5A52", "on-secondary-container": "#00714d", "surface-container-high": "#e7e8ea", "inverse-primary": "#80d6c9" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin": "1.25rem", "gutter-desktop": "1.5rem", "space-xs": "0.375rem", "gutter": "0.75rem", "space-xl": "1.75rem", "margin-tablet": "1.5rem", "space-sm": "0.5rem", "margin-desktop": "2rem", "space-lg": "1.375rem", "space-md": "1rem", "margin-mobile": "1.25rem" }, fontFamily: { "headline-xl-mobile": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "caption": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"] }, fontSize: { "headline-xl-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "700" }], "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }], "caption": ["10px", { lineHeight: "12px", letterSpacing: "0.02em", fontWeight: "500" }], "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.03em", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "headline-md": ["18px", { lineHeight: "24px", fontWeight: "700" }], "headline-xl": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-lg-mobile": ["21px", { lineHeight: "28px", fontWeight: "700" }], "body-md": ["14px", { lineHeight: "22px", fontWeight: "400" }], "title-md": ["17px", { lineHeight: "24px", fontWeight: "600" }] } } } };</script><style>@layer base{html,body{width:100%;min-height:100%;margin:0;padding:0;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-scaffold-base text-on-surface antialiased flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><main class="flex-1 flex flex-col relative w-full bg-scaffold-base pt-safe pb-safe"><div class="flex flex-col w-full pb-8 px-5 max-w-[420px] mx-auto">
+<!-- Toast Notification: Post-Logout Feedback -->
+<div class="w-full mb-6 p-4 rounded-xl bg-surface-white shadow-md flex items-start gap-3 transition-all duration-300 transform" id="logoutToast">
+<div class="w-7 h-7 rounded-full bg-secondary-fixed/30 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-[18px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-headline-md text-headline-md text-on-surface text-[14px] leading-5">Berhasil keluar dari akun</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[12px] leading-4 mt-0.5">Sesi &amp; cache lokal untuk <span class="font-title-md font-semibold text-primary">Sarah Safira</span> telah dibersihkan secara aman.</p>
+</div>
+<button aria-label="Tutup notifikasi" class="text-outline hover:text-on-surface shrink-0 p-1 rounded-lg" onclick="document.getElementById('logoutToast').classList.add('opacity-0', '-translate-y-2'); setTimeout(() =&gt; document.getElementById('logoutToast').remove(), 300)">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Brand Identity Card -->
+<div class="flex flex-col items-center text-center mb-6">
+<div class="w-16 h-16 rounded-2xl bg-primary-container shadow-lg flex items-center justify-center mb-3 relative">
+<span class="material-symbols-outlined text-on-primary text-[34px]" style="font-variation-settings: 'FILL' 1;">local_pharmacy</span>
+<div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-teal-light flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-on-primary text-[14px]">pin_drop</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-headline-xl-mobile text-headline-xl-mobile text-primary tracking-tight">MediFinder</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed/40 text-on-secondary-fixed-variant font-label-sm text-label-sm tracking-wider uppercase">HealthLoc</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 max-w-[280px]">Temukan Apotek &amp; Konsultasi Obat Terpercaya</p>
+</div>
+<!-- Primary Login Card -->
+<div class="w-full bg-surface-white rounded-3xl p-6 shadow-md flex flex-col">
+<!-- Header inside card -->
+<div class="mb-5">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Selamat Datang Kembali</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Masuk untuk mengakses konsultasi MediBot, resep digital, dan apotek terdekat.</p>
+</div>
+<!-- Login Form -->
+<form class="flex flex-col gap-4" onsubmit="event.preventDefault();">
+<!-- Email Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface-variant" for="email">Alamat Email</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">mail</span>
+<input class="w-full h-[52px] pl-11 pr-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-white focus:outline-none transition-colors" id="email" placeholder="nama@email.com" type="email" value="sarah.safira@gmail.com">
+</div>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface-variant" for="password">Kata Sandi</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">lock</span>
+<input class="w-full h-[52px] pl-11 pr-12 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-white focus:outline-none transition-colors" id="password" placeholder="Masukkan kata sandi" type="password" value="••••••••••••">
+<button aria-label="Tampilkan sandi" class="absolute right-3.5 text-outline hover:text-on-surface p-1 rounded-lg" onclick="const p = document.getElementById('password'); const icon = this.querySelector('.material-symbols-outlined'); if(p.type === 'password'){ p.type = 'text'; icon.textContent = 'visibility_off'; } else { p.type = 'password'; icon.textContent = 'visibility'; }" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Checkbox & Forgot Password -->
+<div class="flex items-center justify-between mt-1">
+<label class="flex items-center gap-2 cursor-pointer select-none">
+<input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-0 accent-primary" type="checkbox">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Ingat Saya</span>
+</label>
+<a class="font-label-md text-label-md text-primary hover:underline" href="#lupa-sandi">Lupa Kata Sandi?</a>
+</div>
+<!-- Main Submit CTA -->
+<button class="w-full h-14 mt-2 rounded-2xl bg-primary-container hover:bg-primary-dark text-on-primary font-headline-md text-headline-md flex items-center justify-center gap-2 shadow-md active:scale-[0.99] transition-all" type="submit">
+<span class="">Masuk ke Akun</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</form>
+<!-- Biometric Quick Login Access -->
+
+<!-- Divider -->
+<div class="flex items-center gap-3 my-5">
+<div class="flex-1 h-[1px] bg-surface-container-highest"></div>
+<span class="font-caption text-caption text-outline uppercase tracking-wider">atau masuk dengan</span>
+<div class="flex-1 h-[1px] bg-surface-container-highest"></div>
+</div>
+<!-- Google Sign-In -->
+<button class="w-full h-[52px] rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-title-md text-title-md flex items-center justify-center gap-3 transition-colors" type="button">
+<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+<path d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.87c2.26-2.09 3.67-5.17 3.67-9.15z" fill="#4285F4"></path>
+<path d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.87-3.05c-1.08.72-2.45 1.16-4.06 1.16-3.13 0-5.78-2.11-6.73-4.96H1.26v3.15C3.25 21.31 7.31 24 12 24z" fill="#34A853"></path>
+<path d="M5.27 14.24c-.25-.72-.39-1.5-.39-2.24s.14-1.52.39-2.24V6.61H1.26C.46 8.22 0 10.05 0 12s.46 3.78 1.26 5.39l4.01-3.15z" fill="#FBBC05"></path>
+<path d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.69 1.26 6.61l4.01 3.15c.95-2.85 3.6-4.96 6.73-4.96z" fill="#EA4335"></path>
+</svg>
+<span class="text-[14px]">Lanjutkan dengan Google</span>
+</button>
+</div>
+<!-- Sign Up Prompt -->
+<div class="flex items-center justify-center gap-1.5 mt-5 text-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Belum punya akun?</span>
+<a class="font-headline-md text-headline-md text-primary hover:underline text-[14px]" href="#daftar">Daftar Sekarang</a>
+</div>
+<!-- Security Compliance Card -->
+
+</div></main>
+
+</body></html>

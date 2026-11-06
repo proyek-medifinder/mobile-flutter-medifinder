@@ -1,322 +1,267 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medifinder/page/widgets/apotek_card.dart';
-import 'package:medifinder/page/widgets/page_intro_card.dart';
+import 'package:medifinder/page/widgets/clinical_widgets.dart';
 import 'package:medifinder/providers.dart';
 import 'package:medifinder/theme/app_ui.dart';
-import 'package:medifinder/utils/apotek_mapper.dart';
 
 class SearchTab extends ConsumerStatefulWidget {
   const SearchTab({super.key});
-
   @override
   ConsumerState<SearchTab> createState() => _SearchTabState();
 }
 
 class _SearchTabState extends ConsumerState<SearchTab> {
+  final _search = TextEditingController();
   String _keyword = '';
-  final TextEditingController _searchController = TextEditingController();
-
-  static const List<String> _quickSearches = [
-    '24 Jam',
-    'Kimia Farma',
-    'K-24',
-    'Apotek',
-  ];
-
+  int _filter = 0;
+  bool _nearest = false;
   @override
   void dispose() {
-    _searchController.dispose();
+    _search.dispose();
     super.dispose();
   }
 
-  void _applyQuickSearch(String text) {
-    _searchController.text = text;
-    setState(() {
-      _keyword = text.trim();
-    });
+  void _set(String s) {
+    _search.text = s;
+    setState(() => _keyword = s.trim());
   }
 
   @override
   Widget build(BuildContext context) {
-    final apotekAsync = ref.watch(apotekViewDataListProvider);
-
+    final list = ref.watch(apotekViewDataListProvider);
+    final location = ref.watch(userLocationProvider);
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── INTRO & SEARCH BAR ─────────────────────────────────────────────
-          PageIntroCard(
-            title: 'Cari Apotek',
-            subtitle:
-                'Temukan apotek berdasarkan nama atau jalan dengan pencarian cepat.',
-            icon: Icons.search_rounded,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppUi.primaryDark, AppUi.primary],
+              ),
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: AppUi.cardShadow,
+            ),
+            child: Row(
               children: [
-                // Clean White Search Input
                 Container(
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: .15),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(
+                    Icons.local_pharmacy_outlined,
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.10),
-                        blurRadius: 14,
-                        offset: const Offset(0, 4),
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Cari Apotek',
+                        style: AppUi.text(
+                          fontSize: 21,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        'Temukan apotek berdasarkan nama atau alamat.',
+                        style: AppUi.text(fontSize: 12, color: Colors.white),
                       ),
                     ],
                   ),
-                  child: TextField(
-                    controller: _searchController,
-                    style: GoogleFonts.poppins(
-                      color: Colors.black87,
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Ketik nama apotek atau lokasi...',
-                      hintStyle: GoogleFonts.poppins(
-                        color: Colors.black38,
-                        fontSize: 13,
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.search_rounded,
-                        color: Color(0xFF0F756B),
-                      ),
-                      suffixIcon: _keyword.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(
-                                Icons.cancel_rounded,
-                                color: Colors.black45,
-                                size: 19,
-                              ),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() => _keyword = '');
-                              },
-                            )
-                          : null,
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _keyword = value.trim();
-                      });
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: 14),
-
-                // Popular search tag chips
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text(
-                      'Cari cepat:',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white.withValues(alpha: 0.75),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    ..._quickSearches.map((tag) {
-                      final isSelected =
-                          _keyword.toLowerCase() == tag.toLowerCase();
-                      return InkWell(
-                        onTap: () => _applyQuickSearch(tag),
-                        borderRadius: BorderRadius.circular(999),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 11,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? Colors.white
-                                : Colors.white.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(999),
-                            border: Border.all(
-                              color: isSelected
-                                  ? Colors.white
-                                  : Colors.white.withValues(alpha: 0.25),
-                            ),
-                          ),
-                          child: Text(
-                            tag,
-                            style: GoogleFonts.poppins(
-                              color: isSelected
-                                  ? const Color(0xFF0F756B)
-                                  : Colors.white,
-                              fontSize: 11,
-                              fontWeight: isSelected
-                                  ? FontWeight.w700
-                                  : FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ],
                 ),
               ],
             ),
           ),
-
-          const SizedBox(height: 20),
-
-          // ── LIST DATA ──────────────────────────────────────────────────────
-          apotekAsync.when(
-            loading: () => const Padding(
-              padding: EdgeInsets.symmetric(vertical: 32),
-              child: Center(
-                child: CircularProgressIndicator(color: Colors.white),
-              ),
+          const SizedBox(height: 16),
+          AppSearchField(
+            controller: _search,
+            hint: 'Ketik nama apotek atau jalan...',
+            onChanged: (s) => setState(() => _keyword = s.trim()),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'PENCARIAN CEPAT',
+            style: AppUi.text(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: AppUi.colors(context).secondary,
             ),
-            error: (err, st) => _emptyState(
-              icon: Icons.error_outline_rounded,
-              title: 'Data belum bisa dimuat',
-              subtitle: 'Coba beberapa saat lagi. Detail error: $err',
-            ),
-            data: (List<ApotekViewData> listApotek) {
-              final lower = _keyword.toLowerCase();
-              final filtered = _keyword.isEmpty
-                  ? listApotek
-                  : listApotek.where((apotek) {
-                      final namaMatches =
-                          apotek.name.toLowerCase().contains(lower);
-                      final alamatMatches =
-                          apotek.address.toLowerCase().contains(lower);
-                      return namaMatches || alamatMatches;
-                    }).toList();
-
-              if (filtered.isEmpty) {
-                return _emptyState(
-                  icon: Icons.search_off_rounded,
-                  title: 'Apotek tidak ditemukan',
-                  subtitle:
-                      'Tidak ada apotek dengan kata kunci "$_keyword". Coba kata kunci lainnya.',
-                );
-              }
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _resultBadge(
-                        _keyword.isEmpty
-                            ? 'Semua Apotek (${filtered.length})'
-                            : '${filtered.length} apotek ditemukan',
-                      ),
-                      if (_keyword.isNotEmpty)
-                        TextButton.icon(
-                          onPressed: () {
-                            _searchController.clear();
-                            setState(() => _keyword = '');
-                          },
-                          icon: const Icon(
-                            Icons.refresh_rounded,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                          label: Text(
-                            'Reset Filter',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+          ),
+          const SizedBox(height: 6),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children:
+                  ['24 Jam', 'Kimia Farma', 'K-24', 'Century']
+                      .map(
+                        (s) => Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ActionChip(
+                            label: Text(
+                              s,
+                              style: AppUi.text(
+                                fontSize: 11,
+                                color: AppUi.colors(context).primaryText,
+                              ),
                             ),
+                            backgroundColor: AppUi.colors(context).surface,
+                            side: BorderSide.none,
+                            onPressed: () => _set(s),
                           ),
                         ),
+                      )
+                      .toList(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          FilterPills(
+            labels: const ['Semua Status', 'Hanya Buka', 'Tutup'],
+            selected: _filter,
+            onSelected: (i) => setState(() => _filter = i),
+          ),
+          const SizedBox(height: 16),
+          list.when(
+            loading:
+                () =>
+                    const DataState(title: 'Mencari apotek...', loading: true),
+            error:
+                (e, s) => DataState(
+                  title: 'Data apotek belum bisa dimuat',
+                  onRetry: () => ref.invalidate(apotekListProvider),
+                ),
+            data: (all) {
+              final query = _keyword.toLowerCase();
+              final result =
+                  all.where((a) {
+                    final matches =
+                        query == '24 jam'
+                            ? a.hours.toLowerCase().contains(query)
+                            : '${a.name} ${a.address}'.toLowerCase().contains(
+                              query,
+                            );
+                    return matches &&
+                        (_filter == 0 || (_filter == 1 ? a.isBuka : !a.isBuka));
+                  }).toList();
+              if (_nearest) {
+                result.sort(
+                  (a, b) => (a.distance ?? double.infinity).compareTo(
+                    b.distance ?? double.infinity,
+                  ),
+                );
+              }
+              return Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Ditemukan ${result.length} apotek',
+                          style: AppUi.text(
+                            fontSize: 12,
+                            color: AppUi.colors(context).secondary,
+                          ),
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed:
+                            all.any((a) => a.distance != null)
+                                ? () => setState(() => _nearest = !_nearest)
+                                : null,
+                        icon: const Icon(Icons.sort_rounded, size: 17),
+                        label: Text(
+                          _nearest ? 'Terdekat' : 'Urutkan',
+                          style: AppUi.text(
+                            fontSize: 11,
+                            color: AppUi.colors(context).primaryText,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 14),
-                  ...filtered.map((viewData) {
-                    return ApotekCard(
-                      namaApotek: viewData.name,
-                      alamat: viewData.address,
-                      statusBuka: viewData.isBuka ? 'Buka' : 'Tutup',
-                      jamOperasional: viewData.hours,
-                      gambarUrl: viewData.imageUrl,
-                      idApotek: viewData.id,
-                      apotekData: viewData.raw,
-                      distance: viewData.distance,
-                    );
-                  }),
+                  if (result.isEmpty)
+                    const DataState(
+                      title: 'Apotek tidak ditemukan',
+                      subtitle: 'Coba nama, alamat, atau filter lain.',
+                    ),
+                  ...result.map(
+                    (a) => ApotekCard(
+                      namaApotek: a.name,
+                      alamat: a.address,
+                      statusBuka: a.isBuka ? 'Buka' : 'Tutup',
+                      jamOperasional: a.hours,
+                      gambarUrl: a.imageUrl,
+                      idApotek: a.id,
+                      apotekData: a.raw,
+                      distance: a.distance,
+                    ),
+                  ),
                 ],
               );
             },
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _resultBadge(String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
-  Widget _emptyState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(28),
-      decoration: AppUi.glassDecoration(radius: 24),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: Colors.white, size: 36),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
           const SizedBox(height: 8),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
+          ContentPanel(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SectionHeading('Jelajahi Peta Wilayah'),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    color: AppUi.colors(context).softTeal,
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.map_outlined,
+                        color: AppUi.colors(context).primaryText,
+                        size: 42,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        location?.addressName ?? 'Cari apotek di Google Maps',
+                        textAlign: TextAlign.center,
+                        style: AppUi.text(
+                          fontSize: 12,
+                          color: AppUi.colors(context).primaryText,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      FilledButton.icon(
+                        onPressed:
+                            () => openExternal(
+                              context,
+                              Uri.https('www.google.com', '/maps/search/', {
+                                'api': '1',
+                                'query':
+                                    location == null
+                                        ? 'apotek terdekat'
+                                        : 'apotek near ${location.lat},${location.lng}',
+                              }),
+                            ),
+                        icon: const Icon(Icons.open_in_new_rounded, size: 16),
+                        label: const Text('Buka Peta'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(height: 12),
         ],
       ),
     );

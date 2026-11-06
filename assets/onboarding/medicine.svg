@@ -1,0 +1,35 @@
+<svg fill="none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<!-- Subtle baseline shelf -->
+<path d="M40 160H160" stroke="#0F756B" stroke-linecap="round" stroke-opacity="0.18" stroke-width="3"></path>
+<!-- Medicine Bottle Body -->
+<rect fill="#FFFFFF" height="80" rx="14" stroke="#0F756B" stroke-width="3.5" width="60" x="52" y="72"></rect>
+<!-- Bottle Neck & Cap -->
+<rect fill="#0F756B" height="12" rx="3.5" width="34" x="65" y="60"></rect>
+<rect fill="#14B8A6" height="10" rx="4" width="42" x="61" y="50"></rect>
+<!-- Bottle Label Base -->
+<rect fill="#F4FAF8" height="42" rx="7" width="48" x="58" y="92"></rect>
+<!-- Medical Plus Cross on Bottle -->
+<path d="M82 103V123M72 113H92" stroke="#0F756B" stroke-linecap="round" stroke-width="3.5"></path>
+<!-- Liquid Indicator Fill in Bottle -->
+<path d="M54 135C64 137 72 133 82 135C92 137 100 134 110 135V140C110 146 105 150 99 150H63C57 150 54 146 54 140V135Z" fill="#0F756B" fill-opacity="0.12"></path>
+<!-- Angled Capsule Tablet -->
+<g transform="rotate(-30 135 125)">
+<rect fill="#0F756B" height="16" rx="8" width="32" x="120" y="112"></rect>
+<path d="M120 120C120 115.582 123.582 112 128 112H136V128H128C123.582 128 120 124.418 120 120Z" fill="#14B8A6"></path>
+<rect height="16" rx="8" stroke="#0F756B" stroke-width="2.5" width="32" x="120" y="112"></rect>
+<line stroke="#FFFFFF" stroke-opacity="0.6" stroke-width="1.5" x1="136" x2="136" y1="112" y2="128"></line>
+</g>
+<!-- Small Pill Circle -->
+<circle cx="150" cy="85" fill="#FFFFFF" r="9" stroke="#0F756B" stroke-width="3"></circle>
+<line stroke="#0F756B" stroke-linecap="round" stroke-width="2.5" x1="144" x2="156" y1="85" y2="85"></line>
+<!-- High-Contrast Magnifying Glass Inspecting Medicine -->
+<g>
+<circle cx="122" cy="74" fill="#FFFFFF" fill-opacity="0.95" r="23" stroke="#0F756B" stroke-width="3.5"></circle>
+<!-- Lens shine -->
+<path d="M112 66C115 62 121 60 126 62" stroke="#14B8A6" stroke-linecap="round" stroke-width="2"></path>
+<!-- Magnifier Handle -->
+<path d="M139 90L156 107" stroke="#0F756B" stroke-linecap="round" stroke-width="4.5"></path>
+<!-- Golden Discovery Star / Plus inside Glass -->
+<path d="M122 68V80M116 74H128" stroke="#F59E0B" stroke-linecap="round" stroke-width="2.5"></path>
+</g>
+</svg>

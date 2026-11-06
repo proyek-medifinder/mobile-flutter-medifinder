@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:medifinder/theme/app_ui.dart';
 
 class PageIntroCard extends StatelessWidget {
@@ -21,7 +21,12 @@ class PageIntroCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
-      decoration: AppUi.glassDecoration(radius: 26),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppUi.primaryDark, AppUi.primary],
+        ),
+        borderRadius: BorderRadius.circular(26),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -37,7 +42,7 @@ class PageIntroCard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             title,
-            style: GoogleFonts.poppins(
+            style: AppUi.text(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -47,16 +52,9 @@ class PageIntroCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             subtitle,
-            style: GoogleFonts.poppins(
-              color: Colors.white70,
-              fontSize: 13,
-              height: 1.5,
-            ),
+            style: AppUi.text(color: Colors.white70, fontSize: 13, height: 1.5),
           ),
-          if (child != null) ...[
-            const SizedBox(height: 18),
-            child!,
-          ],
+          if (child != null) ...[const SizedBox(height: 18), child!],
         ],
       ),
     );

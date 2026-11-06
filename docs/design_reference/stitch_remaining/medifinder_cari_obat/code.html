@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-fixed-dim": "#4edea3", "surface-container-lowest": "#ffffff", "line-border": "#E5E7EB", "secondary-container": "#6cf8bb", "teal-light": "#14B8A6", "on-secondary-container": "#00714d", "surface-dim": "#d9dadc", "on-surface-variant": "#3e4947", "primary-container": "#0f756b", "secondary": "#006c49", "surface-container-highest": "#e1e2e4", "surface-container-high": "#e7e8ea", "tertiary-fixed": "#ffdea3", "error": "#ba1a1a", "inverse-on-surface": "#f0f1f3", "on-error": "#ffffff", "status-open": "#1B8A5A", "surface-bright": "#f8f9fb", "on-primary": "#ffffff", "on-tertiary-container": "#ffe5b9", "on-tertiary": "#ffffff", "surface-container-low": "#f2f4f6", "primary-dark": "#0A5A52", "destructive-red": "#DC2626", "inverse-primary": "#80d6c9", "inverse-surface": "#2e3132", "error-container": "#ffdad6", "primary": "#005b52", "surface-variant": "#e1e2e4", "tertiary-container": "#876200", "on-primary-container": "#a2f8eb", "on-primary-fixed-variant": "#005049", "on-secondary": "#ffffff", "primary-fixed": "#9cf2e5", "on-tertiary-fixed": "#261900", "on-surface": "#191c1e", "on-error-container": "#93000a", "tertiary-fixed-dim": "#fabc2a", "on-tertiary-fixed-variant": "#5d4200", "scaffold-base": "#F7FBF9", "surface-white": "#FFFFFF", "secondary-fixed": "#6ffbbe", "outline-variant": "#bdc9c6", "on-secondary-fixed": "#002113", "status-closed": "#C0392B", "on-background": "#191c1e", "on-primary-fixed": "#00201d", "outline": "#6e7977", "surface-tint": "#006a61", "on-secondary-fixed-variant": "#005236", "primary-fixed-dim": "#80d6c9", "background": "#f8f9fb", "surface-container": "#edeef0", "surface": "#f8f9fb", "tertiary": "#684b00" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-mobile": "1.25rem", "space-sm": "0.5rem", "gutter-desktop": "1.5rem", "gutter": "0.75rem", "margin-tablet": "1.5rem", "margin": "1.25rem", "space-xl": "1.75rem", "space-xs": "0.375rem", "margin-desktop": "2rem", "space-md": "1rem", "space-lg": "1.375rem" }, fontFamily: { "headline-xl": ["Plus Jakarta Sans"], "caption": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"] }, fontSize: { "headline-xl": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "caption": ["10px", { lineHeight: "12px", letterSpacing: "0.02em", fontWeight: "500" }], "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.03em", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }], "headline-md": ["18px", { lineHeight: "24px", fontWeight: "700" }], "headline-lg-mobile": ["21px", { lineHeight: "28px", fontWeight: "700" }], "body-md": ["14px", { lineHeight: "22px", fontWeight: "400" }], "headline-xl-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "700" }], "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "title-md": ["17px", { lineHeight: "24px", fontWeight: "600" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-scaffold-base text-on-surface font-body-md text-body-md flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface-white/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-[68px] px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-sm"><button aria-label="Menu Drawer" class="w-11 h-11 flex items-center justify-center rounded-xl text-primary hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-[24px]">menu</span></button><div class="flex items-center gap-space-xs"><img alt="MediFinder Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTSyfJgq-sO0EROciQSCKHAdTFXZxJn2gz5CUh9soARo1VzcekbErk4zJOUV6aVGn0ysk043x8jvd8E89x2ejKhVu2-GiYHU732zpINNjIdbjmOPMDaMYvs-YyprqkZQxenLvakH3DplL4MKkG0Jz9WaEMDh4xDWwuy0TgDbTMO_vhaKeqkDoY_PbVzvTFTBbEZDoXYDh2kYKOvfcejwvyZteuiOZSWcwWbp2azvNJ"/><span class="font-headline-md text-headline-md text-primary tracking-tight">MediFinder</span></div></div><div class="flex items-center gap-space-sm"><span class="hidden">Medifinder   Cari Obat</span><div class="relative flex items-center justify-center"><button aria-label="Profil Saya" class="w-11 h-11 flex items-center justify-center rounded-full"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5PTeuccXrMIJeIGSHHR1rx7laM7nY6CcZwhXV3OYbP-bl20iQsouzqa-zXRKSpqNCXsmeUgNcUTZ0rf9FGEqgwSOghhbn-2HO-9knyw5TeEgE3NVMhrrYiXM0iI_woxfb1z7gngr9ezteG56LX8FKQ4X5Ngw9LvbCRPzLzkAXxJg3VnRF5Nd-EqblV8NG4IZ8G9Vh8TIYhGOo0oJnwkz5GJoFLkMBm4NEIeHqSsWX"/></button><span class="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-status-open ring-2 ring-surface-white"></span></div></div></div></header><main class="flex flex-col relative w-full pt-[68px] pb-24 bg-scaffold-base flex-1"><div class="flex flex-col w-full">
+<!-- 1. Header Pengantar (PageIntroCard) -->
+<section class="bg-gradient-to-br from-primary-container to-primary-dark text-on-primary px-margin-mobile pt-5 pb-6 rounded-b-[28px] shadow-[0_12px_24px_-8px_rgba(15,117,107,0.28)] relative overflow-hidden">
+<!-- Subtle organic background curves for visual richness -->
+<div class="absolute -right-12 -top-12 w-44 h-44 rounded-full bg-white/5 pointer-events-none blur-xl"></div>
+<div class="absolute -left-10 -bottom-10 w-36 h-36 rounded-full bg-teal-light/10 pointer-events-none blur-lg"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-space-xs mb-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary-fixed">medication</span>
+<span class="font-label-sm text-label-sm text-primary-fixed uppercase tracking-wider">Katalog &amp; Stok Terkini</span>
+</div>
+<h1 class="font-headline-xl-mobile text-headline-xl-mobile font-bold tracking-tight text-on-primary">
+        Cari &amp; Temukan Obat
+      </h1>
+<p class="font-body-md text-body-md text-on-primary/80 mt-1 max-w-sm">
+        Cek ketersediaan stok obat di apotek terdekat secara real-time dan terpercaya.
+      </p>
+<!-- Integrated Search Box -->
+<div class="mt-4 relative flex items-center">
+<div class="w-full bg-surface-white rounded-2xl flex items-center px-3.5 py-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
+<span class="material-symbols-outlined text-outline text-[22px] mr-2.5">search</span>
+<input class="w-full bg-transparent text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none py-2" id="searchInput" placeholder="Ketik nama obat, keluhan, atau zat aktif..." type="text"/>
+<button aria-label="Bersihkan pencarian" class="text-outline hover:text-on-surface p-1 rounded-full transition-colors hidden" id="clearSearchBtn">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+<button aria-label="Filter Pencarian Lanjutan" class="ml-1.5 bg-surface-container-low hover:bg-surface-container text-primary-container p-2 rounded-xl flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+</div>
+<!-- Keyword Suggestion Chips -->
+<div class="mt-3.5 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+<span class="font-caption text-caption text-primary-fixed shrink-0">Populer:</span>
+<button class="shrink-0 bg-white/15 hover:bg-white/25 text-on-primary text-label-sm font-label-sm px-2.5 py-1 rounded-full transition-colors backdrop-blur-sm" onclick="setQuery('Paracetamol')">
+          Paracetamol
+        </button>
+<button class="shrink-0 bg-white/15 hover:bg-white/25 text-on-primary text-label-sm font-label-sm px-2.5 py-1 rounded-full transition-colors backdrop-blur-sm" onclick="setQuery('Amoxicillin')">
+          Amoxicillin
+        </button>
+<button class="shrink-0 bg-white/15 hover:bg-white/25 text-on-primary text-label-sm font-label-sm px-2.5 py-1 rounded-full transition-colors backdrop-blur-sm" onclick="setQuery('Vitamin C')">
+          Vitamin C
+        </button>
+<button class="shrink-0 bg-white/15 hover:bg-white/25 text-on-primary text-label-sm font-label-sm px-2.5 py-1 rounded-full transition-colors backdrop-blur-sm" onclick="setQuery('Sanmol')">
+          Sanmol
+        </button>
+<button class="shrink-0 bg-white/15 hover:bg-white/25 text-on-primary text-label-sm font-label-sm px-2.5 py-1 rounded-full transition-colors backdrop-blur-sm" onclick="setQuery('Antangin')">
+          Antangin
+        </button>
+<button class="shrink-0 bg-white/15 hover:bg-white/25 text-on-primary text-label-sm font-label-sm px-2.5 py-1 rounded-full transition-colors backdrop-blur-sm" onclick="setQuery('Cetirizine')">
+          Cetirizine
+        </button>
+</div>
+</div>
+</section>
+<!-- 2. Filter Klasifikasi Obat & Status Resep -->
+<section class="mt-4 px-margin-mobile">
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+<button class="shrink-0 h-9 px-4 rounded-full bg-primary-container text-on-primary font-label-sm text-label-sm font-semibold shadow-sm transition-transform active:scale-95">
+        Semua
+      </button>
+<button class="shrink-0 h-9 px-3.5 rounded-full bg-surface-white text-primary-dark font-label-sm text-label-sm font-medium shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex items-center gap-1.5 hover:bg-surface-container-low transition-colors">
+<span class="w-2.5 h-2.5 rounded-full bg-status-open"></span>
+<span>Obat Bebas</span>
+</button>
+<button class="shrink-0 h-9 px-3.5 rounded-full bg-surface-white text-primary-dark font-label-sm text-label-sm font-medium shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex items-center gap-1.5 hover:bg-surface-container-low transition-colors">
+<span class="w-2.5 h-2.5 rounded-full bg-teal-light"></span>
+<span>Bebas Terbatas</span>
+</button>
+<button class="shrink-0 h-9 px-3.5 rounded-full bg-surface-white text-primary-dark font-label-sm text-label-sm font-medium shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex items-center gap-1.5 hover:bg-surface-container-low transition-colors">
+<span class="w-2.5 h-2.5 rounded-full bg-destructive-red"></span>
+<span>Resep Dokter (K)</span>
+</button>
+<button class="shrink-0 h-9 px-3.5 rounded-full bg-surface-white text-primary-dark font-label-sm text-label-sm font-medium shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex items-center gap-1.5 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[16px] text-tertiary">nutrition</span>
+<span>Suplemen &amp; Vitamin</span>
+</button>
+<button class="shrink-0 h-9 px-3.5 rounded-full bg-surface-white text-primary-dark font-label-sm text-label-sm font-medium shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex items-center gap-1.5 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[16px] text-status-open">near_me</span>
+<span>Stok Terdekat</span>
+</button>
+</div>
+</section>
+<!-- 3. Smart MediBot AI Consultation Banner -->
+<section class="mt-4 px-margin-mobile">
+<div class="bg-gradient-to-r from-surface-white via-surface-container-lowest to-secondary-container/20 rounded-2xl p-4 shadow-[0_4px_16px_-2px_rgba(15,117,107,0.06)] flex items-center justify-between gap-3 relative overflow-hidden">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-primary to-teal-light flex items-center justify-center text-on-primary shadow-sm shrink-0">
+<span class="material-symbols-outlined text-[24px]">smart_toy</span>
+</div>
+<div>
+<h2 class="font-headline-md text-title-md font-bold text-primary-dark leading-tight">
+            Bingung Dosis atau Obat?
+          </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 line-clamp-1">
+            Dapatkan saran awal &amp; kontraindikasi medis
+          </p>
+</div>
+</div>
+<button class="shrink-0 bg-primary hover:bg-primary-dark text-on-primary px-3 py-2 rounded-xl text-label-sm font-label-sm font-semibold flex items-center gap-1 transition-transform active:scale-95 shadow-sm">
+<span>Tanya AI</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- 4. Section "Hasil Pencarian Obat Unggulan" -->
+<section class="mt-5 px-margin-mobile">
+<div class="flex items-center justify-between mb-3.5">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary-dark font-bold">Obat Unggulan &amp; Stok</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Menampilkan obat paling sering dibutuhkan</p>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-[14px] text-primary">location_on</span>
+<span class="font-caption text-caption font-semibold text-primary">Tebet, Jaksel</span>
+</div>
+</div>
+<!-- Medicine Card Stacks -->
+<div class="space-y-4">
+<!-- ITEM 1: Paracetamol 500 mg -->
+<article class="bg-surface-white rounded-2xl p-4 shadow-[0_6px_16px_-2px_rgba(10,90,82,0.06)]">
+<div class="flex items-start gap-3">
+<div class="w-20 h-20 rounded-xl overflow-hidden shrink-0 bg-surface-container-low flex items-center justify-center relative">
+<img class="w-full h-full object-cover" data-alt="Clean clinical studio photography of a silver blister strip of Paracetamol 500mg tablets, soft soft green pharmacy lighting, crisp pharmaceutical packaging, calm aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-56p45FxQzgS5cfmyt8bSsBWF2QikE3CeZoXCEQHzCwFdGw6MvwgzhcFnUtBIeb_qpopIIK_wOsrGRu_jW2H4SCc-MnyxfgmEck6S3yZg0UC7_qXhUTkorLUwcTot9tj3n2-jqPOYHEbXn81jZssywYYWE-7vL5u-ef0sP7c8Szbqs2_rQzy-h584NymzlboKH7HgnArwpFHvIsUn5nb00MsYLYBFozAcAsn85UHB"/>
+<span class="absolute bottom-1 right-1 bg-status-open text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded-md leading-none">Strip</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-open/10 text-status-open font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-status-open"></span>
+                Obat Bebas
+              </span>
+<span class="font-caption text-caption text-on-surface-variant">Strip 10 Tablet</span>
+</div>
+<h3 class="font-title-md text-title-md font-bold text-on-surface mt-1 truncate">
+              Paracetamol 500 mg
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
+              Pereda demam dan nyeri ringan hingga sedang
+            </p>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-caption text-caption text-on-surface-variant">Estimasi:</span>
+<span class="font-headline-md text-title-md text-primary font-bold">Rp 4.500 - Rp 7.000</span>
+<span class="font-caption text-caption text-on-surface-variant">/ strip</span>
+</div>
+</div>
+</div>
+<!-- Pharmacy Providers Accordion / List -->
+<div class="mt-3.5 pt-3 bg-surface-container-lowest rounded-xl p-3">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm font-semibold text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-teal-light">storefront</span>
+              Apotek Penyedia Terdekat (2):
+            </span>
+<span class="font-caption text-caption text-status-open font-medium">Stok Terkonfirmasi</span>
+</div>
+<!-- Pharmacy 1 -->
+<div class="p-2 rounded-xl bg-surface-container-low mb-2 flex items-center justify-between gap-2">
+<div class="min-w-0">
+<div class="font-label-md text-label-md font-bold text-on-surface truncate">Apotek Kimia Farma Tebet Raya</div>
+<div class="flex items-center gap-2 mt-0.5 font-caption text-caption text-on-surface-variant">
+<span>0.8 km</span>
+<span>•</span>
+<span class="text-status-open font-semibold">Banyak (24 strip)</span>
+<span>•</span>
+<span class="font-bold text-on-surface">Rp 6.500</span>
+</div>
+</div>
+<button class="shrink-0 bg-tertiary-fixed-dim hover:bg-tertiary-fixed text-primary-dark font-label-sm text-label-sm font-bold px-3 py-1.5 rounded-lg transition-transform active:scale-95 shadow-sm">
+              Kunjungi
+            </button>
+</div>
+<!-- Pharmacy 2 -->
+<div class="p-2 rounded-xl bg-surface-container-low flex items-center justify-between gap-2">
+<div class="min-w-0">
+<div class="font-label-md text-label-md font-bold text-on-surface truncate">Apotek K-24 Saharjo</div>
+<div class="flex items-center gap-2 mt-0.5 font-caption text-caption text-on-surface-variant">
+<span>1.4 km</span>
+<span>•</span>
+<span class="text-status-open font-semibold">Ada (12 strip)</span>
+<span>•</span>
+<span class="font-bold text-on-surface">Rp 6.800</span>
+</div>
+</div>
+<button class="shrink-0 bg-tertiary-fixed-dim hover:bg-tertiary-fixed text-primary-dark font-label-sm text-label-sm font-bold px-3 py-1.5 rounded-lg transition-transform active:scale-95 shadow-sm">
+              Kunjungi
+            </button>
+</div>
+<button class="w-full mt-2.5 py-2 text-center text-primary font-label-sm text-label-sm font-bold hover:bg-surface-container rounded-lg transition-colors flex items-center justify-center gap-1">
+<span>Lihat 5 Apotek Penyedia Lainnya</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+</article>
+<!-- ITEM 2: Amoxicillin 500 mg -->
+<article class="bg-surface-white rounded-2xl p-4 shadow-[0_6px_16px_-2px_rgba(10,90,82,0.06)]">
+<div class="flex items-start gap-3">
+<div class="w-20 h-20 rounded-xl overflow-hidden shrink-0 bg-surface-container-low flex items-center justify-center relative">
+<img class="w-full h-full object-cover" data-alt="Pack of Amoxicillin 500mg antibiotic capsules with distinctive red dot medical prescription emblem on pharmaceutical packaging, pristine laboratory table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCm4G52T-7UcphVYAOOt6jVPFXaxQ72qeDnCvl25Fp4GvGxh317rc9bE_F_UGtUx4StHFJ1fGtIZqRHJiPDh6A_qhJeRAPIZdnEmMFxKpFy5F3op5EPmUODr8q8VEHB9oe0aXkbsc5mj7LltLE050-swulZAc9GtDndeLRRAbwm_Bm9QhEQ_H6ZXeyxjhNYejhcyH0yII7T-gtGBA0tGlB5sIfzv98EvfwdtvZ6mcrI"/>
+<span class="absolute top-1 left-1 bg-destructive-red text-on-primary text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">K</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-destructive-red/10 text-destructive-red font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-[13px]">lock</span>
+                Wajib Resep Dokter
+              </span>
+<span class="font-caption text-caption text-on-surface-variant">Strip 10 Kaplet</span>
+</div>
+<h3 class="font-title-md text-title-md font-bold text-on-surface mt-1 truncate">
+              Amoxicillin 500 mg
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
+              Antibiotik untuk infeksi bakteri, harus dihabiskan
+            </p>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-caption text-caption text-on-surface-variant">Estimasi:</span>
+<span class="font-headline-md text-title-md text-primary font-bold">Rp 12.000 - Rp 16.000</span>
+<span class="font-caption text-caption text-on-surface-variant">/ strip</span>
+</div>
+</div>
+</div>
+<!-- Pharmacy Providers List -->
+<div class="mt-3.5 pt-3 bg-surface-container-lowest rounded-xl p-3">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm font-semibold text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-teal-light">storefront</span>
+              Apotek Penyedia Terdekat (2):
+            </span>
+<span class="font-caption text-caption text-destructive-red font-medium">Bawa Resep</span>
+</div>
+<div class="p-2 rounded-xl bg-surface-container-low mb-2 flex items-center justify-between gap-2">
+<div class="min-w-0">
+<div class="font-label-md text-label-md font-bold text-on-surface truncate">Apotek K-24 Saharjo</div>
+<div class="flex items-center gap-2 mt-0.5 font-caption text-caption text-on-surface-variant">
+<span>1.4 km</span>
+<span>•</span>
+<span class="text-status-open font-semibold">Ada (8 strip)</span>
+<span>•</span>
+<span class="text-primary font-semibold">Buka 24 Jam</span>
+</div>
+</div>
+<button class="shrink-0 bg-tertiary-fixed-dim hover:bg-tertiary-fixed text-primary-dark font-label-sm text-label-sm font-bold px-3 py-1.5 rounded-lg transition-transform active:scale-95 shadow-sm">
+              Kunjungi
+            </button>
+</div>
+<div class="p-2 rounded-xl bg-surface-container-low flex items-center justify-between gap-2">
+<div class="min-w-0">
+<div class="font-label-md text-label-md font-bold text-on-surface truncate">Apotek Roxy Manggarai</div>
+<div class="flex items-center gap-2 mt-0.5 font-caption text-caption text-on-surface-variant">
+<span>2.8 km</span>
+<span>•</span>
+<span class="text-status-open font-semibold">Ada (15 strip)</span>
+<span>•</span>
+<span>Buka s/d 22:00</span>
+</div>
+</div>
+<button class="shrink-0 bg-tertiary-fixed-dim hover:bg-tertiary-fixed text-primary-dark font-label-sm text-label-sm font-bold px-3 py-1.5 rounded-lg transition-transform active:scale-95 shadow-sm">
+              Kunjungi
+            </button>
+</div>
+</div>
+</article>
+<!-- ITEM 3: Sanmol Forte Sirup -->
+<article class="bg-surface-white rounded-2xl p-4 shadow-[0_6px_16px_-2px_rgba(10,90,82,0.06)]">
+<div class="flex items-start gap-3">
+<div class="w-20 h-20 rounded-xl overflow-hidden shrink-0 bg-surface-container-low flex items-center justify-center relative">
+<img class="w-full h-full object-cover" data-alt="Amber glass syrup medicine bottle Sanmol Forte with dosing measuring cup, pediatric fever remedy bottle on warm clean pharmacy surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_OSs8F0LXU1_W77qqIR2lgpKyUS1n1-gxGUlxLZZqWlZjcT4wA8y3JCUvjO5Dd50ljBTlY5m5DB2EBGZpZVUrnegwOxhPcm4UpkwSEW922xLIuZ4ZjVCNoR1iX94suw-Wje8N-2gxAJJuthedI_xp9TmCykoM0z-Dd-YqnFmdH62uEsP1JMf0e828YOSEEHsl5J-LX8e8fT64T2QziMybFhzzmEvJHOtez4ZudFLh"/>
+<span class="absolute bottom-1 right-1 bg-primary text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded-md leading-none">60 ml</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-open/10 text-status-open font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-status-open"></span>
+                Obat Bebas
+              </span>
+<span class="font-caption text-caption text-on-surface-variant">Sirup Forte</span>
+</div>
+<h3 class="font-title-md text-title-md font-bold text-on-surface mt-1 truncate">
+              Sanmol Forte Sirup 60 ml
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
+              Demam &amp; pereda rasa sakit anak dan dewasa
+            </p>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-caption text-caption text-on-surface-variant">Estimasi:</span>
+<span class="font-headline-md text-title-md text-primary font-bold">Rp 21.000 - Rp 23.500</span>
+<span class="font-caption text-caption text-on-surface-variant">/ botol</span>
+</div>
+</div>
+</div>
+<div class="mt-3.5 pt-3 bg-surface-container-lowest rounded-xl p-3">
+<div class="p-2 rounded-xl bg-surface-container-low flex items-center justify-between gap-2">
+<div class="min-w-0">
+<div class="font-label-md text-label-md font-bold text-on-surface truncate">Apotek Kimia Farma Tebet Raya</div>
+<div class="flex items-center gap-2 mt-0.5 font-caption text-caption text-on-surface-variant">
+<span>0.8 km</span>
+<span>•</span>
+<span class="text-status-open font-semibold">Tersedia (14 botol)</span>
+<span>•</span>
+<span class="font-bold text-on-surface">Rp 22.500</span>
+</div>
+</div>
+<button class="shrink-0 bg-tertiary-fixed-dim hover:bg-tertiary-fixed text-primary-dark font-label-sm text-label-sm font-bold px-3 py-1.5 rounded-lg transition-transform active:scale-95 shadow-sm">
+              Kunjungi
+            </button>
+</div>
+</div>
+</article>
+<!-- ITEM 4: Vitamin C 500 mg IPI -->
+<article class="bg-surface-white rounded-2xl p-4 shadow-[0_6px_16px_-2px_rgba(10,90,82,0.06)]">
+<div class="flex items-start gap-3">
+<div class="w-20 h-20 rounded-xl overflow-hidden shrink-0 bg-surface-container-low flex items-center justify-center relative">
+<img class="w-full h-full object-cover" data-alt="Small yellow and white vitamin C tablet bottle packaging on bright medical desk, dietary immune supplement photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUFIHDc5TDLMI4cIsaQVWCjDPfAkHiSeI-tLEMEe3u2tNFDSB3QcubqukXOhzdZTs-ZgC9585F1ASXME6CgibJbnJOur7hhWPSr-Soqv_0OEC_O-Wo4pr-hVLojYYyjkyyUN3-7ihySOXj4vhsHTDzOfoKfYIZsEXQL_tULue2PPwldbSb-N-VCqop3dQpjolbSqrGLvTwkn7kEvq90oTqg2LsinqLR5tQaVpQz6gB"/>
+<span class="absolute bottom-1 right-1 bg-tertiary-container text-on-tertiary-container text-[10px] font-bold px-1.5 py-0.5 rounded-md leading-none">45 Tab</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[12px]">eco</span>
+                Suplemen Kesehatan
+              </span>
+<span class="font-caption text-caption text-on-surface-variant">Botol 45 Tablet</span>
+</div>
+<h3 class="font-title-md text-title-md font-bold text-on-surface mt-1 truncate">
+              Vitamin C 500 mg IPI
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
+              Menjaga daya tahan tubuh dan pemulihan harian
+            </p>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-caption text-caption text-on-surface-variant">Estimasi:</span>
+<span class="font-headline-md text-title-md text-primary font-bold">Rp 8.000 - Rp 9.500</span>
+<span class="font-caption text-caption text-on-surface-variant">/ botol</span>
+</div>
+</div>
+</div>
+<div class="mt-3.5 pt-3 bg-surface-container-lowest rounded-xl p-3">
+<div class="p-2 rounded-xl bg-surface-container-low flex items-center justify-between gap-2">
+<div class="min-w-0">
+<div class="font-label-md text-label-md font-bold text-on-surface truncate">Apotek Century Tebet Eco Park</div>
+<div class="flex items-center gap-2 mt-0.5 font-caption text-caption text-on-surface-variant">
+<span>2.1 km</span>
+<span>•</span>
+<span class="text-tertiary font-bold">Menipis (3 botol)</span>
+<span>•</span>
+<span class="font-bold text-on-surface">Rp 8.500</span>
+</div>
+</div>
+<button class="shrink-0 bg-tertiary-fixed-dim hover:bg-tertiary-fixed text-primary-dark font-label-sm text-label-sm font-bold px-3 py-1.5 rounded-lg transition-transform active:scale-95 shadow-sm">
+              Kunjungi
+            </button>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- 5. Fitur Kebutuhan Khusus / Footer Prescription Helper Card -->
+<section class="mt-6 mb-3 px-margin-mobile">
+<div class="bg-gradient-to-br from-primary/10 via-surface-container-low to-scaffold-base rounded-2xl p-4 shadow-[0_4px_12px_rgba(0,0,0,0.03)] flex flex-col gap-3">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">prescriptions</span>
+</div>
+<div>
+<h4 class="font-headline-md text-title-md font-bold text-primary-dark">
+            Punya Resep Dokter Fisik?
+          </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+            Anda dapat langsung menebus resep resmi di apotek rekanan berlogo <strong class="text-primary font-semibold">MediFinder Verified</strong> dengan dukungan layanan Penebusan Resep &amp; BPJS Kesehatan.
+          </p>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-status-open">verified</span>
+          100% Apoteker Berlisensi SIPA
+        </span>
+<button class="text-primary font-label-sm text-label-sm font-bold flex items-center gap-0.5 hover:underline">
+<span>Panduan Resep</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Interactive JavaScript for micro-interactions -->
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+    function setQuery(query) {
+      if (searchInput) {
+        searchInput.value = query;
+        searchInput.focus();
+        if (clearSearchBtn) clearSearchBtn.classList.remove('hidden');
+      }
+    }
+
+    if (searchInput && clearSearchBtn) {
+      searchInput.addEventListener('input', function() {
+        if (this.value.trim().length > 0) {
+          clearSearchBtn.classList.remove('hidden');
+        } else {
+          clearSearchBtn.classList.add('hidden');
+        }
+      });
+
+      clearSearchBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        searchInput.focus();
+        clearSearchBtn.classList.add('hidden');
+      });
+    }
+  </script>
+</div></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface-white/95 backdrop-blur-xl shadow-[0_-4px_20px_rgba(15,117,107,0.08)]" data-active-classes="text-primary-container font-label-sm font-bold"><div class="relative flex items-center justify-around h-16 px-space-xs max-w-lg mx-auto"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-all" data-path="beranda" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-sm text-label-sm mt-0.5">Beranda</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-all" data-path="cari-apotek" href="#"><span class="material-symbols-outlined text-[22px]">store</span><span class="font-label-sm text-label-sm mt-0.5">Cari Apotek</span></a><div class="relative flex flex-col items-center -top-4"><div class="w-[68px] h-[68px] rounded-full bg-surface-white flex items-center justify-center shadow-[0_4px_16px_rgba(15,117,107,0.12)]"><a aria-label="MediBot AI" class="w-[52px] h-[52px] rounded-full bg-gradient-to-tr from-primary to-teal-light flex items-center justify-center text-on-primary shadow-[0_8px_20px_0_rgba(20,184,166,0.38)] active:scale-95 transition-transform" data-path="medibot-ai" href="#"><span class="material-symbols-outlined text-[26px]">smart_toy</span></a></div><span class="font-label-sm text-label-sm text-primary font-bold mt-0.5">MediBot</span></div><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-all" data-path="cari-obat" href="#"><span class="material-symbols-outlined text-[22px]">pill</span><span class="font-label-sm text-label-sm mt-0.5">Cari Obat</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-all" data-path="profil" href="#"><span class="material-symbols-outlined text-[22px]">person</span><span class="font-label-sm text-label-sm mt-0.5">Profil</span></a></div></nav></body></html>

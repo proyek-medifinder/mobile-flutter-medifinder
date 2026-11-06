@@ -1,511 +1,362 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:medifinder/config/api_config.dart';
-import 'package:medifinder/page/login.dart';
 import 'package:medifinder/theme/app_ui.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'package:medifinder/page/home.dart';
+import 'package:medifinder/page/login.dart';
+import 'package:medifinder/page/widgets/auth/auth_widgets.dart';
+import 'package:medifinder/services/auth_api_service.dart';
+import 'package:medifinder/services/auth_service.dart';
+import 'package:medifinder/services/auth_session_store.dart';
 
 class Register extends StatefulWidget {
-  const Register({super.key});
-
+  const Register({super.key, this.api, this.auth});
+  final AuthApiService? api;
+  final AuthService? auth;
   @override
   State<Register> createState() => _RegisterState();
 }
 
 class _RegisterState extends State<Register> {
-  final fullName = TextEditingController();
-  final username = TextEditingController();
-  final email = TextEditingController();
-  final password = TextEditingController();
-  final confirmPassword = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-
-  // Dio instance untuk memanggil API backend
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: ApiConfig.authHost,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 15),
-      headers: const {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    ),
-  );
-
-  bool _isPasswordHidden = true;
-  bool _isConfirmHidden = true;
-  bool _isSubmitting = false;
+  final _name = TextEditingController(),
+      _email = TextEditingController(),
+      _password = TextEditingController(),
+      _confirm = TextEditingController();
+  final _form = GlobalKey<FormState>();
+  late final AuthApiService _api = widget.api ?? AuthApiService();
+  late final AuthService _auth = widget.auth ?? AuthService(api: _api);
+  bool _hidden = true,
+      _confirmHidden = true,
+      _busy = false,
+      _googleBusy = false;
+  String? _error;
+  bool get _working => _busy || _googleBusy;
+  bool get _long => _password.text.length >= 8;
+  bool get _upper => RegExp(r'[A-Z]').hasMatch(_password.text);
+  bool get _number => RegExp(r'[0-9]').hasMatch(_password.text);
+  int get _strength => [_long, _upper, _number].where((value) => value).length;
 
   @override
   void dispose() {
-    fullName.dispose();
-    username.dispose();
-    email.dispose();
-    password.dispose();
-    confirmPassword.dispose();
-    _dio.close();
+    for (final controller in [_name, _email, _password, _confirm]) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
-  InputDecoration _fieldDecoration({
-    required String hint,
-    required IconData icon,
-    Widget? suffixIcon,
-  }) {
-    return InputDecoration(
-      hintText: hint,
-      prefixIcon: Icon(icon, color: Colors.grey),
-      suffixIcon: suffixIcon,
-      filled: true,
-      fillColor: const Color(0xFFF3F4F6),
-      contentPadding: const EdgeInsets.symmetric(vertical: 18),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: Color(0xFF0F756B), width: 1.4),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: Colors.redAccent),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: Colors.redAccent, width: 1.4),
-      ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide.none,
-      ),
-    );
-  }
-
-  Widget _modernField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-    TextInputAction textInputAction = TextInputAction.next,
-    Iterable<String>? autofillHints,
-    List<TextInputFormatter>? inputFormatters,
-    String? Function(String?)? validator,
-    ValueChanged<String>? onFieldSubmitted,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      textInputAction: textInputAction,
-      autofillHints: autofillHints,
-      inputFormatters: inputFormatters,
-      validator: validator,
-      onFieldSubmitted: onFieldSubmitted,
-      decoration: _fieldDecoration(hint: hint, icon: icon),
-    );
-  }
-
-  Widget _modernPasswordField({
-    required TextEditingController controller,
-    required String hint,
-    required bool isHidden,
-    required VoidCallback toggle,
-    required String? Function(String?) validator,
-    ValueChanged<String>? onFieldSubmitted,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: isHidden,
-      textInputAction: TextInputAction.next,
-      autofillHints:
-          hint == 'Konfirmasi Password'
-              ? const [AutofillHints.password]
-              : const [AutofillHints.newPassword],
-      validator: validator,
-      onFieldSubmitted: onFieldSubmitted,
-      decoration: _fieldDecoration(
-        hint: hint,
-        icon: Icons.lock_outline,
-        suffixIcon: IconButton(
-          icon: Icon(isHidden ? Icons.visibility : Icons.visibility_off),
-          onPressed: toggle,
-        ),
-      ),
-    );
-  }
-
-  Future<void> _handleRegister() async {
-    FocusScope.of(context).unfocus();
-
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() {
-      _isSubmitting = true;
-    });
-
-    try {
-      // 1. Panggil API backend untuk membuat akun
-      final response = await _dio.post(
-        '/register',
-        data: {
-          'name': fullName.text.trim(),
-          'email': email.text.trim(),
-          'password': password.text.trim(),
-        },
-      );
-
-      // Cek apakah respons berhasil (status 201)
-      if (response.statusCode != 201 && response.statusCode != 200) {
-        final errorMsg = (response.data is Map)
-            ? (response.data['error'] ?? response.data['message'] ?? 'Registrasi gagal')
-            : 'Registrasi gagal';
-        throw Exception(errorMsg.toString());
-      }
-
-      // 2. Simpan data lokal agar form login terisi otomatis
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('full_name', fullName.text.trim());
-      await prefs.setString('username', username.text.trim());
-      await prefs.setString('email', email.text.trim());
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Akun berhasil dibuat! Silakan login.'),
-          backgroundColor: Color(0xFF0F756B),
-        ),
-      );
-
+  void _toLogin([String? email]) {
+    if (!mounted) return;
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context, email);
+    } else {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const Login()),
-      );
-    } on DioException catch (e) {
-      if (!mounted) return;
-
-      String errMsg = 'Registrasi gagal. Coba lagi.';
-      final data = e.response?.data;
-      if (data is Map) {
-        errMsg = (data['error'] ?? data['message'] ?? errMsg).toString();
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errMsg),
-          backgroundColor: Colors.redAccent,
+        MaterialPageRoute(
+          builder:
+              (_) => Login(
+                initialEmail: email,
+                notice:
+                    email == null
+                        ? null
+                        : 'Akun berhasil dibuat. Silakan masuk dengan akun baru Anda.',
+              ),
         ),
       );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString().replaceFirst('Exception: ', '')),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
-      }
     }
   }
 
+  Future<void> _register() async {
+    if (_working) return;
+    FocusScope.of(context).unfocus();
+    if (!_form.currentState!.validate()) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await _api.register(
+        name: _name.text.trim(),
+        email: _email.text.trim(),
+        password: _password.text,
+      );
+      _toLogin(_email.text.trim());
+    } catch (error) {
+      if (mounted) setState(() => _error = friendlyAuthError(error));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _google() async {
+    if (_working) return;
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _googleBusy = true;
+      _error = null;
+    });
+    try {
+      final session = await _auth.signInWithGoogle();
+      if (session == null) return;
+      await AuthSessionStore(api: _api).save(session, provider: 'google');
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const Home()),
+        (_) => false,
+      );
+    } catch (error) {
+      if (mounted) setState(() => _error = friendlyAuthError(error));
+    } finally {
+      if (mounted) setState(() => _googleBusy = false);
+    }
+  }
 
   @override
-  Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-
-    return Scaffold(
-      backgroundColor: AppUi.primary,
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(24, 32, 24, bottomInset + 24),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: AutofillGroup(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    /// LOGO
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 18,
+  Widget build(BuildContext context) => AuthScaffold(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            SizedBox(
+              width: 44,
+              height: 44,
+              child: IconButton.filledTonal(
+                tooltip: 'Kembali ke login',
+                onPressed: _working ? null : () => _toLogin(),
+                style: IconButton.styleFrom(
+                  backgroundColor: AppUi.colors(context).softTeal,
+                  foregroundColor: AppUi.colors(context).primaryText,
+                ),
+                icon: const Icon(Icons.arrow_back_rounded, size: 21),
+              ),
+            ),
+            const Expanded(child: Center(child: MediFinderLogo(width: 220))),
+            const SizedBox(width: 44),
+          ],
+        ),
+        const SizedBox(height: 20),
+        AuthPanel(
+          padding: 20,
+          child: AutofillGroup(
+            child: Form(
+              key: _form,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.person_add_alt_1_rounded,
+                        color: AppUi.colors(context).primaryText,
+                        size: 23,
                       ),
-                      decoration: AppUi.panelDecoration(radius: 999),
-                      child: Image.asset(
-                        'assets/images/Logo-remove.png',
-                        height: 55,
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    /// TITLE
-                    Text(
-                      'Buat Akun Baru',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    Text(
-                      'Daftar untuk mulai menggunakan MediFinder.',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.white70,
-                      ),
-                    ),
-
-                    const SizedBox(height: 28),
-
-                    /// CARD
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 32,
-                      ),
-                      decoration: AppUi.panelDecoration(radius: 32),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Lengkapi data diri',
-                              style: GoogleFonts.poppins(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: AppUi.primary,
-                              ),
-                            ),
-
-                            const SizedBox(height: 6),
-
-                            Text(
-                              'Simpan akun lokal untuk akses cepat di perangkat ini.',
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                color: Colors.black54,
-                              ),
-                            ),
-
-                            const SizedBox(height: 24),
-
-                            /// NAMA
-                            _modernField(
-                              controller: fullName,
-                              hint: 'Nama Lengkap',
-                              icon: Icons.person_outline,
-                              keyboardType: TextInputType.name,
-                              autofillHints: const [AutofillHints.name],
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return 'Nama lengkap wajib diisi';
-                                }
-                                if (value.trim().length < 3) {
-                                  return 'Nama terlalu pendek';
-                                }
-                                return null;
-                              },
-                            ),
-
-                            const SizedBox(height: 18),
-
-                            /// USERNAME
-                            _modernField(
-                              controller: username,
-                              hint: 'Username',
-                              icon: Icons.account_circle_outlined,
-                              autofillHints: const [AutofillHints.username],
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                              ],
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return 'Username wajib diisi';
-                                }
-                                if (value.trim().length < 3) {
-                                  return 'Minimal 3 karakter';
-                                }
-                                return null;
-                              },
-                            ),
-
-                            const SizedBox(height: 18),
-
-                            /// EMAIL
-                            _modernField(
-                              controller: email,
-                              hint: 'Email',
-                              icon: Icons.email_outlined,
-                              keyboardType: TextInputType.emailAddress,
-                              autofillHints: const [AutofillHints.email],
-                              validator: (value) {
-                                final text = value?.trim() ?? '';
-                                if (text.isEmpty) return 'Email wajib diisi';
-                                if (!RegExp(
-                                  r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-                                ).hasMatch(text)) {
-                                  return 'Format email tidak valid';
-                                }
-                                return null;
-                              },
-                            ),
-
-                            const SizedBox(height: 18),
-
-                            /// PASSWORD
-                            _modernPasswordField(
-                              controller: password,
-                              hint: 'Password',
-                              isHidden: _isPasswordHidden,
-                              toggle: () {
-                                setState(() {
-                                  _isPasswordHidden = !_isPasswordHidden;
-                                });
-                              },
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return 'Password wajib diisi';
-                                }
-                                if (value.trim().length < 6) {
-                                  return 'Minimal 6 karakter';
-                                }
-                                return null;
-                              },
-                            ),
-
-                            const SizedBox(height: 18),
-
-                            /// KONFIRMASI
-                            _modernPasswordField(
-                              controller: confirmPassword,
-                              hint: 'Konfirmasi Password',
-                              isHidden: _isConfirmHidden,
-                              toggle: () {
-                                setState(() {
-                                  _isConfirmHidden = !_isConfirmHidden;
-                                });
-                              },
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return 'Wajib diisi';
-                                }
-                                if (value.trim() != password.text.trim()) {
-                                  return 'Password tidak cocok';
-                                }
-                                return null;
-                              },
-                              onFieldSubmitted: (_) => _handleRegister(),
-                            ),
-
-                            const SizedBox(height: 28),
-
-                            /// BUTTON
-                            SizedBox(
-                              width: double.infinity,
-                              height: 56,
-                              child: ElevatedButton(
-                                onPressed:
-                                    _isSubmitting ? null : _handleRegister,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppUi.accent,
-                                  disabledBackgroundColor:
-                                      AppUi.accent.withValues(alpha: 0.6),
-                                  shape: const StadiumBorder(),
-                                  elevation: 0,
-                                ),
-                                child:
-                                    _isSubmitting
-                                        ? const SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2.2,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                  Colors.white,
-                                                ),
-                                          ),
-                                        )
-                                        : Text(
-                                          'Daftar',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            Text(
-                              'Dengan mendaftar, data akun akan tersimpan di perangkat ini.',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.poppins(
-                                fontSize: 11,
-                                color: Colors.black45,
-                              ),
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            /// LOGIN LINK
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Sudah punya akun?',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text(
-                                    'Login',
-                                    style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w600,
-                                      color: AppUi.primary,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Registrasi Pengguna',
+                          style: AuthDesign.text(18, weight: FontWeight.w700),
                         ),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Buat akun untuk mulai menggunakan MediFinder.',
+                    style: AuthDesign.text(
+                      12,
+                      color: AppUi.colors(context).secondary,
                     ),
-
-                    const SizedBox(height: 12),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 22),
+                  if (_error != null) AuthNotice(message: _error!, error: true),
+                  AbsorbPointer(
+                    absorbing: _working,
+                    child: Column(
+                      children: [
+                        AuthField(
+                          label: 'Nama Lengkap',
+                          controller: _name,
+                          hint: 'Contoh: Sarah Safira',
+                          icon: Icons.badge_outlined,
+                          autofillHints: const [AutofillHints.name],
+                          validator:
+                              (value) =>
+                                  (value?.trim().length ?? 0) < 2
+                                      ? 'Masukkan nama lengkap Anda.'
+                                      : null,
+                        ),
+                        const SizedBox(height: 18),
+                        AuthField(
+                          label: 'Alamat Email',
+                          controller: _email,
+                          hint: 'nama@email.com',
+                          icon: Icons.mail_outline_rounded,
+                          keyboardType: TextInputType.emailAddress,
+                          autofillHints: const [AutofillHints.email],
+                          validator: AuthDesign.emailValidator,
+                        ),
+                        const SizedBox(height: 18),
+                        AuthField(
+                          label: 'Kata Sandi Baru',
+                          controller: _password,
+                          hint: 'Buat kata sandi',
+                          icon: Icons.lock_outline_rounded,
+                          obscure: _hidden,
+                          autofillHints: const [AutofillHints.newPassword],
+                          onChanged: (_) => setState(() {}),
+                          validator:
+                              (_) =>
+                                  _long && _upper && _number
+                                      ? null
+                                      : 'Gunakan min. 8 karakter, huruf besar, dan angka.',
+                          suffix: IconButton(
+                            tooltip:
+                                _hidden
+                                    ? 'Tampilkan kata sandi'
+                                    : 'Sembunyikan kata sandi',
+                            onPressed: () => setState(() => _hidden = !_hidden),
+                            icon: Icon(
+                              _hidden
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              size: 21,
+                              color: AppUi.colors(context).secondary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: List.generate(
+                            3,
+                            (index) => Expanded(
+                              child: Container(
+                                height: 3,
+                                margin: EdgeInsets.only(
+                                  right: index < 2 ? 5 : 0,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      _password.text.isEmpty ||
+                                              index >= _strength
+                                          ? AppUi.colors(context).line
+                                          : _strength == 3
+                                          ? const Color(0xFF1B8A5A)
+                                          : const Color(0xFFFABC2A),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Min. 8 karakter, huruf besar & angka',
+                                style: AuthDesign.text(
+                                  10,
+                                  color: AppUi.colors(context).secondary,
+                                ),
+                              ),
+                            ),
+                            if (_strength == 3)
+                              const Icon(
+                                Icons.check_circle_outline_rounded,
+                                color: Color(0xFF1B8A5A),
+                                size: 16,
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                        AuthField(
+                          label: 'Konfirmasi Kata Sandi',
+                          controller: _confirm,
+                          hint: 'Ulangi kata sandi',
+                          icon: Icons.lock_reset_rounded,
+                          obscure: _confirmHidden,
+                          action: TextInputAction.done,
+                          autofillHints: const [AutofillHints.newPassword],
+                          onSubmitted: (_) => _register(),
+                          validator:
+                              (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Ulangi kata sandi Anda.'
+                                      : value != _password.text
+                                      ? 'Konfirmasi kata sandi belum cocok.'
+                                      : null,
+                          suffix: IconButton(
+                            tooltip:
+                                _confirmHidden
+                                    ? 'Tampilkan konfirmasi kata sandi'
+                                    : 'Sembunyikan konfirmasi kata sandi',
+                            onPressed:
+                                () => setState(
+                                  () => _confirmHidden = !_confirmHidden,
+                                ),
+                            icon: Icon(
+                              _confirmHidden
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              size: 21,
+                              color: AppUi.colors(context).secondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  AuthPrimaryButton(
+                    label: 'Daftar Akun Baru',
+                    onPressed: _working ? null : _register,
+                    loading: _busy,
+                  ),
+                  const AuthDivider(register: true),
+                  AuthGoogleButton(
+                    register: true,
+                    onPressed: _working ? null : _google,
+                    loading: _googleBusy,
+                  ),
+                ],
               ),
             ),
           ),
         ),
-      ),
-    );
-  }
+        const SizedBox(height: 18),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: AppUi.colors(context).softTeal,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                'Sudah memiliki akun? ',
+                style: AuthDesign.text(
+                  12,
+                  color: AppUi.colors(context).secondary,
+                ),
+              ),
+              TextButton(
+                onPressed: _working ? null : () => _toLogin(),
+                child: Text(
+                  'Masuk ke Akun',
+                  style: AuthDesign.text(
+                    12,
+                    weight: FontWeight.w700,
+                    color: AppUi.colors(context).primaryText,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }

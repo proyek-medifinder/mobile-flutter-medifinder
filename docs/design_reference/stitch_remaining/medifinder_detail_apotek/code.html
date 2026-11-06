@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-fixed-dim": "#4edea3", "surface-container-lowest": "#ffffff", "line-border": "#E5E7EB", "secondary-container": "#6cf8bb", "teal-light": "#14B8A6", "on-secondary-container": "#00714d", "surface-dim": "#d9dadc", "on-surface-variant": "#3e4947", "primary-container": "#0f756b", "secondary": "#006c49", "surface-container-highest": "#e1e2e4", "surface-container-high": "#e7e8ea", "tertiary-fixed": "#ffdea3", "error": "#ba1a1a", "inverse-on-surface": "#f0f1f3", "on-error": "#ffffff", "status-open": "#1B8A5A", "surface-bright": "#f8f9fb", "on-primary": "#ffffff", "on-tertiary-container": "#ffe5b9", "on-tertiary": "#ffffff", "surface-container-low": "#f2f4f6", "primary-dark": "#0A5A52", "destructive-red": "#DC2626", "inverse-primary": "#80d6c9", "inverse-surface": "#2e3132", "error-container": "#ffdad6", "primary": "#005b52", "surface-variant": "#e1e2e4", "tertiary-container": "#876200", "on-primary-container": "#a2f8eb", "on-primary-fixed-variant": "#005049", "on-secondary": "#ffffff", "primary-fixed": "#9cf2e5", "on-tertiary-fixed": "#261900", "on-surface": "#191c1e", "on-error-container": "#93000a", "tertiary-fixed-dim": "#fabc2a", "on-tertiary-fixed-variant": "#5d4200", "scaffold-base": "#F7FBF9", "surface-white": "#FFFFFF", "secondary-fixed": "#6ffbbe", "outline-variant": "#bdc9c6", "on-secondary-fixed": "#002113", "status-closed": "#C0392B", "on-background": "#191c1e", "on-primary-fixed": "#00201d", "outline": "#6e7977", "surface-tint": "#006a61", "on-secondary-fixed-variant": "#005236", "primary-fixed-dim": "#80d6c9", "background": "#f8f9fb", "surface-container": "#edeef0", "surface": "#f8f9fb", "tertiary": "#684b00" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-mobile": "1.25rem", "space-sm": "0.5rem", "gutter-desktop": "1.5rem", "gutter": "0.75rem", "margin-tablet": "1.5rem", "margin": "1.25rem", "space-xl": "1.75rem", "space-xs": "0.375rem", "margin-desktop": "2rem", "space-md": "1rem", "space-lg": "1.375rem" }, fontFamily: { "headline-xl": ["Plus Jakarta Sans"], "caption": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"] }, fontSize: { "headline-xl": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "caption": ["10px", { lineHeight: "12px", letterSpacing: "0.02em", fontWeight: "500" }], "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.03em", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }], "headline-md": ["18px", { lineHeight: "24px", fontWeight: "700" }], "headline-lg-mobile": ["21px", { lineHeight: "28px", fontWeight: "700" }], "body-md": ["14px", { lineHeight: "22px", fontWeight: "400" }], "headline-xl-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "700" }], "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "title-md": ["17px", { lineHeight: "24px", fontWeight: "600" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-scaffold-base text-on-surface font-body-md text-body-md flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface-white/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-[68px] px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-sm"><button aria-label="Kembali" class="w-11 h-11 flex items-center justify-center rounded-xl text-primary hover:bg-surface-container-low transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><div class="flex items-center gap-space-xs"><img alt="MediFinder Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTSyfJgq-sO0EROciQSCKHAdTFXZxJn2gz5CUh9soARo1VzcekbErk4zJOUV6aVGn0ysk043x8jvd8E89x2ejKhVu2-GiYHU732zpINNjIdbjmOPMDaMYvs-YyprqkZQxenLvakH3DplL4MKkG0Jz9WaEMDh4xDWwuy0TgDbTMO_vhaKeqkDoY_PbVzvTFTBbEZDoXYDh2kYKOvfcejwvyZteuiOZSWcwWbp2azvNJ"/><h1 class="font-title-md text-title-md text-on-surface">Detail Apotek</h1></div></div><div class="flex items-center gap-space-sm"><button aria-label="Profil Pengguna" class="w-11 h-11 flex items-center justify-center rounded-full"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5PTeuccXrMIJeIGSHHR1rx7laM7nY6CcZwhXV3OYbP-bl20iQsouzqa-zXRKSpqNCXsmeUgNcUTZ0rf9FGEqgwSOghhbn-2HO-9knyw5TeEgE3NVMhrrYiXM0iI_woxfb1z7gngr9ezteG56LX8FKQ4X5Ngw9LvbCRPzLzkAXxJg3VnRF5Nd-EqblV8NG4IZ8G9Vh8TIYhGOo0oJnwkz5GJoFLkMBm4NEIeHqSsWX"/></button></div></div></header><main class="flex flex-col relative w-full pt-[68px] bg-scaffold-base flex-1"><div class="flex flex-col w-full pb-safe">
+<!-- Pharmacy Hero Banner Section -->
+<div class="relative w-full h-[250px] overflow-hidden bg-primary-dark">
+<img class="w-full h-full object-cover" data-alt="A modern, pristine pharmacy exterior with clean emerald glass facade, bright welcoming entrance, clear botanical signage Kimia Farma, daylight architectural photography, soft natural shadows, minimalist healthcare aesthetic, Jakarta street ambiance in background, calm and trustworthy medical atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZnmrhekpor2fHtZhfT7FBc0BE67B0oNYVSNWjAhlXSAo9h7jEAF_gQg9ZYLRze8zQ1Hl0TawvLJ-w0vktyId176ZL2dooiagX9EHAkzTyEcBdgUkclxT4ja6wJh8kcw4oQ5aKGWD1FJpEtikwng2LpVDBptiSErqDoU5Ay_HcdHiv2e82PmZEZGfyXGge_z2fYnKgJGEFRu0cL5VsyLEHu50gvSiyzeG8AUI_Ffdd"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-primary-dark/25 to-transparent"></div>
+<!-- Status Pill Floating on Hero -->
+<div class="absolute top-4 left-margin-mobile flex items-center gap-space-xs bg-surface-white/95 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md">
+<span class="w-2.5 h-2.5 rounded-full bg-status-open animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-status-open">Buka Sekarang • Hingga 23.00</span>
+</div>
+<!-- Quick Floating Action -->
+<div class="absolute top-4 right-margin-mobile flex items-center gap-space-xs">
+<button aria-label="Bagikan Informasi Apotek" class="w-10 h-10 rounded-full bg-surface-white/90 backdrop-blur-md text-primary flex items-center justify-center shadow-md active:scale-95 transition-transform" id="shareBtn">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+</div>
+</div>
+<!-- Main Content Wrap with Overlap Card Pattern -->
+<div class="relative -mt-8 px-margin-mobile flex flex-col gap-space-md z-10">
+<!-- Header Pharmacy Card -->
+<div class="w-full bg-surface-white rounded-3xl p-5 shadow-[0_6px_20px_-2px_rgba(10,90,82,0.08)] flex flex-col gap-4">
+<!-- Badges and Verification Row -->
+<div class="flex items-center justify-between gap-2">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-fixed/30 text-on-secondary-fixed font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>Resmi Kemenkes</span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2.5 py-1 rounded-full text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-label-md">4.8</span>
+<span class="font-caption text-caption text-on-surface-variant">(142 ulasan)</span>
+</div>
+</div>
+<!-- Title & Location Proximity -->
+<div class="flex flex-col gap-1">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Apotek Kimia Farma Tebet Raya</h2>
+<div class="flex items-center gap-1.5 text-primary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px]">near_me</span>
+<span class="font-medium text-on-surface-variant"><strong class="text-primary font-semibold">0.8 km</strong> dari lokasi Anda</span>
+</div>
+</div>
+<!-- Action Row Buttons -->
+<div class="grid grid-cols-[1fr_auto_auto] items-center gap-2 pt-1">
+<!-- Call Button (Yellow Accent Prompt) -->
+<a class="h-12 bg-tertiary-fixed text-primary-dark font-label-md text-label-md rounded-2xl flex items-center justify-center gap-2 shadow-sm active:bg-tertiary-fixed-dim transition-colors" href="tel:0218301234">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">call</span>
+<span>Hubungi Apotek</span>
+</a>
+<!-- Directions Button -->
+<a aria-label="Navigasi Rute Maps" class="h-12 px-4 bg-surface-container-low text-primary font-label-md text-label-md rounded-2xl flex items-center justify-center gap-1.5 hover:bg-surface-container transition-colors active:scale-95" href="#map-section">
+<span class="material-symbols-outlined text-[20px]">directions</span>
+<span>Rute</span>
+</a>
+<!-- Favorite Toggle Button -->
+<button aria-label="Simpan ke favorit" class="w-12 h-12 rounded-2xl bg-surface-container-low text-on-surface-variant flex items-center justify-center hover:bg-surface-container transition-colors active:scale-90" id="favoriteBtn">
+<span class="material-symbols-outlined text-[22px] transition-colors" id="favIcon">favorite_border</span>
+</button>
+</div>
+</div>
+<!-- Essential Information Details Panel -->
+<div class="w-full bg-surface-white rounded-3xl p-5 shadow-[0_4px_16px_-2px_rgba(10,90,82,0.05)] flex flex-col gap-4">
+<div class="flex items-center gap-2 pb-1">
+<span class="material-symbols-outlined text-primary text-[20px]">storefront</span>
+<h3 class="font-title-md text-title-md text-on-surface">Informasi Operasional</h3>
+</div>
+<!-- Operational Hour -->
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-xl bg-surface-container-low flex items-center justify-center text-primary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Jam Operasional</span>
+<span class="font-body-sm text-body-sm text-on-surface font-semibold">Senin - Minggu: 07.00 - 23.00 WIB</span>
+</div>
+</div>
+<!-- Address -->
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-xl bg-surface-container-low flex items-center justify-center text-primary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Alamat Lengkap</span>
+<span class="font-body-sm text-body-sm text-on-surface">Jl. Tebet Raya No. 42, Tebet Barat, Jakarta Selatan</span>
+</div>
+</div>
+<!-- Services List Tags -->
+<div class="flex flex-col gap-2 pt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Layanan Tersedia</span>
+<div class="flex flex-wrap gap-1.5">
+<div class="px-3 py-1.5 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]">health_and_safety</span>
+<span>Konsultasi Apoteker</span>
+</div>
+<div class="px-3 py-1.5 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]">prescriptions</span>
+<span>Penebusan Resep</span>
+</div>
+<div class="px-3 py-1.5 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]">bloodtype</span>
+<span>Tes Gula &amp; Kolesterol</span>
+</div>
+</div>
+</div>
+<!-- Location Map Snippet -->
+<div class="w-full h-28 rounded-2xl overflow-hidden mt-1 relative" id="map-section">
+<div class="w-full h-full bg-cover bg-center" data-location="Jl. Tebet Raya No. 42, Jakarta Selatan" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAMPZNpYl7XPjKI74FyyGcAkq8Oq9wkewUa8ca0_hwpnjWJDG0_F6C900UeI4NqBowXOhm9WPeJQsrnxAoizVUTW9Sst_uat0UscJeyN3mXpXFlGC_8qAcvBmnbkYzu68dHspN1WyXy43oV-kgMQ4rU_4tKSSbr3q7EjZl6Dph85wJA6st5v-6OenUqahFEA4ZrW0coh1vSHFU8ogIqIfNBlzgHWCtrIZZDp1DZSO7S')"></div>
+<div class="absolute inset-0 bg-primary/10 pointer-events-none"></div>
+<div class="absolute bottom-2 right-2 bg-surface-white/95 px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1 font-caption text-caption text-primary">
+<span class="material-symbols-outlined text-[14px]">map</span>
+<span>Buka di Google Maps</span>
+</div>
+</div>
+</div>
+<!-- Medicine Catalog & Availability Section -->
+<div class="w-full flex flex-col gap-3.5 pt-2">
+<!-- Section Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2.5 h-6 rounded-full bg-primary"></div>
+<h3 class="font-title-md text-title-md text-on-surface">Katalog Obat di Apotek Ini</h3>
+</div>
+<span class="font-caption text-caption text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full">6 Item</span>
+</div>
+<!-- Search Input within Pharmacy -->
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full h-12 pl-11 pr-10 bg-surface-white text-on-surface placeholder:text-on-surface-variant font-body-sm text-body-sm rounded-2xl shadow-[0_2px_10px_-2px_rgba(10,90,82,0.06)] focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" id="productSearchInput" placeholder="Cari obat di apotek ini..." type="text"/>
+<button class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface" id="clearSearch">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Quick Filter Pills -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 -mx-margin-mobile px-margin-mobile scrollbar-none">
+<button class="filter-chip px-3.5 py-1.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm whitespace-nowrap shadow-sm" data-filter="all">Semua</button>
+<button class="filter-chip px-3.5 py-1.5 rounded-full bg-surface-white text-primary-dark font-label-sm text-label-sm whitespace-nowrap shadow-sm hover:bg-surface-container-low" data-filter="tersedia">Tersedia</button>
+<button class="filter-chip px-3.5 py-1.5 rounded-full bg-surface-white text-primary-dark font-label-sm text-label-sm whitespace-nowrap shadow-sm hover:bg-surface-container-low" data-filter="resep">Butuh Resep</button>
+<button class="filter-chip px-3.5 py-1.5 rounded-full bg-surface-white text-primary-dark font-label-sm text-label-sm whitespace-nowrap shadow-sm hover:bg-surface-container-low" data-filter="sirup">Sirup &amp; Anak</button>
+</div>
+<!-- 2-Column Catalog Grid (Section 4.3 & 6.5) -->
+<div class="grid grid-cols-2 gap-gutter w-full" id="catalogGrid">
+<!-- Product 1: Paracetamol -->
+<div class="product-item bg-surface-white rounded-2xl p-3 shadow-[0_4px_12px_-2px_rgba(10,90,82,0.06)] flex flex-col justify-between" data-name="Paracetamol 500mg Strip 10 Kaplet" data-status="tersedia">
+<div class="flex flex-col gap-2">
+<div class="w-full h-28 rounded-xl overflow-hidden bg-surface-container-low relative">
+<img class="w-full h-full object-cover" data-alt="Pack of Paracetamol 500mg blister strip with clean green clinical medical branding packaging, studio lighting, top down product photography on soft off-white surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnr3GfPgRFWjAl8jlwJqJfrVVL_U27xSSNRXsshOfX8kGCDfvr_up_ZKJlLOEBUgm0-M2ca1DtBxbsIVShuwmqWEtmo9eXVwu_b9kSyBJExkE6dycYzK3R9Lgtn5HQSla2gJt9Rj453DyDUj-mmQvVCD20pByFBvQbSdTriEvir56KkCEEr7nqghtcRYILO4x6ZAOlH6H4bkpqvXomZDXzpE9kxG90GgmPDvFd9mhZ"/>
+<span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-status-open/15 text-status-open font-caption text-caption font-semibold">Tersedia (34)</span>
+</div>
+<div class="flex flex-col">
+<span class="font-caption text-caption text-on-surface-variant">Obat Bebas</span>
+<h4 class="font-label-md text-label-md text-on-surface line-clamp-2 leading-tight">Paracetamol 500mg (Strip 10 Kaplet)</h4>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 mt-1">
+<span class="font-headline-md text-headline-md text-primary font-bold">Rp 6.500</span>
+<button aria-label="Tambah Paracetamol" class="w-8 h-8 rounded-xl bg-primary text-on-primary flex items-center justify-center active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</div>
+<!-- Product 2: Amoxicillin (Needs Prescription) -->
+<div class="product-item bg-surface-white rounded-2xl p-3 shadow-[0_4px_12px_-2px_rgba(10,90,82,0.06)] flex flex-col justify-between" data-name="Amoxicillin 500mg" data-status="resep">
+<div class="flex flex-col gap-2">
+<div class="w-full h-28 rounded-xl overflow-hidden bg-surface-container-low relative">
+<img class="w-full h-full object-cover" data-alt="Pharmaceutical box of Amoxicillin 500mg capsules with official prescription red circle badge label, minimalist clean laboratory photography, clinical high detail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-L6kUxoAomefxIZPRSYQcq3pDaWp9D55NKJmNswylf5ZhdXMRTJYIyDhTOlbmrLCVQqBul_FmMtSNMO1ZiuXi4tH9aqK-BfglI7VboHIZWHOqO7x0kmBaWBYK6U8h8N36Ep-eRCt6tnOaoXditR_vl9_l_T5HlOgUwCh09Ix752iGA83BfACU8RbmI189OeiuTpPwiP1H7eT57fgrEO3S_XQwWG_QOR6ev6NEcBug"/>
+<span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-primary-fixed-variant text-surface-white font-caption text-caption font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[10px]">prescriptions</span>
+                Resep Dokter
+              </span>
+</div>
+<div class="flex flex-col">
+<span class="font-caption text-caption text-destructive-red font-medium">Obat Keras (K)</span>
+<h4 class="font-label-md text-label-md text-on-surface line-clamp-2 leading-tight">Amoxicillin 500mg</h4>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 mt-1">
+<span class="font-headline-md text-headline-md text-primary font-bold">Rp 14.000</span>
+<button aria-label="Unggah Resep Amoxicillin" class="w-8 h-8 rounded-xl bg-surface-container-high text-on-surface-variant flex items-center justify-center active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+</button>
+</div>
+</div>
+<!-- Product 3: Sanmol Forte Sirup -->
+<div class="product-item bg-surface-white rounded-2xl p-3 shadow-[0_4px_12px_-2px_rgba(10,90,82,0.06)] flex flex-col justify-between" data-name="Sanmol Forte Sirup 60ml" data-status="tersedia sirup">
+<div class="flex flex-col gap-2">
+<div class="w-full h-28 rounded-xl overflow-hidden bg-surface-container-low relative">
+<img class="w-full h-full object-cover" data-alt="Pediatric liquid syrup medicine bottle Sanmol Forte 60ml with measuring cup cap, pleasant gentle lighting, clean pharmaceutical product shot." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUkExK2sD5wV4TQGolS86RWd1OrGtpmt34c029UBcRv9emDS-f9J23td_Wn_lMBQjRjk7cQWayRkqdhysQQDiMYZHj-dEK4fOCvBNToNzJ4WIytVCB1t_p3nSI9yAaeVscsvlUtZC4kH7q5n8Y66YTumgA2uGJMylfV2aXv0nd5qOj6xi2j6HXkxjgNMqrataJ9yqF09DkR3_U2VWaMXQlA2URAsdSRDjU1gbvbsen"/>
+<span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-status-open/15 text-status-open font-caption text-caption font-semibold">Tersedia (12)</span>
+</div>
+<div class="flex flex-col">
+<span class="font-caption text-caption text-on-surface-variant">Sirup Demam</span>
+<h4 class="font-label-md text-label-md text-on-surface line-clamp-2 leading-tight">Sanmol Forte Sirup 60ml</h4>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 mt-1">
+<span class="font-headline-md text-headline-md text-primary font-bold">Rp 22.000</span>
+<button aria-label="Tambah Sanmol Forte" class="w-8 h-8 rounded-xl bg-primary text-on-primary flex items-center justify-center active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</div>
+<!-- Product 4: Vitamin C 500mg IPI -->
+<div class="product-item bg-surface-white rounded-2xl p-3 shadow-[0_4px_12px_-2px_rgba(10,90,82,0.06)] flex flex-col justify-between" data-name="Vitamin C 500mg IPI" data-status="menipis">
+<div class="flex flex-col gap-2">
+<div class="w-full h-28 rounded-xl overflow-hidden bg-surface-container-low relative">
+<img class="w-full h-full object-cover" data-alt="Vitamin C yellow container tub with citrus accent, commercial healthcare bottle photography, soft shadows, vibrant warm teal and orange undertones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfbiqfRNJGT5SlggQCLtM9LH-Yp3A3E3rnIfU1OzrdbhUPMsIPi99R-BX8ofFEYPaFIa1KmE_2w7OrsjjlXz4wY0RCvbw47F-ZLLdPiNvC8eIksgwI2IeOgbmowYJpLTsm38-4p4hRdz2YESWct65VLRaEn68QpyqdytPLSQ1209s98Q212RsYaK4pdKASExJ9FLx6_0tT2rmJqXkZMEYBhKnnIBmVH9lK8Ntk4fL7"/>
+<span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-caption text-caption font-semibold">Stok Menipis (3)</span>
+</div>
+<div class="flex flex-col">
+<span class="font-caption text-caption text-on-surface-variant">Suplemen Harian</span>
+<h4 class="font-label-md text-label-md text-on-surface line-clamp-2 leading-tight">Vitamin C 500mg IPI</h4>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 mt-1">
+<span class="font-headline-md text-headline-md text-primary font-bold">Rp 8.500</span>
+<button aria-label="Tambah Vitamin C" class="w-8 h-8 rounded-xl bg-primary text-on-primary flex items-center justify-center active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</div>
+<!-- Product 5: Betadine Antiseptic -->
+<div class="product-item bg-surface-white rounded-2xl p-3 shadow-[0_4px_12px_-2px_rgba(10,90,82,0.06)] flex flex-col justify-between" data-name="Betadine Antiseptic 15ml" data-status="tersedia">
+<div class="flex flex-col gap-2">
+<div class="w-full h-28 rounded-xl overflow-hidden bg-surface-container-low relative">
+<img class="w-full h-full object-cover" data-alt="First aid brown antiseptic bottle Betadine 15ml with yellow nozzle cap, studio medical product photography on clean surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYUExB0_BhMBcpmjkS16_SlsW-xzWPiGfkaqh36N9tAtyDdZ6UVTyW7-ulKC4XJwG0GggK_b7BywxN9TMW4m3-zv5Iaiid5DoXhOz0hrLIxyGdroBTX0X7hanp4jMmLK2de_809y70We-npNbFF-_AdfTxESGGIgG3ex1rRn2RHdW6GCSpmIsRXIVvBGb3hukwu2znHx94icBwGuim06Asbf4FPfY-7hPuVrVZthWh"/>
+<span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-status-open/15 text-status-open font-caption text-caption font-semibold">Tersedia (20)</span>
+</div>
+<div class="flex flex-col">
+<span class="font-caption text-caption text-on-surface-variant">Pertolongan Pertama</span>
+<h4 class="font-label-md text-label-md text-on-surface line-clamp-2 leading-tight">Betadine Antiseptic 15ml</h4>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 mt-1">
+<span class="font-headline-md text-headline-md text-primary font-bold">Rp 18.000</span>
+<button aria-label="Tambah Betadine" class="w-8 h-8 rounded-xl bg-primary text-on-primary flex items-center justify-center active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</div>
+<!-- Product 6: Panadol Extra Merah (Habis) -->
+<div class="product-item bg-surface-white rounded-2xl p-3 shadow-[0_4px_12px_-2px_rgba(10,90,82,0.06)] flex flex-col justify-between opacity-80" data-name="Panadol Extra Merah" data-status="habis">
+<div class="flex flex-col gap-2">
+<div class="w-full h-28 rounded-xl overflow-hidden bg-surface-container-low relative">
+<img class="w-full h-full object-cover grayscale-[40%]" data-alt="Panadol Extra blister pack red tablet package, clean pharmaceutical tabletop photo, slight desaturation to represent out of stock status." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2-RalWTeSPYfn_3M6SXoBeR6Hx__wEAjdVkf8yabKKY0i5YXPNksxW-vnKPSg1hZ8T0rIFN3grDBue6LptWCUw26D6CVXOaoILPh1IUjOPi0WIvwPB5EovO5NQuDnb9I-BmZwp53sTTRd5Vt4NUKJmZgD87lIaoupkKBnInIV9E-EK_G2Wj6qVP1lXqmDbgulpHKfwGSy5vlMF9qNMQyVxiouoZ7Q2PbuoOFvzfrP"/>
+<span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-status-closed/15 text-status-closed font-caption text-caption font-semibold">Habis</span>
+</div>
+<div class="flex flex-col">
+<span class="font-caption text-caption text-on-surface-variant">Pereda Nyeri</span>
+<h4 class="font-label-md text-label-md text-on-surface line-clamp-2 leading-tight">Panadol Extra Merah</h4>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 mt-1">
+<span class="font-headline-md text-headline-md text-on-surface-variant font-bold">Rp 13.500</span>
+<button aria-label="Stok Panadol Habis" class="w-8 h-8 rounded-xl bg-surface-container-highest text-outline flex items-center justify-center cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Empty Search Fallback State (Hidden by default) -->
+<div class="hidden flex-col items-center justify-center py-10 px-4 text-center bg-surface-white rounded-3xl shadow-sm" id="emptyCatalogState">
+<div class="w-14 h-14 rounded-full bg-surface-container-low flex items-center justify-center text-primary mb-3">
+<span class="material-symbols-outlined text-[28px]">inventory_2</span>
+</div>
+<h4 class="font-title-md text-title-md text-on-surface">Obat Tidak Ditemukan</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs mt-1">Maaf, obat yang dicari belum tersedia di apotek ini. Coba kata kunci lain atau tanyakan pada apoteker.</p>
+<button class="mt-4 px-4 py-2 bg-surface-container-low text-primary rounded-xl font-label-md text-label-md" onclick="document.getElementById('productSearchInput').value=''; filterCatalog();">
+          Reset Pencarian
+        </button>
+</div>
+</div>
+<!-- Need Immediate Help Floating Prompt -->
+<div class="w-full bg-gradient-to-r from-primary to-primary-dark text-on-primary rounded-3xl p-4 shadow-lg flex items-center justify-between mt-2 mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-2xl bg-surface-white/15 flex items-center justify-center text-teal-light">
+<span class="material-symbols-outlined text-[22px]">smart_toy</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-primary">Butuh Rekomendasi Cepat?</span>
+<span class="font-caption text-caption text-on-primary/80">Tanyakan keluhan ke MediBot AI kami</span>
+</div>
+</div>
+<button class="h-9 px-3.5 rounded-xl bg-teal-light text-primary-dark font-label-sm text-label-sm font-bold flex items-center gap-1 active:scale-95 transition-transform shadow-md">
+<span>Konsul AI</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+  // Search and Filter Functionality
+  const searchInput = document.getElementById('productSearchInput');
+  const clearBtn = document.getElementById('clearSearch');
+  const catalogGrid = document.getElementById('catalogGrid');
+  const emptyState = document.getElementById('emptyCatalogState');
+  const productCards = document.querySelectorAll('.product-item');
+  const filterChips = document.querySelectorAll('.filter-chip');
+  let activeFilter = 'all';
+
+  function filterCatalog() {
+    const query = searchInput.value.toLowerCase().trim();
+    let visibleCount = 0;
+
+    if (query.length > 0) {
+      clearBtn.classList.remove('hidden');
+    } else {
+      clearBtn.classList.add('hidden');
+    }
+
+    productCards.forEach(card => {
+      const name = card.getAttribute('data-name').toLowerCase();
+      const status = card.getAttribute('data-status').toLowerCase();
+      
+      const matchesSearch = name.includes(query);
+      const matchesFilter = activeFilter === 'all' || status.includes(activeFilter);
+
+      if (matchesSearch && matchesFilter) {
+        card.style.display = 'flex';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    if (visibleCount === 0) {
+      emptyState.classList.remove('hidden');
+      emptyState.classList.add('flex');
+    } else {
+      emptyState.classList.add('hidden');
+      emptyState.classList.remove('flex');
+    }
+  }
+
+  searchInput.addEventListener('input', filterCatalog);
+
+  clearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    filterCatalog();
+    searchInput.focus();
+  });
+
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      filterChips.forEach(c => {
+        c.classList.remove('bg-primary', 'text-on-primary');
+        c.classList.add('bg-surface-white', 'text-primary-dark');
+      });
+      chip.classList.remove('bg-surface-white', 'text-primary-dark');
+      chip.classList.add('bg-primary', 'text-on-primary');
+
+      activeFilter = chip.getAttribute('data-filter');
+      filterCatalog();
+    });
+  });
+
+  // Favorite Micro-interaction
+  const favoriteBtn = document.getElementById('favoriteBtn');
+  const favIcon = document.getElementById('favIcon');
+  let isFavorite = false;
+
+  favoriteBtn.addEventListener('click', () => {
+    isFavorite = !isFavorite;
+    if (isFavorite) {
+      favIcon.textContent = 'favorite';
+      favIcon.style.fontVariationSettings = "'FILL' 1";
+      favIcon.classList.add('text-destructive-red');
+      favoriteBtn.classList.add('bg-red-50');
+    } else {
+      favIcon.textContent = 'favorite_border';
+      favIcon.style.fontVariationSettings = "'FILL' 0";
+      favIcon.classList.remove('text-destructive-red');
+      favoriteBtn.classList.remove('bg-red-50');
+    }
+  });
+
+  // Web Share API support
+  const shareBtn = document.getElementById('shareBtn');
+  shareBtn.addEventListener('click', async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Apotek Kimia Farma Tebet Raya - MediFinder',
+          text: 'Lihat info ketersediaan obat dan jam buka Apotek Kimia Farma Tebet Raya di MediFinder.',
+          url: window.location.href,
+        });
+      } catch (err) {
+        // User dismissed share
+      }
+    } else {
+      // Fallback feedback
+      const orig = shareBtn.innerHTML;
+      shareBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">done</span>';
+      setTimeout(() => { shareBtn.innerHTML = orig; }, 1500);
+    }
+  });
+</script></main></body></html>

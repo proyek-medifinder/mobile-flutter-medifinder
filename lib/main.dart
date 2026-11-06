@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:medifinder/page/login.dart';
 import 'package:medifinder/page/home.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:medifinder/page/onboarding.dart';
+import 'package:medifinder/services/onboarding_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'firebase_options.dart';
+import 'package:medifinder/services/auth_session_store.dart';
 
 import 'services/socket_notification_service.dart';
 import 'services/notification_service.dart';
-import 'package:medifinder/services/notification_permission_service.dart';
 
-import 'package:google_fonts/google_fonts.dart';
+import 'package:medifinder/theme/app_ui.dart';
+import 'package:medifinder/theme/theme_controller.dart';
 
 final SocketNotificationService socketNotificationService =
     SocketNotificationService();
@@ -20,61 +19,54 @@ final SocketNotificationService socketNotificationService =
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  await NotificationPermissionService.requestWithoutContext();
+  await ThemeController.instance.load();
   await NotificationService.init();
   socketNotificationService.connect();
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? authToken = prefs.getString('auth_token');
-  bool hasAuthToken = authToken != null && authToken.isNotEmpty;
-
-  final bool sudahLoginGoogle = FirebaseAuth.instance.currentUser != null;
+  final hasBackendSession = await AuthSessionStore().restore();
+  if (hasBackendSession) await OnboardingStore.complete();
+  final showOnboarding =
+      !hasBackendSession && !await OnboardingStore.hasCompleted();
 
   runApp(
     ProviderScope(
-      child: MyApp(langsungKeHasil: hasAuthToken || sudahLoginGoogle),
+      child: MyApp(
+        langsungKeHasil: hasBackendSession,
+        showOnboarding: showOnboarding,
+      ),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
   final bool langsungKeHasil;
+  final bool showOnboarding;
 
-  const MyApp({super.key, required this.langsungKeHasil});
+  const MyApp({
+    super.key,
+    required this.langsungKeHasil,
+    this.showOnboarding = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: ThemeController.instance,
+      builder:
+          (context, mode, _) => MaterialApp(
+            debugShowCheckedModeBanner: false,
 
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0F756B),
-          primary: const Color(0xFF0F756B),
-          secondary: const Color(0xFF10B981),
-        ),
-        scaffoldBackgroundColor: const Color(0xFFF7FBF9),
-        textTheme: GoogleFonts.poppinsTextTheme(),
+            theme: AppUi.theme,
+            darkTheme: AppUi.darkTheme,
+            themeMode: mode,
 
-        inputDecorationTheme: InputDecorationTheme(
-          hintStyle: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
-        ),
-
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            textStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            home:
+                langsungKeHasil
+                    ? const Home()
+                    : showOnboarding
+                    ? const Onboarding()
+                    : const Login(),
           ),
-        ),
-
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: OutlinedButton.styleFrom(textStyle: GoogleFonts.poppins()),
-        ),
-      ),
-
-      home: langsungKeHasil ? const Home() : const Login(),
     );
   }
 }

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-fixed-dim": "#4edea3", "surface-container-lowest": "#ffffff", "line-border": "#E5E7EB", "secondary-container": "#6cf8bb", "teal-light": "#14B8A6", "on-secondary-container": "#00714d", "surface-dim": "#d9dadc", "on-surface-variant": "#3e4947", "primary-container": "#0f756b", "secondary": "#006c49", "surface-container-highest": "#e1e2e4", "surface-container-high": "#e7e8ea", "tertiary-fixed": "#ffdea3", "error": "#ba1a1a", "inverse-on-surface": "#f0f1f3", "on-error": "#ffffff", "status-open": "#1B8A5A", "surface-bright": "#f8f9fb", "on-primary": "#ffffff", "on-tertiary-container": "#ffe5b9", "on-tertiary": "#ffffff", "surface-container-low": "#f2f4f6", "primary-dark": "#0A5A52", "destructive-red": "#DC2626", "inverse-primary": "#80d6c9", "inverse-surface": "#2e3132", "error-container": "#ffdad6", "primary": "#005b52", "surface-variant": "#e1e2e4", "tertiary-container": "#876200", "on-primary-container": "#a2f8eb", "on-primary-fixed-variant": "#005049", "on-secondary": "#ffffff", "primary-fixed": "#9cf2e5", "on-tertiary-fixed": "#261900", "on-surface": "#191c1e", "on-error-container": "#93000a", "tertiary-fixed-dim": "#fabc2a", "on-tertiary-fixed-variant": "#5d4200", "scaffold-base": "#F7FBF9", "surface-white": "#FFFFFF", "secondary-fixed": "#6ffbbe", "outline-variant": "#bdc9c6", "on-secondary-fixed": "#002113", "status-closed": "#C0392B", "on-background": "#191c1e", "on-primary-fixed": "#00201d", "outline": "#6e7977", "surface-tint": "#006a61", "on-secondary-fixed-variant": "#005236", "primary-fixed-dim": "#80d6c9", "background": "#f8f9fb", "surface-container": "#edeef0", "surface": "#f8f9fb", "tertiary": "#684b00" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-mobile": "1.25rem", "space-sm": "0.5rem", "gutter-desktop": "1.5rem", "gutter": "0.75rem", "margin-tablet": "1.5rem", "margin": "1.25rem", "space-xl": "1.75rem", "space-xs": "0.375rem", "margin-desktop": "2rem", "space-md": "1rem", "space-lg": "1.375rem" }, fontFamily: { "headline-xl": ["Plus Jakarta Sans"], "caption": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"] }, fontSize: { "headline-xl": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "caption": ["10px", { lineHeight: "12px", letterSpacing: "0.02em", fontWeight: "500" }], "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.03em", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }], "headline-md": ["18px", { lineHeight: "24px", fontWeight: "700" }], "headline-lg-mobile": ["21px", { lineHeight: "28px", fontWeight: "700" }], "body-md": ["14px", { lineHeight: "22px", fontWeight: "400" }], "headline-xl-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "700" }], "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "title-md": ["17px", { lineHeight: "24px", fontWeight: "600" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-scaffold-base text-on-surface font-body-md text-body-md flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface-white/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-[68px] px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-sm"><button aria-label="Menu Drawer" class="w-11 h-11 flex items-center justify-center rounded-xl text-primary hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-[24px]">menu</span></button><div class="flex items-center gap-space-xs"><img alt="MediFinder Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTSyfJgq-sO0EROciQSCKHAdTFXZxJn2gz5CUh9soARo1VzcekbErk4zJOUV6aVGn0ysk043x8jvd8E89x2ejKhVu2-GiYHU732zpINNjIdbjmOPMDaMYvs-YyprqkZQxenLvakH3DplL4MKkG0Jz9WaEMDh4xDWwuy0TgDbTMO_vhaKeqkDoY_PbVzvTFTBbEZDoXYDh2kYKOvfcejwvyZteuiOZSWcwWbp2azvNJ"/><span class="font-headline-md text-headline-md text-primary tracking-tight">MediFinder</span></div></div><div class="flex items-center gap-space-sm"><span class="hidden">Cari Apotek</span><div class="relative flex items-center justify-center"><button aria-label="Profil Saya" class="w-11 h-11 flex items-center justify-center rounded-full"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5PTeuccXrMIJeIGSHHR1rx7laM7nY6CcZwhXV3OYbP-bl20iQsouzqa-zXRKSpqNCXsmeUgNcUTZ0rf9FGEqgwSOghhbn-2HO-9knyw5TeEgE3NVMhrrYiXM0iI_woxfb1z7gngr9ezteG56LX8FKQ4X5Ngw9LvbCRPzLzkAXxJg3VnRF5Nd-EqblV8NG4IZ8G9Vh8TIYhGOo0oJnwkz5GJoFLkMBm4NEIeHqSsWX"/></button><span class="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-status-open ring-2 ring-surface-white"></span></div></div></div></header><main class="flex flex-col relative w-full pt-[68px] pb-24 bg-scaffold-base flex-1"><div class="flex flex-col w-full">
+<div class="px-margin-mobile flex flex-col gap-space-md pt-space-sm pb-space-lg">
+<!-- Intro Card -->
+<div class="relative overflow-hidden bg-gradient-to-br from-primary to-primary-dark text-on-primary rounded-2xl p-space-lg shadow-[0_8px_24px_rgba(15,117,107,0.18)]">
+<div class="absolute -right-6 -bottom-6 w-32 h-32 bg-teal-light/15 rounded-full blur-2xl pointer-events-none"></div>
+<div class="relative flex items-center gap-space-md">
+<div class="w-[54px] h-[54px] shrink-0 rounded-2xl bg-surface-white/15 backdrop-blur-md flex items-center justify-center text-on-primary shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
+<span class="material-symbols-outlined text-[30px]" style="font-variation-settings: 'FILL' 1;">local_pharmacy</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-primary tracking-tight">Cari Apotek</h1>
+<p class="font-body-sm text-body-sm text-on-primary/80 line-clamp-2 mt-0.5">Temukan apotek terdekat berdasarkan nama atau alamat wilayah</p>
+</div>
+</div>
+</div>
+<!-- Search Input Bar -->
+<div class="relative w-full">
+<div class="flex items-center w-full h-[52px] bg-surface-white rounded-2xl shadow-[0_4px_16px_-2px_rgba(10,90,82,0.06)] px-space-md gap-space-sm transition-all focus-within:shadow-[0_4px_20px_rgba(15,117,107,0.16)]">
+<span class="material-symbols-outlined text-primary text-[22px] shrink-0">search</span>
+<input class="flex-1 bg-transparent font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none min-w-0" id="pharmacySearchInput" placeholder="Ketik nama apotek atau jalan..." type="text"/>
+<button aria-label="Hapus Pencarian" class="w-7 h-7 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center hover:bg-surface-container-highest transition-colors active:scale-95" id="clearSearchBtn" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div>
+<!-- Quick Search Horizontal Chips -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Pencarian Cepat</span>
+<span class="font-caption text-caption text-primary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">bolt</span>
+          Populer
+        </span>
+</div>
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 -mx-margin-mobile px-margin-mobile scrollbar-none" id="quickChipsContainer">
+<button class="quick-chip h-9 px-space-md rounded-full bg-surface-white text-primary-dark font-label-md text-label-md shrink-0 shadow-[0_2px_8px_rgba(10,90,82,0.04)] active:scale-95 transition-all flex items-center gap-1.5" data-filter="24jam" type="button">
+<span class="material-symbols-outlined text-[16px] text-teal-light" style="font-variation-settings: 'FILL' 1;">timelapse</span>
+          24 Jam
+        </button>
+<button class="quick-chip h-9 px-space-md rounded-full bg-surface-white text-primary-dark font-label-md text-label-md shrink-0 shadow-[0_2px_8px_rgba(10,90,82,0.04)] active:scale-95 transition-all" data-filter="kimia-farma" type="button">Kimia Farma</button>
+<button class="quick-chip h-9 px-space-md rounded-full bg-surface-white text-primary-dark font-label-md text-label-md shrink-0 shadow-[0_2px_8px_rgba(10,90,82,0.04)] active:scale-95 transition-all" data-filter="k24" type="button">K-24</button>
+<button class="quick-chip h-9 px-space-md rounded-full bg-surface-white text-primary-dark font-label-md text-label-md shrink-0 shadow-[0_2px_8px_rgba(10,90,82,0.04)] active:scale-95 transition-all" data-filter="century" type="button">Century</button>
+<button class="quick-chip h-9 px-space-md rounded-full bg-surface-white text-primary-dark font-label-md text-label-md shrink-0 shadow-[0_2px_8px_rgba(10,90,82,0.04)] active:scale-95 transition-all" data-filter="apotek-generik" type="button">Apotek Generik</button>
+<button class="quick-chip h-9 px-space-md rounded-full bg-surface-white text-primary-dark font-label-md text-label-md shrink-0 shadow-[0_2px_8px_rgba(10,90,82,0.04)] active:scale-95 transition-all flex items-center gap-1" data-filter="stasiun" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">train</span>
+          Dekat Stasiun
+        </button>
+</div>
+</div>
+<!-- Operational Filter Bar -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-0.5" id="statusFilterBar">
+<button class="filter-tab px-space-md py-1.5 rounded-full font-label-sm text-label-sm shrink-0 transition-all bg-primary text-on-primary font-semibold shadow-[0_2px_6px_rgba(0,91,82,0.2)]" data-status="all" type="button">
+        Semua Status
+      </button>
+<button class="filter-tab px-space-md py-1.5 rounded-full font-label-sm text-label-sm shrink-0 transition-all bg-surface-container-high text-on-surface-variant hover:text-on-surface" data-status="open" type="button">
+        Hanya Buka
+      </button>
+<button class="filter-tab px-space-md py-1.5 rounded-full font-label-sm text-label-sm shrink-0 transition-all bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-1" data-status="bpjs" type="button">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+        Layanan BPJS
+      </button>
+</div>
+<!-- Results Meta Header -->
+<div class="flex items-center justify-between pt-space-xs">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-teal-light"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Ditemukan 8 apotek di sekitar Anda</span>
+</div>
+<button class="flex items-center gap-1 font-label-sm text-label-sm text-primary hover:text-primary-dark active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+        Urutkan
+      </button>
+</div>
+<!-- Pharmacy Results List -->
+<div class="flex flex-col gap-space-md" id="pharmacyCardList">
+<!-- Card 1: Apotek K-24 Casablanca -->
+<article class="bg-surface-white rounded-3xl p-space-md shadow-[0_6px_20px_-3px_rgba(10,90,82,0.06)] flex flex-col gap-space-md relative overflow-hidden transition-transform active:scale-[0.99]">
+<div class="relative w-full h-[185px] rounded-2xl overflow-hidden bg-surface-container-low">
+<img class="w-full h-full object-cover" data-alt="Modern clean exterior storefront of Apotek K-24 Casablanca brightly lit with iconic green and teal branding in vibrant daylight with clear pedestrian pavement and welcoming atmosphere in minimalist healthcare style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD10N_Kx1gBlBAAXa9E9pAwJTIABNcedeBUObeKoVDBl-Zc_ATfPzQ7Y-JTNl8VWJe2B1gu9YjqfMmEVfDZ9RwirdLhv5mvHWs84lxNdwI6GXIocmOBGhgOu-srBEAbVqxWSa3XixHXmObT1p60u62uh-PyFutUxtNSfMurFwBbAmTmEgSJYdchWPPRGFeYOhviuhZsh8aw0MYJteVFNr1Tu1yxfV4ehRB4KRF56jc5"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/60 via-transparent to-transparent"></div>
+<!-- Badges overlay -->
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full bg-status-open text-on-primary font-label-sm text-label-sm shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
+<span class="w-1.5 h-1.5 rounded-full bg-surface-white animate-pulse"></span>
+              Buka 24 Jam
+            </span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-on-primary">
+<div class="flex items-center gap-1 font-label-md text-label-md bg-inverse-surface/75 backdrop-blur-sm px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[15px] text-teal-light">near_me</span>
+<span>1.1 km</span>
+</div>
+<div class="flex items-center gap-1 font-label-sm text-label-sm bg-inverse-surface/75 backdrop-blur-sm px-2.5 py-1 rounded-full text-tertiary-fixed">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold">4.9</span>
+<span class="text-on-primary/75">(142)</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-start justify-between gap-space-sm">
+<h2 class="font-title-md text-title-md text-on-surface line-clamp-1">Apotek K-24 Casablanca</h2>
+<button aria-label="Simpan Favorit" class="w-8 h-8 rounded-full bg-surface-container-low text-on-surface-variant hover:text-primary flex items-center justify-center shrink-0 active:scale-90 transition-all">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0">location_on</span>
+<span class="truncate">Jl. Casablanca No. 8, Menteng Dalam</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0">call</span>
+<span class="truncate">021-83701234</span>
+</div>
+</div>
+<!-- Action Section -->
+<div class="flex items-center gap-space-sm pt-space-xs">
+<button aria-label="Telepon Apotek" class="w-12 h-12 rounded-xl bg-surface-container-low text-primary flex items-center justify-center shrink-0 hover:bg-surface-container-high transition-colors active:scale-95" type="button">
+<span class="material-symbols-outlined text-[20px]">phone_in_talk</span>
+</button>
+<a class="flex-1 h-12 rounded-[14px] bg-[#FDBF2D] text-primary-dark font-title-md text-title-md font-bold flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(253,191,45,0.25)] hover:brightness-95 active:scale-98 transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">directions</span>
+            Kunjungi Apotek
+          </a>
+</div>
+</article>
+<!-- Card 2: Apotek Kimia Farma Saharjo -->
+<article class="bg-surface-white rounded-3xl p-space-md shadow-[0_6px_20px_-3px_rgba(10,90,82,0.06)] flex flex-col gap-space-md relative overflow-hidden transition-transform active:scale-[0.99]">
+<div class="relative w-full h-[185px] rounded-2xl overflow-hidden bg-surface-container-low">
+<img class="w-full h-full object-cover" data-alt="Kimia Farma pharmacy branch on Dr. Saharjo street Jakarta with clean glass windows displaying medicine shelves organized counter and professional clinic vibe in botanical teal tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPbhn-Hf6FUDLMrx5mSsHG1i6o6OPFihQi3V2FLyNNLAtnvi04GNLzcjQVPax-FoXMdStU_st09pVr41wH-SJxYZjXtOVNsb9rNR61hDoHVdqq35uqqWbmqi2FkX3sdHJ-DbWVc35AmZyOsOTPbkw_0FnQHln1R5zsDoAdO89HsgzlvaCl1fzDtTw0ZDKRIKxN1tVUvvLIQcuXJXgXWkGQ_yt7U8yIfRgA43LpEPkG"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/60 via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full bg-status-open text-on-primary font-label-sm text-label-sm shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
+<span class="w-1.5 h-1.5 rounded-full bg-surface-white"></span>
+              Buka
+            </span>
+<span class="inline-flex items-center gap-0.5 h-6 px-2 rounded-full bg-surface-white/90 backdrop-blur-sm text-primary-dark font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[13px] text-teal-light">verified</span>
+              BPJS
+            </span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-on-primary">
+<div class="flex items-center gap-1 font-label-md text-label-md bg-inverse-surface/75 backdrop-blur-sm px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[15px] text-teal-light">near_me</span>
+<span>1.6 km</span>
+</div>
+<div class="flex items-center gap-1 font-label-sm text-label-sm bg-inverse-surface/75 backdrop-blur-sm px-2.5 py-1 rounded-full text-tertiary-fixed">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold">4.8</span>
+<span class="text-on-primary/75">(98)</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-start justify-between gap-space-sm">
+<h2 class="font-title-md text-title-md text-on-surface line-clamp-1">Apotek Kimia Farma Saharjo</h2>
+<button aria-label="Simpan Favorit" class="w-8 h-8 rounded-full bg-surface-container-low text-on-surface-variant hover:text-primary flex items-center justify-center shrink-0 active:scale-90 transition-all">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0">location_on</span>
+<span class="truncate">Jl. Dr. Saharjo No. 88, Tebet</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0">schedule</span>
+<span class="truncate">07.30 - 22.30 WIB</span>
+</div>
+</div>
+<!-- Action Section -->
+<div class="flex items-center gap-space-sm pt-space-xs">
+<button aria-label="Telepon Apotek" class="w-12 h-12 rounded-xl bg-surface-container-low text-primary flex items-center justify-center shrink-0 hover:bg-surface-container-high transition-colors active:scale-95" type="button">
+<span class="material-symbols-outlined text-[20px]">phone_in_talk</span>
+</button>
+<a class="flex-1 h-12 rounded-[14px] bg-[#FDBF2D] text-primary-dark font-title-md text-title-md font-bold flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(253,191,45,0.25)] hover:brightness-95 active:scale-98 transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">directions</span>
+            Kunjungi Apotek
+          </a>
+</div>
+</article>
+<!-- Card 3: Apotek Roxy Manggarai -->
+<article class="bg-surface-white rounded-3xl p-space-md shadow-[0_6px_20px_-3px_rgba(10,90,82,0.06)] flex flex-col gap-space-md relative overflow-hidden transition-transform active:scale-[0.99] opacity-90">
+<div class="relative w-full h-[185px] rounded-2xl overflow-hidden bg-surface-container-low">
+<img class="w-full h-full object-cover grayscale-[25%]" data-alt="Apotek Roxy storefront in Manggarai neighbourhood Jakarta evening twilight dusk lighting quiet facade with closed roller shutter aesthetic in calm medical minimalist atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUR-d99CYrJ9fv7l4o4boiJturkzdtuPR0WQL3ZhxWDLGCNgIW58-HVZpk1nD8hnDh0SZ1KQOTZ-xA-otCQ3DN3aHyB8kCMuKJMSJpSIvze79EAtdwHyH-3S6tIumg97-KoOhHGcN9BeHqBlc4PaV0aenlbyKm5CVmLL5t9mw8OoNpjZMMxz_FZQRc35H4u-R0o3rmIp-Ztp80MAZbZPzTnCeSt06wvtBwOxH4TSGq"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/65 via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full bg-status-closed text-on-error font-label-sm text-label-sm shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
+<span class="w-1.5 h-1.5 rounded-full bg-surface-white"></span>
+              Tutup
+            </span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-on-primary">
+<div class="flex items-center gap-1 font-label-md text-label-md bg-inverse-surface/75 backdrop-blur-sm px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[15px] text-outline-variant">near_me</span>
+<span>2.8 km</span>
+</div>
+<div class="flex items-center gap-1 font-label-sm text-label-sm bg-inverse-surface/75 backdrop-blur-sm px-2.5 py-1 rounded-full text-tertiary-fixed">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold">4.6</span>
+<span class="text-on-primary/75">(64)</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-start justify-between gap-space-sm">
+<h2 class="font-title-md text-title-md text-on-surface line-clamp-1">Apotek Roxy Manggarai</h2>
+<button aria-label="Simpan Favorit" class="w-8 h-8 rounded-full bg-surface-container-low text-on-surface-variant hover:text-primary flex items-center justify-center shrink-0 active:scale-90 transition-all">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0">location_on</span>
+<span class="truncate">Jl. Manggarai Utara II No. 14</span>
+</div>
+<div class="flex items-center gap-1.5 text-status-closed font-body-sm text-body-sm font-medium">
+<span class="material-symbols-outlined text-[18px] shrink-0">history_toggle_off</span>
+<span class="truncate">Buka besok 08.00 WIB</span>
+</div>
+</div>
+<!-- Action Section -->
+<div class="flex items-center gap-space-sm pt-space-xs">
+<button aria-label="Telepon Apotek" class="w-12 h-12 rounded-xl bg-surface-container-low text-on-surface-variant flex items-center justify-center shrink-0 hover:bg-surface-container-high transition-colors active:scale-95" type="button">
+<span class="material-symbols-outlined text-[20px]">phone_in_talk</span>
+</button>
+<a class="flex-1 h-12 rounded-[14px] bg-surface-container-high text-primary font-title-md text-title-md font-semibold flex items-center justify-center gap-1.5 hover:bg-surface-container-highest active:scale-98 transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+            Lihat Detail
+          </a>
+</div>
+</article>
+</div>
+<!-- Quick Location Map Peek Banner -->
+<div class="bg-surface-white rounded-3xl p-space-md shadow-[0_6px_20px_-3px_rgba(10,90,82,0.06)] flex flex-col gap-space-sm mt-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[18px]">map</span>
+</div>
+<span class="font-title-md text-title-md text-on-surface">Peta Interaktif Wilayah</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold">Buka Layar Penuh</span>
+</div>
+<div class="w-full h-36 bg-cover bg-center rounded-2xl relative overflow-hidden shadow-inner" data-location="Jakarta Selatan, Indonesia" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAVeYod8ms1ryvSZYFGKlsczPbzqoj9Ae65O2_noFIwLhs0j3jdtRSJuW3oXgScPRjefEJnslckWkiS1MeRnCME-cwrgNWop_OzPvn8pJialKE-hX_WNhr6WQpmpBRzayuoZpRA86hwnoEDjwmSGVxfm5HuN68P_u83sftTP2JkdKUHpB-TWJZ7t-yVclCXrfn81WCqcuM7I_oFJJMxYZS-Uq65l3kZKi6_Ky1grICH')">
+<div class="absolute inset-0 bg-primary/20 backdrop-blur-[1px]"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="px-4 py-2 rounded-full bg-surface-white/90 text-primary-dark font-label-md text-label-md shadow-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-teal-light animate-bounce">location_on</span>
+            Eksplorasi di Peta
+          </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Micro-interactions for search and filter chips
+  const searchInput = document.getElementById('pharmacySearchInput');
+  const clearBtn = document.getElementById('clearSearchBtn');
+  const quickChips = document.querySelectorAll('.quick-chip');
+  const statusTabs = document.querySelectorAll('.filter-tab');
+
+  if (clearBtn && searchInput) {
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      searchInput.focus();
+    });
+  }
+
+  quickChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const isSelected = chip.classList.contains('bg-primary');
+      quickChips.forEach(c => {
+        c.classList.remove('bg-primary', 'text-on-primary', 'font-semibold');
+        c.classList.add('bg-surface-white', 'text-primary-dark');
+      });
+      if (!isSelected) {
+        chip.classList.remove('bg-surface-white', 'text-primary-dark');
+        chip.classList.add('bg-primary', 'text-on-primary', 'font-semibold');
+        if (searchInput) {
+          searchInput.value = chip.textContent.trim();
+        }
+      }
+    });
+  });
+
+  statusTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      statusTabs.forEach(t => {
+        t.classList.remove('bg-primary', 'text-on-primary', 'font-semibold', 'shadow-[0_2px_6px_rgba(0,91,82,0.2)]');
+        t.classList.add('bg-surface-container-high', 'text-on-surface-variant');
+      });
+      tab.classList.remove('bg-surface-container-high', 'text-on-surface-variant');
+      tab.classList.add('bg-primary', 'text-on-primary', 'font-semibold', 'shadow-[0_2px_6px_rgba(0,91,82,0.2)]');
+    });
+  });
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface-white/95 backdrop-blur-xl shadow-[0_-4px_20px_rgba(15,117,107,0.08)]" data-active-classes="text-primary-container font-label-sm"><div class="relative flex items-center justify-around h-16 px-space-xs max-w-lg mx-auto"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-all" data-path="beranda" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-sm text-label-sm mt-0.5">Beranda</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] py-1 transition-all text-primary-container font-label-sm" data-path="cari-apotek" href="#"><span class="material-symbols-outlined text-[22px]">store</span><span class="font-label-sm text-label-sm mt-0.5">Cari Apotek</span></a><div class="relative flex flex-col items-center -top-4"><div class="w-[68px] h-[68px] rounded-full bg-surface-white flex items-center justify-center shadow-[0_4px_16px_rgba(15,117,107,0.12)]"><a aria-label="MediBot AI" class="w-[52px] h-[52px] rounded-full bg-gradient-to-tr from-primary to-teal-light flex items-center justify-center text-on-primary shadow-[0_8px_20px_0_rgba(20,184,166,0.38)] active:scale-95 transition-transform" data-path="medibot-ai" href="#"><span class="material-symbols-outlined text-[26px]">smart_toy</span></a></div><span class="font-label-sm text-label-sm text-primary font-bold mt-0.5">MediBot</span></div><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-all" data-path="cari-obat" href="#"><span class="material-symbols-outlined text-[22px]">pill</span><span class="font-label-sm text-label-sm mt-0.5">Cari Obat</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-all" data-path="profil" href="#"><span class="material-symbols-outlined text-[22px]">person</span><span class="font-label-sm text-label-sm mt-0.5">Profil</span></a></div></nav></body></html>

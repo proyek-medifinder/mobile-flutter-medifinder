@@ -29,7 +29,6 @@ class ApiClient {
       ),
     );
 
-    // logging interceptor biar enak debug
-    dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
+    // Authenticated requests must not print JWT headers or private response data.
   }
 }

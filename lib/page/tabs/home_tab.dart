@@ -1,61 +1,71 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:medifinder/page/chatbot.dart';
+import 'package:medifinder/page/search.dart';
 import 'package:medifinder/page/widgets/apotek_card.dart';
-import 'package:medifinder/page/widgets/page_intro_card.dart';
+import 'package:medifinder/page/widgets/clinical_widgets.dart';
 import 'package:medifinder/providers.dart';
 import 'package:medifinder/services/location_service.dart';
 import 'package:medifinder/theme/app_ui.dart';
-import 'package:medifinder/utils/apotek_mapper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Enum untuk mode filter buka/tutup
-enum FilterMode { semua, buka, tutup }
-
 class HomeTab extends ConsumerStatefulWidget {
-  final ValueChanged<int>? onNavigateTab;
-
   const HomeTab({super.key, this.onNavigateTab});
-
+  final ValueChanged<int>? onNavigateTab;
   @override
   ConsumerState<HomeTab> createState() => _HomeTabState();
 }
 
-class _HomeTabState extends ConsumerState<HomeTab>
-    with SingleTickerProviderStateMixin {
-  String username = '';
-  bool isLoading = true;
-  User? _firebaseUser;
-
-  // State filter
-  FilterMode _filterMode = FilterMode.semua;
-
-  late AnimationController _filterAnimController;
-
+class _HomeTabState extends ConsumerState<HomeTab> {
+  String _name = '';
+  int _filter = 0;
+  String? _locationError;
   @override
   void initState() {
     super.initState();
-    _filterAnimController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    _loadUsername();
+    _loadName();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _detectLocation();
+      if (mounted &&
+          ref.read(userLocationProvider) == null &&
+          !ref.read(isLocationLoadingProvider)) {
+        _locate();
+      }
     });
   }
 
-  Future<void> _detectLocation() async {
+  @override
+  void didUpdateWidget(covariant HomeTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _loadName();
+  }
+
+  Future<void> _loadName() async {
+    final p = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(
+        () =>
+            _name =
+                p.getString('display_name') ??
+                p.getString('full_name') ??
+                'Pengguna',
+      );
+    }
+  }
+
+  Future<void> _locate() async {
+    if (ref.read(isLocationLoadingProvider)) return;
     ref.read(isLocationLoadingProvider.notifier).setLoading(true);
+    setState(() => _locationError = null);
     try {
       final loc = await LocationService.fetchUserLocation();
-      if (mounted) {
+      if (!mounted) return;
+      if (loc != null) {
         ref.read(userLocationProvider.notifier).setLocation(loc);
+      } else {
+        setState(
+          () => _locationError = 'Aktifkan GPS dan izinkan akses lokasi.',
+        );
       }
-    } catch (_) {
-      // Abaikan error lokasi
     } finally {
       if (mounted) {
         ref.read(isLocationLoadingProvider.notifier).setLoading(false);
@@ -63,553 +73,255 @@ class _HomeTabState extends ConsumerState<HomeTab>
     }
   }
 
-  @override
-  void dispose() {
-    _filterAnimController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadUsername() async {
-    final prefs = await SharedPreferences.getInstance();
-    final firebaseUser = FirebaseAuth.instance.currentUser;
-
-    if (!mounted) return;
-
-    setState(() {
-      _firebaseUser = firebaseUser;
-      username =
-          firebaseUser?.displayName ??
-          firebaseUser?.email ??
-          prefs.getString('full_name') ??
-          prefs.getString('email') ??
-          prefs.getString('username') ??
-          'User';
-      isLoading = false;
-    });
-  }
-
-  List<ApotekViewData> _applyFilter(List<ApotekViewData> list) {
-    switch (_filterMode) {
-      case FilterMode.buka:
-        return list.where((a) => a.isBuka).toList();
-      case FilterMode.tutup:
-        return list.where((a) => !a.isBuka).toList();
-      case FilterMode.semua:
-        return list;
+  void _navigate(int tab) {
+    if (widget.onNavigateTab != null) {
+      widget.onNavigateTab!(tab);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => tab == 2 ? const ChatbotPage() : const Search(),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Gunakan semua apotek, filter dilakukan di sisi client
-    final apotekAsync = ref.watch(apotekViewDataListProvider);
-    final userLocation = ref.watch(userLocationProvider);
-    final isLocationLoading = ref.watch(isLocationLoadingProvider);
-    final googlePhoto = _firebaseUser?.photoURL;
-
-    if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: Colors.white),
-      );
-    }
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // --- HERO CARD ---
-          PageIntroCard(
-            title: 'Halo, $username',
-            subtitle:
-                'Cek daftar apotek yang siap melayani dan temukan informasi penting dengan lebih nyaman.',
-            icon: Icons.favorite_rounded,
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.white.withValues(alpha: 0.18),
-                  backgroundImage:
-                      googlePhoto != null ? NetworkImage(googlePhoto) : null,
-                  child:
-                      googlePhoto == null
-                          ? const Icon(Icons.person, color: Colors.white)
-                          : null,
+    final list = ref.watch(apotekViewDataListProvider),
+        location = ref.watch(userLocationProvider);
+    final locating = ref.watch(isLocationLoadingProvider);
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(apotekListProvider);
+        try {
+          await ref.read(apotekViewDataListProvider.future);
+        } catch (_) {}
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppUi.primary, AppUi.primaryDark],
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _tagChip('Info apotek lengkap'),
-                      _tagChip('Status buka real-time'),
-                    ],
-                  ),
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(26),
                 ),
-              ],
-            ),
-          ),
-
-          // --- USER LOCATION BAR (SESUAI FITUR WEB) ---
-          _buildLocationCard(userLocation, isLocationLoading),
-
-          const SizedBox(height: 16),
-
-          // --- BANNER CHATBOT MEDIBOT AI ---
-          _buildChatbotBanner(context),
-
-          const SizedBox(height: 24),
-
-          // --- SECTION TITLE ---
-          Text(
-            userLocation != null ? 'Apotek Terdekat' : 'Daftar Apotek',
-            style: AppUi.sectionTitleStyle(color: Colors.white),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            userLocation != null
-                ? 'Menampilkan apotek di sekitar wilayah terdeteksi.'
-                : 'Pilih apotek berdasarkan status operasionalnya.',
-            style: GoogleFonts.poppins(fontSize: 13, color: Colors.white70),
-          ),
-
-          const SizedBox(height: 16),
-
-          // --- FILTER BAR ---
-          _buildFilterBar(apotekAsync),
-
-          const SizedBox(height: 18),
-
-          // --- LIST APOTEK ---
-          apotekAsync.when(
-            loading:
-                () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 32),
-                  child: Center(
-                    child: CircularProgressIndicator(color: Colors.white),
-                  ),
-                ),
-            error:
-                (err, st) => _infoState(
-                  icon: Icons.error_outline_rounded,
-                  title: 'Data apotek belum bisa dimuat',
-                  subtitle: 'Coba lagi beberapa saat. Detail error: $err',
-                ),
-            data: (List<ApotekViewData> allApotek) {
-              final filtered = _applyFilter(allApotek);
-
-              if (filtered.isEmpty) {
-                final msg = switch (_filterMode) {
-                  FilterMode.buka =>
-                    'Saat ini belum ada apotek yang sedang buka.',
-                  FilterMode.tutup =>
-                    'Semua apotek sedang buka! Tidak ada yang tutup.',
-                  FilterMode.semua => 'Belum ada data apotek tersedia.',
-                };
-                return _infoState(
-                  icon: Icons.store_mall_directory_outlined,
-                  title: 'Tidak ada apotek',
-                  subtitle: msg,
-                );
-              }
-
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder:
-                    (child, anim) =>
-                        FadeTransition(opacity: anim, child: child),
-                child: Column(
-                  key: ValueKey(_filterMode),
-                  children: filtered.map((viewData) {
-                    return ApotekCard(
-                      namaApotek: viewData.name,
-                      alamat: viewData.address,
-                      // Tampilkan "Buka" / "Tutup" berdasarkan getter isBuka
-                      statusBuka: viewData.isBuka ? 'Buka' : 'Tutup',
-                      jamOperasional: viewData.hours,
-                      gambarUrl: viewData.imageUrl,
-                      idApotek: viewData.id,
-                      apotekData: viewData.raw,
-                      distance: viewData.distance,
-                    );
-                  }).toList(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── Location Card (Sesuai Fitur Web) ─────────────────────────────────────────
-
-  Widget _buildLocationCard(UserLocation? userLocation, bool isLocationLoading) {
-    return Container(
-      margin: const EdgeInsets.only(top: 14),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.18),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: AppUi.primary.withValues(alpha: 0.25),
-              shape: BoxShape.circle,
-            ),
-            child: isLocationLoading
-                ? const Padding(
-                    padding: EdgeInsets.all(10),
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Halo, ${_name.isEmpty ? 'Pengguna' : _name.split(' ').first}',
+                    style: AppUi.text(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
-                  )
-                : const Icon(
-                    Icons.near_me_rounded,
-                    color: Colors.white,
-                    size: 20,
                   ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Lokasi Anda',
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white70,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  isLocationLoading
-                      ? 'Mendeteksi lokasi GPS...'
-                      : (userLocation != null
-                          ? userLocation.addressName
-                          : 'Lokasi belum aktif. Ketuk untuk deteksi.'),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            onPressed: isLocationLoading ? null : _detectLocation,
-            icon: Icon(
-              userLocation != null ? Icons.refresh_rounded : Icons.my_location_rounded,
-              color: Colors.white,
-              size: 20,
-            ),
-            tooltip: 'Perbarui Lokasi',
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── Filter Bar ─────────────────────────────────────────────────────────────
-
-  Widget _buildFilterBar(AsyncValue<List<ApotekViewData>> apotekAsync) {
-    int? total, bukaCount, tutupCount;
-    apotekAsync.whenData((list) {
-      total = list.length;
-      bukaCount = list.where((a) => a.isBuka).length;
-      tutupCount = list.where((a) => !a.isBuka).length;
-    });
-
-    return Container(
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
-      ),
-      child: Row(
-        children: [
-          _filterChip(
-            label: 'Semua',
-            icon: Icons.apps_rounded,
-            mode: FilterMode.semua,
-            count: total,
-            activeColor: Colors.white,
-            activeTextColor: AppUi.primary,
-          ),
-          const SizedBox(width: 5),
-          _filterChip(
-            label: 'Buka',
-            icon: Icons.store_rounded,
-            mode: FilterMode.buka,
-            count: bukaCount,
-            activeColor: const Color(0xFF1B8A5A),
-            activeTextColor: Colors.white,
-          ),
-          const SizedBox(width: 5),
-          _filterChip(
-            label: 'Tutup',
-            icon: Icons.store_mall_directory_outlined,
-            mode: FilterMode.tutup,
-            count: tutupCount,
-            activeColor: const Color(0xFFC0392B),
-            activeTextColor: Colors.white,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _filterChip({
-    required String label,
-    required IconData icon,
-    required FilterMode mode,
-    int? count,
-    required Color activeColor,
-    required Color activeTextColor,
-  }) {
-    final isSelected = _filterMode == mode;
-
-    return Expanded(
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeInOut,
-        decoration: BoxDecoration(
-          color: isSelected ? activeColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(15),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(15),
-            onTap: () => setState(() => _filterMode = mode),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    icon,
-                    size: 18,
-                    color: isSelected ? activeTextColor : Colors.white60,
-                  ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 5),
                   Text(
-                    label,
-                    style: GoogleFonts.poppins(
-                      fontSize: 11.5,
-                      fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? activeTextColor : Colors.white60,
-                    ),
+                    'Cari apotek terdekat & cek ketersediaan obat.',
+                    style: AppUi.text(fontSize: 13, color: Colors.white),
                   ),
-                  if (count != null) ...[
-                    const SizedBox(height: 3),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? activeTextColor.withValues(alpha: 0.15)
-                            : Colors.white.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        '$count',
-                        style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: isSelected ? activeTextColor : Colors.white60,
+                  const SizedBox(height: 18),
+                  Material(
+                    color: AppUi.colors(context).surface,
+                    borderRadius: BorderRadius.circular(16),
+                    child: InkWell(
+                      onTap: () => _navigate(3),
+                      borderRadius: BorderRadius.circular(16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.search_rounded,
+                              color: AppUi.colors(context).primaryText,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Cari obat atau apotek...',
+                                style: AppUi.text(
+                                  fontSize: 13,
+                                  color: AppUi.colors(context).secondary,
+                                ),
+                              ),
+                            ),
+                            Icon(
+                              Icons.tune_rounded,
+                              color: AppUi.colors(context).primaryText,
+                              size: 20,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ],
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppUi.colors(context).surface,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(9),
+                          decoration: BoxDecoration(
+                            color: AppUi.colors(context).softTeal,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child:
+                              locating
+                                  ? const SizedBox.square(
+                                    dimension: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : Icon(
+                                    Icons.location_on_outlined,
+                                    color: AppUi.colors(context).primaryText,
+                                    size: 21,
+                                  ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'LOKASI ANDA',
+                                style: AppUi.text(
+                                  fontSize: 10,
+                                  color: AppUi.colors(context).secondary,
+                                ),
+                              ),
+                              Text(
+                                locating
+                                    ? 'Sedang mencari lokasi...'
+                                    : _locationError ??
+                                        location?.addressName ??
+                                        'Lokasi belum diaktifkan',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppUi.text(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: locating ? null : _locate,
+                          child: Text(
+                            location == null ? 'Aktifkan' : 'Ubah',
+                            style: AppUi.text(
+                              fontSize: 11,
+                              color: AppUi.colors(context).primaryText,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ── Helpers ────────────────────────────────────────────────────────────────
-
-  Widget _tagChip(String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
-  Widget _infoState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: AppUi.glassDecoration(radius: 24),
-      child: Column(
-        children: [
-          Icon(icon, color: Colors.white, size: 40),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildChatbotBanner(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF0C5C54), Color(0xFF138A7E)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.12),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Center(
-              child: Text('🩺', style: TextStyle(fontSize: 24)),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'Tanya MediBot AI',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                      decoration: BoxDecoration(
-                        color: AppUi.accent,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BotBanner(onTap: () => _navigate(2)),
+                  const SizedBox(height: 24),
+                  SectionHeading(
+                    location == null ? 'Daftar Apotek' : 'Apotek Terdekat',
+                    subtitle:
+                        location == null
+                            ? 'Temukan apotek yang Anda butuhkan.'
+                            : 'Apotek di sekitar lokasi Anda.',
+                    action: TextButton(
+                      onPressed: () => _navigate(1),
                       child: Text(
-                        'AI',
-                        style: GoogleFonts.poppins(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.black87,
+                        'Lihat Semua',
+                        style: AppUi.text(
+                          fontSize: 11,
+                          color: AppUi.colors(context).primaryText,
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Konsultasi gejala & apotek terdekat.',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white70,
-                    fontSize: 11,
                   ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: AppUi.primary,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                  FilterPills(
+                    labels: const ['Semua', 'Buka Sekarang', '24 Jam'],
+                    selected: _filter,
+                    onSelected: (i) => setState(() => _filter = i),
+                  ),
+                  const SizedBox(height: 12),
+                  list.when(
+                    loading:
+                        () => const DataState(
+                          title: 'Memuat apotek...',
+                          loading: true,
+                        ),
+                    error:
+                        (e, s) => DataState(
+                          title: 'Data apotek belum bisa dimuat',
+                          onRetry: () => ref.invalidate(apotekListProvider),
+                        ),
+                    data: (all) {
+                      final filtered =
+                          all
+                              .where(
+                                (a) =>
+                                    _filter == 0 ||
+                                    (_filter == 1
+                                        ? a.isBuka
+                                        : a.hours.toLowerCase().contains(
+                                          '24 jam',
+                                        )),
+                              )
+                              .toList();
+                      if (filtered.isEmpty) {
+                        return const DataState(
+                          title: 'Belum ada apotek yang sesuai',
+                          subtitle:
+                              'Coba filter lain atau perbarui lokasi Anda.',
+                        );
+                      }
+                      return Column(
+                        children:
+                            filtered
+                                .map(
+                                  (a) => ApotekCard(
+                                    namaApotek: a.name,
+                                    alamat: a.address,
+                                    statusBuka: a.isBuka ? 'Buka' : 'Tutup',
+                                    jamOperasional: a.hours,
+                                    gambarUrl: a.imageUrl,
+                                    idApotek: a.id,
+                                    apotekData: a.raw,
+                                    distance: a.distance,
+                                  ),
+                                )
+                                .toList(),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
-            onPressed: () {
-              if (widget.onNavigateTab != null) {
-                widget.onNavigateTab!(2);
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ChatbotPage()),
-                );
-              }
-            },
-            child: Text(
-              'Tanya',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w700,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

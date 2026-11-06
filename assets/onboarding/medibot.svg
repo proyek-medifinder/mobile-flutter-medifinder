@@ -1,0 +1,26 @@
+<svg fill="none" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+<!-- Antenna -->
+<circle cx="60" cy="14" fill="#14B8A6" r="5"></circle>
+<line stroke="#0F756B" stroke-linecap="round" stroke-width="3" x1="60" x2="60" y1="18" y2="28"></line>
+<!-- Robot Head -->
+<rect fill="#FFFFFF" height="52" rx="20" stroke="#0F756B" stroke-width="3.5" width="70" x="25" y="28"></rect>
+<!-- Screen Face -->
+<rect fill="#E6F4F1" height="36" rx="13" width="54" x="33" y="36"></rect>
+<!-- Expressive Eyes -->
+<circle cx="48" cy="53" fill="#0F756B" r="5"></circle>
+<circle cx="72" cy="53" fill="#0F756B" r="5"></circle>
+<circle cx="50" cy="51.5" fill="#FFFFFF" r="1.5"></circle>
+<circle cx="74" cy="51.5" fill="#FFFFFF" r="1.5"></circle>
+<!-- Smile -->
+<path d="M54 62C56 64.5 64 64.5 66 62" stroke="#0F756B" stroke-linecap="round" stroke-width="2.5"></path>
+<!-- Earphones / Side Nodes -->
+<rect fill="#0F756B" height="18" rx="3" width="6" x="20" y="44"></rect>
+<rect fill="#0F756B" height="18" rx="3" width="6" x="94" y="44"></rect>
+<!-- Robot Body / Coat -->
+<path d="M36 86C36 81.5817 39.5817 78 44 78H76C80.4183 78 84 81.5817 84 86V108C84 110.209 82.2091 112 80 112H40C37.7909 112 36 110.209 36 108V86Z" fill="#FFFFFF" stroke="#0F756B" stroke-width="3.5"></path>
+<!-- Medical Cross on Chest -->
+<rect fill="#14B8A6" height="16" rx="2" width="8" x="56" y="87"></rect>
+<rect fill="#14B8A6" height="8" rx="2" width="16" x="52" y="91"></rect>
+<!-- Decorative Stethoscope Collar -->
+<path d="M46 80V94C46 101.732 52.268 108 60 108C67.732 108 74 101.732 74 94V80" stroke="#0A5A52" stroke-linecap="round" stroke-width="2.5"></path>
+</svg>

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
+import 'package:medifinder/page/widgets/clinical_widgets.dart';
 import 'package:medifinder/page/detail_apotek1.dart';
 import 'package:medifinder/providers.dart';
 import 'package:medifinder/services/chatbot_service.dart';
@@ -46,28 +47,28 @@ class _ChatbotTabState extends ConsumerState<ChatbotTab> {
       label: 'Balita',
       category: 'Balita (< 2 tahun)',
       defaultAge: 1,
-      desc: 'Sirup tetes / Drops',
+      desc: '< 2 tahun',
       icon: Icons.child_care_rounded,
     ),
     AgeOption(
       label: 'Anak-anak',
       category: 'Anak (2-12 tahun)',
       defaultAge: 7,
-      desc: 'Sirup anak',
+      desc: '2–12 tahun',
       icon: Icons.escalator_warning_rounded,
     ),
     AgeOption(
       label: 'Dewasa',
       category: 'Dewasa (12-59 tahun)',
       defaultAge: 25,
-      desc: 'Tablet & Kapsul',
+      desc: '12–59 tahun',
       icon: Icons.person_rounded,
     ),
     AgeOption(
       label: 'Lansia',
       category: 'Lansia (≥ 60 tahun)',
       defaultAge: 65,
-      desc: 'Dosis aman lansia',
+      desc: '60+ tahun',
       icon: Icons.elderly_rounded,
     ),
   ];
@@ -99,7 +100,7 @@ class _ChatbotTabState extends ConsumerState<ChatbotTab> {
       id: 'welcome',
       sender: 'bot',
       text:
-          'Halo! Saya MediBot, asisten apoteker virtual MediFinder 🩺\n\nAgar rekomendasi obat dan bentuk sediaan (sirup/tablet) tepat dan aman, silakan pilih kelompok usia pasien terlebih dahulu:',
+          'Halo! Saya MediBot. Pilih kelompok usia pasien, lalu ceritakan keluhan atau tanyakan informasi obat.',
       timestamp: DateTime.now(),
     );
   }
@@ -175,55 +176,69 @@ class _ChatbotTabState extends ConsumerState<ChatbotTab> {
   void _resetChat() {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            const Icon(Icons.refresh_rounded, color: AppUi.primary),
-            const SizedBox(width: 8),
-            Text(
-              'Reset Percakapan',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 16),
+      builder:
+          (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-          ],
-        ),
-        content: Text(
-          'Apakah Anda yakin ingin memulai percakapan baru dengan MediBot?',
-          style: GoogleFonts.poppins(fontSize: 13),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Batal', style: GoogleFonts.poppins(color: Colors.grey[700])),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppUi.primary,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            title: Row(
+              children: [
+                Icon(
+                  Icons.refresh_rounded,
+                  color: AppUi.colors(context).primaryText,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Reset Percakapan',
+                  style: AppUi.text(fontWeight: FontWeight.w700, fontSize: 16),
+                ),
+              ],
             ),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              final chatbotService = ref.read(chatbotServiceProvider);
-              await chatbotService.clearHistory();
-              if (mounted) {
-                setState(() {
-                  _selectedAgeGroup = '';
-                  _selectedAge = 0;
-                  _messages = [_createWelcomeMessage()];
-                });
-              }
-            },
-            child: Text('Reset', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+            content: Text(
+              'Apakah Anda yakin ingin memulai percakapan baru dengan MediBot?',
+              style: AppUi.text(fontSize: 13),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(
+                  'Batal',
+                  style: AppUi.text(color: Colors.grey[700]),
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppUi.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  final chatbotService = ref.read(chatbotServiceProvider);
+                  await chatbotService.clearHistory();
+                  if (mounted) {
+                    setState(() {
+                      _selectedAgeGroup = '';
+                      _selectedAge = 0;
+                      _messages = [_createWelcomeMessage()];
+                    });
+                  }
+                },
+                child: Text(
+                  'Reset',
+                  style: AppUi.text(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   Future<void> _sendMessage(String text) async {
     final cleanText = text.trim();
-    if (cleanText.isEmpty || _isLoading) return;
+    if (cleanText.isEmpty || _isLoading || _selectedAgeGroup.isEmpty) return;
 
     _textController.clear();
 
@@ -302,7 +317,9 @@ class _ChatbotTabState extends ConsumerState<ChatbotTab> {
   }
 
   Future<void> _openGoogleMaps(double lat, double lng) async {
-    final uri = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+    final uri = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng',
+    );
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
@@ -315,7 +332,11 @@ class _ChatbotTabState extends ConsumerState<ChatbotTab> {
   }
 
   // Parser markdown sederhana untuk bold (**teks**), italic (*teks*), dan code (`teks`)
-  List<InlineSpan> _parseMarkdownSpans(String text, TextStyle baseStyle, bool isUser) {
+  List<InlineSpan> _parseMarkdownSpans(
+    String text,
+    TextStyle baseStyle,
+    bool isUser,
+  ) {
     final List<InlineSpan> spans = [];
     final regex = RegExp(
       r'(\*\*\*(.+?)\*\*\*|\*\*(.+?)\*\*|\*(.+?)\*|__(.+?)__|_(.+?)_|`(.+?)`)',
@@ -326,88 +347,100 @@ class _ChatbotTabState extends ConsumerState<ChatbotTab> {
 
     for (final match in regex.allMatches(text)) {
       if (match.start > lastMatchEnd) {
-        spans.add(TextSpan(
-          text: text.substring(lastMatchEnd, match.start),
-          style: baseStyle,
-        ));
+        spans.add(
+          TextSpan(
+            text: text.substring(lastMatchEnd, match.start),
+            style: baseStyle,
+          ),
+        );
       }
 
       final matchedText = match.group(0)!;
       if (matchedText.startsWith('***') && matchedText.endsWith('***')) {
-        spans.add(TextSpan(
-          text: match.group(2),
-          style: baseStyle.copyWith(
-            fontWeight: FontWeight.w700,
-            fontStyle: FontStyle.italic,
-            color: isUser ? Colors.white : const Color(0xFF0F172A),
-          ),
-        ));
-      } else if (matchedText.startsWith('**') && matchedText.endsWith('**')) {
-        spans.add(TextSpan(
-          text: match.group(3),
-          style: baseStyle.copyWith(
-            fontWeight: FontWeight.w700,
-            color: isUser ? Colors.white : const Color(0xFF0F172A),
-          ),
-        ));
-      } else if (matchedText.startsWith('*') && matchedText.endsWith('*')) {
-        spans.add(TextSpan(
-          text: match.group(4),
-          style: baseStyle.copyWith(fontStyle: FontStyle.italic),
-        ));
-      } else if (matchedText.startsWith('__') && matchedText.endsWith('__')) {
-        spans.add(TextSpan(
-          text: match.group(5),
-          style: baseStyle.copyWith(
-            fontWeight: FontWeight.w700,
-            color: isUser ? Colors.white : const Color(0xFF0F172A),
-          ),
-        ));
-      } else if (matchedText.startsWith('_') && matchedText.endsWith('_')) {
-        spans.add(TextSpan(
-          text: match.group(6),
-          style: baseStyle.copyWith(fontStyle: FontStyle.italic),
-        ));
-      } else if (matchedText.startsWith('`') && matchedText.endsWith('`')) {
-        spans.add(WidgetSpan(
-          alignment: PlaceholderAlignment.middle,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-            decoration: BoxDecoration(
-              color: isUser ? Colors.white24 : const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(4),
+        spans.add(
+          TextSpan(
+            text: match.group(2),
+            style: baseStyle.copyWith(
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.italic,
+              color: isUser ? Colors.white : AppUi.colors(context).ink,
             ),
-            child: Text(
-              match.group(7) ?? '',
-              style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 12,
-                color: isUser ? Colors.white : const Color(0xFF0F756B),
-                fontWeight: FontWeight.w600,
+          ),
+        );
+      } else if (matchedText.startsWith('**') && matchedText.endsWith('**')) {
+        spans.add(
+          TextSpan(
+            text: match.group(3),
+            style: baseStyle.copyWith(
+              fontWeight: FontWeight.w700,
+              color: isUser ? Colors.white : AppUi.colors(context).ink,
+            ),
+          ),
+        );
+      } else if (matchedText.startsWith('*') && matchedText.endsWith('*')) {
+        spans.add(
+          TextSpan(
+            text: match.group(4),
+            style: baseStyle.copyWith(fontStyle: FontStyle.italic),
+          ),
+        );
+      } else if (matchedText.startsWith('__') && matchedText.endsWith('__')) {
+        spans.add(
+          TextSpan(
+            text: match.group(5),
+            style: baseStyle.copyWith(
+              fontWeight: FontWeight.w700,
+              color: isUser ? Colors.white : AppUi.colors(context).ink,
+            ),
+          ),
+        );
+      } else if (matchedText.startsWith('_') && matchedText.endsWith('_')) {
+        spans.add(
+          TextSpan(
+            text: match.group(6),
+            style: baseStyle.copyWith(fontStyle: FontStyle.italic),
+          ),
+        );
+      } else if (matchedText.startsWith('`') && matchedText.endsWith('`')) {
+        spans.add(
+          WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+              decoration: BoxDecoration(
+                color: isUser ? Colors.white24 : AppUi.colors(context).muted,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                match.group(7) ?? '',
+                style: TextStyle(
+                  fontFamily: 'monospace',
+                  fontSize: 12,
+                  color:
+                      isUser ? Colors.white : AppUi.colors(context).primaryText,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
-        ));
+        );
       }
 
       lastMatchEnd = match.end;
     }
 
     if (lastMatchEnd < text.length) {
-      spans.add(TextSpan(
-        text: text.substring(lastMatchEnd),
-        style: baseStyle,
-      ));
+      spans.add(TextSpan(text: text.substring(lastMatchEnd), style: baseStyle));
     }
 
     return spans;
   }
 
   Widget _buildFormattedText(String text, {required bool isUser}) {
-    final baseStyle = GoogleFonts.poppins(
+    final baseStyle = AppUi.text(
       fontSize: 13,
       height: 1.48,
-      color: isUser ? Colors.white : Colors.black87,
+      color: isUser ? Colors.white : AppUi.colors(context).ink,
     );
 
     return Text.rich(
@@ -416,682 +449,497 @@ class _ChatbotTabState extends ConsumerState<ChatbotTab> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey[50],
-      child: Column(
-        children: [
-          // 1. Header MediBot
-          _buildHeader(),
-
-          // 2. Chat Feed
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              itemCount: _messages.length + (_isLoading ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index < _messages.length) {
-                  return _buildMessageBubble(_messages[index]);
-                }
-                return _buildTypingIndicator();
-              },
-            ),
-          ),
-
-          // 3. Quick Suggestions (jika tidak sedang loading dan usia sudah dipilih)
-          if (!_isLoading && _selectedAgeGroup.isNotEmpty) _buildQuickSuggestions(),
-
-          // 4. Input Box
-          _buildInputBar(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF0F756B), Color(0xFF14B8A6)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Center(
-              child: Icon(Icons.smart_toy_rounded, color: Colors.white, size: 22),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'MediBot AI',
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F5F3),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        'AI Asisten',
-                        style: GoogleFonts.poppins(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w600,
-                          color: AppUi.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Text(
-                  _selectedAgeGroup.isEmpty
-                      ? 'Konsultasi Gejala & Rekomendasi Obat'
-                      : 'Pasien: $_selectedAgeGroup',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    color: _selectedAgeGroup.isEmpty ? Colors.grey[600] : AppUi.primary,
-                    fontWeight: _selectedAgeGroup.isEmpty ? FontWeight.w400 : FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            tooltip: 'Mulai Ulang Chat',
-            icon: const Icon(Icons.refresh_rounded, color: Colors.black54),
-            onPressed: _resetChat,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMessageBubble(ChatMessage msg) {
-    final isUser = msg.sender == 'user';
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Column(
-        crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              if (!isUser) ...[
-                Container(
-                  width: 30,
-                  height: 30,
-                  margin: const EdgeInsets.only(right: 8, bottom: 2),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0F756B),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Center(
-                    child: Text('🩺', style: TextStyle(fontSize: 14)),
-                  ),
-                ),
-              ],
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-                  decoration: BoxDecoration(
-                    color: isUser ? AppUi.primary : Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(18),
-                      topRight: const Radius.circular(18),
-                      bottomLeft: Radius.circular(isUser ? 18 : 4),
-                      bottomRight: Radius.circular(isUser ? 4 : 18),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: _buildFormattedText(msg.text, isUser: isUser),
-                ),
-              ),
-            ],
-          ),
-
-          // Opsi kelompok usia jika welcome dan belum memilih usia
-          if (msg.id == 'welcome' && _selectedAgeGroup.isEmpty) _buildAgeSelector(),
-
-          // Kartu rekomendasi apotek jika bot mengembalikan apotek
-          if (msg.data != null && msg.data!.pharmacies.isNotEmpty)
-            _buildPharmacyRecommendations(msg.data!),
-
-          // Notice jika obat tidak tersedia
-          if (msg.data != null &&
-              msg.data!.availability == 'EMPTY' &&
-              msg.data!.medicineName.isNotEmpty)
-            _buildEmptyAlert(msg.data!.medicineName),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAgeSelector() {
-    return Container(
-      margin: const EdgeInsets.only(left: 38, top: 10, right: 10),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE0F2F1)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Pilih Kelompok Usia Pasien:',
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.w700,
-              fontSize: 12,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 8),
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            childAspectRatio: 2.2,
-            children: _ageOptions.map((opt) {
-              return InkWell(
-                onTap: () => _selectAge(opt),
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5F3),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFB2DFDB)),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(opt.icon, size: 22, color: AppUi.primary),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              opt.label,
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 11,
-                                color: AppUi.primaryDark,
-                              ),
-                            ),
-                            Text(
-                              opt.desc,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
-                                fontSize: 9,
-                                color: Colors.grey[700],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPharmacyRecommendations(ChatResponseData data) {
-    return Container(
-      margin: const EdgeInsets.only(left: 38, top: 10, right: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: data.isNearby ? const Color(0xFFE8F5E9) : const Color(0xFFFFF3E0),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: data.isNearby ? const Color(0xFFA5D6A7) : const Color(0xFFFFCC80),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  data.isNearby ? Icons.check_circle_rounded : Icons.info_outline_rounded,
-                  size: 13,
-                  color: data.isNearby ? const Color(0xFF2E7D32) : const Color(0xFFE65100),
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  data.isNearby ? 'Tersedia di Apotek Terdekat' : 'Tersedia di Luar Jangkauan Sekitar',
-                  style: GoogleFonts.poppins(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: data.isNearby ? const Color(0xFF2E7D32) : const Color(0xFFE65100),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          ...data.pharmacies.map((pharm) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE0E0E0)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+  Widget build(BuildContext context) => Column(
+    children: [
+      Expanded(
+        child: ListView.builder(
+          controller: _scrollController,
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+          itemCount: _messages.length + 1 + (_isLoading ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return Column(
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          pharm.nama,
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                            color: Colors.black87,
+                  _buildHeader(),
+                  const SizedBox(height: 14),
+                  ContentPanel(
+                    padding: 14,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.info_outline_rounded,
+                          size: 20,
+                          color:
+                              AppUi.colors(context).isDark
+                                  ? const Color(0xFFFABC2A)
+                                  : const Color(0xFF876200),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Informasi bersifat edukatif, bukan pengganti diagnosis atau resep dokter.',
+                            style: AppUi.text(
+                              fontSize: 12,
+                              color: AppUi.colors(context).secondary,
+                            ),
                           ),
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE8F5F3),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          '${pharm.distanceKm.toStringAsFixed(1)} km',
-                          style: GoogleFonts.poppins(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: AppUi.primary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    pharm.alamat,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      fontSize: 11,
-                      color: Colors.grey[600],
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 6),
-
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: pharm.isOpen ? const Color(0xFFE8F5E9) : const Color(0xFFFFEBEE),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          pharm.isOpen
-                              ? 'Buka (Tutup ${pharm.jamTutup})'
-                              : 'Tutup (Buka ${pharm.jamBuka})',
-                          style: GoogleFonts.poppins(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: pharm.isOpen ? const Color(0xFF2E7D32) : const Color(0xFFC62828),
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        'Rp ${pharm.harga.toStringAsFixed(0)}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: AppUi.primary,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Stok: ${pharm.stok}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: Colors.grey[700],
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 16),
+                  _buildAgeSelector(),
+                  const SizedBox(height: 20),
+                ],
+              );
+            }
+            if (index <= _messages.length) {
+              return _buildMessageBubble(_messages[index - 1]);
+            }
+            return const Padding(
+              padding: EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  SizedBox.square(
+                    dimension: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-
-                  const SizedBox(height: 10),
-                  const Divider(height: 1),
-                  const SizedBox(height: 8),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            side: const BorderSide(color: AppUi.primary),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: () {
-                            if (pharm.apotekId.isNotEmpty) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => DetailApotek1(idApotek: pharm.apotekId),
-                                ),
-                              );
-                            }
-                          },
-                          icon: const Icon(Icons.store_rounded, size: 15, color: AppUi.primary),
-                          label: Text(
-                            'Detail Apotek',
-                            style: GoogleFonts.poppins(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: AppUi.primary,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            backgroundColor: AppUi.primary,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: () => _openGoogleMaps(pharm.latitude, pharm.longitude),
-                          icon: const Icon(Icons.directions_rounded, size: 15),
-                          label: Text(
-                            'Rute Maps',
-                            style: GoogleFonts.poppins(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  SizedBox(width: 12),
+                  Expanded(child: Text('MediBot sedang menyiapkan jawaban...')),
                 ],
               ),
             );
-          }),
-        ],
+          },
+        ),
       ),
-    );
-  }
-
-  Widget _buildEmptyAlert(String medicineName) {
-    return Container(
-      margin: const EdgeInsets.only(left: 38, top: 10, right: 10),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF8E1),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFFFE082)),
+      if (!_isLoading &&
+          _selectedAgeGroup.isNotEmpty &&
+          MediaQuery.viewInsetsOf(context).bottom == 0)
+        _buildQuickSuggestions(),
+      _buildInputBar(),
+    ],
+  );
+  Widget _buildHeader() => Row(
+    children: [
+      Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: AppUi.primary,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Icon(
+          Icons.smart_toy_outlined,
+          color: Colors.white,
+          size: 27,
+        ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.warning_amber_rounded, color: Color(0xFFF57F17), size: 20),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'Stok $medicineName saat ini belum ditemukan di apotek terdekat. Anda dapat mencari apotek lain melalui menu Cari Apotek.',
-              style: GoogleFonts.poppins(
-                fontSize: 11,
-                color: const Color(0xFF5D4037),
-                height: 1.4,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTypingIndicator() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        children: [
-          Container(
-            width: 30,
-            height: 30,
-            margin: const EdgeInsets.only(right: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0F756B),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Center(
-              child: Text('🩺', style: TextStyle(fontSize: 14)),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 6,
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppUi.primary),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'MediBot sedang menganalisis...',
-                  style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[600]),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickSuggestions() {
-    return Container(
-      height: 38,
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        itemCount: _quickSuggestions.length,
-        itemBuilder: (context, index) {
-          final suggestion = _quickSuggestions[index];
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ActionChip(
-              backgroundColor: Colors.white,
-              elevation: 1,
-              shadowColor: Colors.black.withValues(alpha: 0.06),
-              side: const BorderSide(color: Color(0xFFB2DFDB)),
-              label: Text(
-                suggestion,
-                style: GoogleFonts.poppins(
-                  fontSize: 11,
-                  color: AppUi.primaryDark,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              onPressed: () => _sendMessage(suggestion),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildInputBar() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(14, 8, 14, 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
+      const SizedBox(width: 10),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: TextField(
-                  controller: _textController,
-                  focusNode: _focusNode,
-                  textInputAction: TextInputAction.send,
-                  minLines: 1,
-                  maxLines: 4,
-                  onSubmitted: _sendMessage,
-                  style: GoogleFonts.poppins(fontSize: 13),
-                  decoration: InputDecoration(
-                    hintText: _selectedAgeGroup.isEmpty
-                        ? 'Pilih usia pasien terlebih dahulu...'
-                        : 'Tulis keluhan atau gejala Anda...',
-                    hintStyle: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[500]),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    border: InputBorder.none,
-                  ),
-                ),
+            Text(
+              'MediBot Asisten AI',
+              style: AppUi.text(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: AppUi.colors(context).primaryText,
               ),
             ),
-            const SizedBox(width: 8),
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppUi.primary, Color(0xFF14B8A6)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppUi.primary.withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: IconButton(
-                icon: _isLoading
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : const Icon(Icons.send_rounded, color: Colors.white, size: 20),
-                onPressed: _isLoading ? null : () => _sendMessage(_textController.text),
+            Text(
+              'Informasi kesehatan & apotek sekitar',
+              style: AppUi.text(
+                fontSize: 12,
+                color: AppUi.colors(context).secondary,
               ),
             ),
           ],
         ),
       ),
+      IconButton(
+        tooltip: 'Mulai percakapan baru',
+        onPressed: _isLoading ? null : _resetChat,
+        icon: Icon(
+          Icons.restart_alt_rounded,
+          color: AppUi.colors(context).primaryText,
+        ),
+      ),
+    ],
+  );
+  Widget _buildAgeSelector() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        'Profil Pasien Konsultasi',
+        style: AppUi.text(fontSize: 14, fontWeight: FontWeight.w600),
+      ),
+      const SizedBox(height: 10),
+      LayoutBuilder(
+        builder:
+            (context, c) => SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children:
+                    _ageOptions.map((o) {
+                      final selected = _selectedAgeGroup == o.category;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Semantics(
+                          selected: selected,
+                          button: true,
+                          child: Material(
+                            color:
+                                selected
+                                    ? AppUi.primary
+                                    : AppUi.colors(context).surface,
+                            borderRadius: BorderRadius.circular(18),
+                            child: InkWell(
+                              onTap: _isLoading ? null : () => _selectAge(o),
+                              borderRadius: BorderRadius.circular(18),
+                              child: Container(
+                                width:
+                                    ((c.maxWidth - 24) / 4)
+                                        .clamp(80, 110)
+                                        .toDouble(),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 12,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      o.icon,
+                                      color:
+                                          selected
+                                              ? Colors.white
+                                              : AppUi.colors(
+                                                context,
+                                              ).primaryText,
+                                      size: 23,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      o.label,
+                                      style: AppUi.text(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color:
+                                            selected
+                                                ? Colors.white
+                                                : AppUi.colors(context).ink,
+                                      ),
+                                    ),
+                                    Text(
+                                      o.desc,
+                                      style: AppUi.text(
+                                        fontSize: 10,
+                                        color:
+                                            selected
+                                                ? Colors.white
+                                                : AppUi.colors(
+                                                  context,
+                                                ).secondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+              ),
+            ),
+      ),
+    ],
+  );
+  Widget _buildMessageBubble(ChatMessage msg) {
+    final user = msg.sender == 'user';
+    final time =
+        '${msg.timestamp.hour.toString().padLeft(2, '0')}.${msg.timestamp.minute.toString().padLeft(2, '0')}';
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Column(
+        crossAxisAlignment:
+            user ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: EdgeInsets.only(left: user ? 32 : 0, right: user ? 0 : 12),
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: user ? AppUi.primaryDark : AppUi.colors(context).surface,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(22),
+                topRight: const Radius.circular(22),
+                bottomLeft: Radius.circular(user ? 22 : 6),
+                bottomRight: Radius.circular(user ? 6 : 22),
+              ),
+              boxShadow: AppUi.cardShadow,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (!user) ...[
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.smart_toy_outlined,
+                        color: AppUi.colors(context).primaryText,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 7),
+                      Expanded(
+                        child: Text(
+                          'MediBot',
+                          style: AppUi.text(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: AppUi.colors(context).primaryText,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        time,
+                        style: AppUi.text(
+                          fontSize: 10,
+                          color: AppUi.colors(context).secondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                _buildFormattedText(msg.text, isUser: user),
+                if (msg.data != null && msg.data!.pharmacies.isNotEmpty)
+                  _buildPharmacyRecommendations(msg.data!),
+                if (msg.data?.availability == 'EMPTY')
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Text(
+                      'Stok obat belum ditemukan. Hubungi apotek untuk memastikan ketersediaan.',
+                      style: AppUi.text(
+                        fontSize: 12,
+                        color: AppUi.colors(context).secondary,
+                      ),
+                    ),
+                  ),
+                if (!user)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      tooltip: 'Salin jawaban',
+                      icon: Icon(
+                        Icons.copy_outlined,
+                        size: 17,
+                        color: AppUi.colors(context).secondary,
+                      ),
+                      onPressed: () async {
+                        await Clipboard.setData(ClipboardData(text: msg.text));
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Jawaban disalin.')),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (user)
+            Padding(
+              padding: const EdgeInsets.only(top: 5, right: 3),
+              child: Text(
+                time,
+                style: AppUi.text(
+                  fontSize: 10,
+                  color: AppUi.colors(context).secondary,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
+
+  Widget _buildPharmacyRecommendations(ChatResponseData data) => Padding(
+    padding: const EdgeInsets.only(top: 18),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          data.medicineName.isEmpty
+              ? 'Apotek yang Ditemukan'
+              : 'Apotek Penyedia ${data.medicineName}',
+          style: AppUi.text(fontSize: 13, fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 10),
+        ...data.pharmacies.map(
+          (p) => Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppUi.colors(context).muted,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  p.nama,
+                  style: AppUi.text(fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    StatusPill(
+                      p.isOpen ? 'Buka' : 'Tutup',
+                      color:
+                          p.isOpen
+                              ? const Color(0xFF1B8A5A)
+                              : const Color(0xFFC0392B),
+                    ),
+                    StatusPill('${p.distanceKm.toStringAsFixed(1)} km'),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Stok ${p.stok} · ${rupiah(p.harga)}',
+                  style: AppUi.text(
+                    fontSize: 12,
+                    color: AppUi.colors(context).primaryText,
+                  ),
+                ),
+                Text(
+                  p.alamat,
+                  style: AppUi.text(
+                    fontSize: 11,
+                    color: AppUi.colors(context).secondary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 6,
+                  children: [
+                    TextButton(
+                      onPressed:
+                          p.apotekId.isEmpty
+                              ? null
+                              : () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) =>
+                                          DetailApotek1(idApotek: p.apotekId),
+                                ),
+                              ),
+                      child: const Text('Lihat Apotek'),
+                    ),
+                    TextButton.icon(
+                      onPressed: () => _openGoogleMaps(p.latitude, p.longitude),
+                      icon: const Icon(Icons.directions_outlined, size: 17),
+                      label: const Text('Rute'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+  Widget _buildQuickSuggestions() => SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+    child: Row(
+      children:
+          _quickSuggestions
+              .take(3)
+              .map(
+                (s) => Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ActionChip(
+                    label: Text(
+                      s,
+                      style: AppUi.text(
+                        fontSize: 11,
+                        color: AppUi.colors(context).primaryText,
+                      ),
+                    ),
+                    onPressed: () => _sendMessage(s),
+                    backgroundColor: AppUi.colors(context).surface,
+                    side: BorderSide.none,
+                  ),
+                ),
+              )
+              .toList(),
+    ),
+  );
+  Widget _buildInputBar() => Padding(
+    padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+    child: Container(
+      padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
+      decoration: AppUi.panelDecoration(
+        radius: 22,
+        color: AppUi.colors(context).surface,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _textController,
+              focusNode: _focusNode,
+              enabled: !_isLoading && _selectedAgeGroup.isNotEmpty,
+              minLines: 1,
+              maxLines: 4,
+              textInputAction: TextInputAction.send,
+              onSubmitted: _sendMessage,
+              style: AppUi.text(fontSize: 13),
+              decoration: InputDecoration(
+                hintText:
+                    _selectedAgeGroup.isEmpty
+                        ? 'Pilih usia pasien terlebih dahulu'
+                        : 'Tuliskan keluhan atau nama obat...',
+                fillColor: AppUi.colors(context).surface,
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 3),
+            child: IconButton.filled(
+              tooltip: 'Kirim pesan',
+              onPressed:
+                  _isLoading || _selectedAgeGroup.isEmpty
+                      ? null
+                      : () => _sendMessage(_textController.text),
+              style: IconButton.styleFrom(
+                backgroundColor: AppUi.primary,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(46, 46),
+              ),
+              icon:
+                  _isLoading
+                      ? const SizedBox.square(
+                        dimension: 19,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                      : const Icon(Icons.send_rounded, size: 22),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<meta content="mobile_blank" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body {
+        width: 100vw;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        overscroll-behavior-y: none;
+      }
+      .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      .pt-safe {
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0F756B",
+            "primary-dark": "#0A5A52",
+            "status-open": "#1B8A5A",
+            "teal-light": "#14B8A6"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-white text-gray-900 font-sans antialiased selection:bg-[#0F756B] selection:text-white">
+<main class="min-h-screen w-full flex flex-col justify-between max-w-[390px] mx-auto bg-white pt-safe pb-safe">
+<!-- Header Bar -->
+<header class="flex items-center justify-between px-6 pt-4 pb-2 w-full">
+<div class="flex items-center gap-2">
+<div class="w-9 h-9 rounded-xl bg-[#0F756B] flex items-center justify-center text-white shadow-sm flex-shrink-0">
+<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M12 6v12m-6-6h12"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-base text-[#0F756B] leading-none tracking-tight">MediFinder</span>
+<span class="text-[10px] text-gray-400 font-semibold tracking-wider uppercase mt-0.5">Akses Obat Tepercaya</span>
+</div>
+</div>
+<button class="px-3.5 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-semibold active:scale-95 transition-all" onclick="handleSkip()" type="button">
+        Bantuan
+      </button>
+</header>
+<!-- Main Visual Illustration Area -->
+<section class="flex-1 flex flex-col items-center justify-center px-6 py-4">
+<div class="relative w-[260px] h-[260px] flex items-center justify-center">
+<!-- Soft Circular Backdrop -->
+<div class="absolute inset-0 rounded-full bg-[#E6F4F1]"></div>
+<!-- Floating Badge: Stok Siap -->
+<div class="absolute top-2 -right-1 bg-white px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5 z-10 border border-gray-50">
+<span class="w-2 h-2 rounded-full bg-[#1B8A5A]"></span>
+<span class="text-xs font-semibold text-[#1B8A5A]">Stok Siap</span>
+</div>
+<!-- Floating Badge: Resep Resmi -->
+<div class="absolute bottom-5 -left-2 bg-white px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5 z-10 border border-gray-50">
+<span class="material-symbols-outlined text-[#14B8A6] text-[16px]">verified</span>
+<span class="text-xs font-semibold text-[#0A5A52]">Resep Resmi</span>
+</div>
+<!-- Clean, Polished Medicine & Search Artwork -->
+<div class="relative z-0 w-full h-full flex items-center justify-center p-3">
+<svg class="w-48 h-48" fill="none" viewbox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<!-- Subtle baseline shelf -->
+<path d="M40 160H160" stroke="#0F756B" stroke-linecap="round" stroke-opacity="0.18" stroke-width="3"></path>
+<!-- Medicine Bottle Body -->
+<rect fill="#FFFFFF" height="80" rx="14" stroke="#0F756B" stroke-width="3.5" width="60" x="52" y="72"></rect>
+<!-- Bottle Neck & Cap -->
+<rect fill="#0F756B" height="12" rx="3.5" width="34" x="65" y="60"></rect>
+<rect fill="#14B8A6" height="10" rx="4" width="42" x="61" y="50"></rect>
+<!-- Bottle Label Base -->
+<rect fill="#F4FAF8" height="42" rx="7" width="48" x="58" y="92"></rect>
+<!-- Medical Plus Cross on Bottle -->
+<path d="M82 103V123M72 113H92" stroke="#0F756B" stroke-linecap="round" stroke-width="3.5"></path>
+<!-- Liquid Indicator Fill in Bottle -->
+<path d="M54 135C64 137 72 133 82 135C92 137 100 134 110 135V140C110 146 105 150 99 150H63C57 150 54 146 54 140V135Z" fill="#0F756B" fill-opacity="0.12"></path>
+<!-- Angled Capsule Tablet -->
+<g transform="rotate(-30 135 125)">
+<rect fill="#0F756B" height="16" rx="8" width="32" x="120" y="112"></rect>
+<path d="M120 120C120 115.582 123.582 112 128 112H136V128H128C123.582 128 120 124.418 120 120Z" fill="#14B8A6"></path>
+<rect height="16" rx="8" stroke="#0F756B" stroke-width="2.5" width="32" x="120" y="112"></rect>
+<line stroke="#FFFFFF" stroke-opacity="0.6" stroke-width="1.5" x1="136" x2="136" y1="112" y2="128"></line>
+</g>
+<!-- Small Pill Circle -->
+<circle cx="150" cy="85" fill="#FFFFFF" r="9" stroke="#0F756B" stroke-width="3"></circle>
+<line stroke="#0F756B" stroke-linecap="round" stroke-width="2.5" x1="144" x2="156" y1="85" y2="85"></line>
+<!-- High-Contrast Magnifying Glass Inspecting Medicine -->
+<g>
+<circle cx="122" cy="74" fill="#FFFFFF" fill-opacity="0.95" r="23" stroke="#0F756B" stroke-width="3.5"></circle>
+<!-- Lens shine -->
+<path d="M112 66C115 62 121 60 126 62" stroke="#14B8A6" stroke-linecap="round" stroke-width="2"></path>
+<!-- Magnifier Handle -->
+<path d="M139 90L156 107" stroke="#0F756B" stroke-linecap="round" stroke-width="4.5"></path>
+<!-- Golden Discovery Star / Plus inside Glass -->
+<path d="M122 68V80M116 74H128" stroke="#F59E0B" stroke-linecap="round" stroke-width="2.5"></path>
+</g>
+</svg>
+</div>
+</div>
+<!-- Typography & Messaging -->
+<div class="mt-8 text-center max-w-xs">
+<h1 class="text-[22px] font-bold text-gray-900 leading-snug mb-3">
+          Cek Ketersediaan Obat
+        </h1>
+<p class="text-sm text-gray-500 leading-relaxed mx-auto">
+          Ketahui stok obat yang Anda butuhkan di apotek terdekat secara real-time dan transparan.
+        </p>
+</div>
+<!-- Pagination Indicator (Dots) -->
+<nav aria-label="Progress onboarding" class="flex items-center justify-center gap-2 mt-8">
+<!-- Dot 1 (Inactive) -->
+<span class="w-2 h-2 rounded-full bg-gray-200 transition-all duration-300"></span>
+<!-- Dot 2 (Active) -->
+<span aria-current="step" class="w-8 h-2 rounded-full bg-[#0F756B] transition-all duration-300"></span>
+<!-- Dot 3 (Inactive) -->
+<span class="w-2 h-2 rounded-full bg-gray-200 transition-all duration-300"></span>
+</nav>
+</section>
+<!-- Bottom Action Navigation -->
+<footer class="flex items-center justify-between px-6 pb-8 pt-2 w-full">
+<button class="text-sm font-medium text-gray-500 hover:text-gray-700 py-2 transition-colors active:scale-95" onclick="handleSkip()" type="button">
+        Lewati
+      </button>
+<button class="px-6 py-3 rounded-full bg-[#0F756B] hover:bg-[#0A5A52] text-white text-sm font-medium flex items-center gap-2 shadow-sm active:scale-[0.98] transition-all" onclick="handleNext()" type="button">
+<span>Lanjutkan</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</footer>
+</main>
+<script>
+    function handleNext() {
+      console.log('Navigating to next onboarding step');
+    }
+    function handleSkip() {
+      console.log('Skipping onboarding to main flow');
+    }
+  </script>
+</body></html>

@@ -1,0 +1,22 @@
+<svg fill="none" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+<!-- Pharmacy Base Building -->
+<rect fill="#FFFFFF" height="62" rx="8" width="70" x="35" y="48"></rect>
+<!-- Storefront Awning / Roof -->
+<path d="M31 48C31 43.5817 34.5817 40 39 40H101C105.418 40 109 43.5817 109 48V52H31V48Z" fill="#0F756B"></path>
+<path d="M39 52C42 54 46 54 49 52C52 54 56 54 59 52C62 54 66 54 69 52C72 54 76 54 79 52C82 54 86 54 89 52C92 54 96 54 101 52" stroke="#FFFFFF" stroke-linecap="round" stroke-width="2"></path>
+<!-- Medical Cross Emblem on Clinic Front -->
+<circle cx="70" cy="73" fill="#E6F4F1" r="13"></circle>
+<path d="M70 65V81M62 73H78" stroke="#0F756B" stroke-linecap="round" stroke-width="3"></path>
+<!-- Glass Doors -->
+<rect fill="#0F756B" fill-opacity="0.12" height="17" rx="3" width="18" x="61" y="93"></rect>
+<circle cx="73" cy="102" fill="#0F756B" r="1.2"></circle>
+<!-- Windows -->
+<rect fill="#E6F4F1" height="13" rx="2" width="12" x="42" y="66"></rect>
+<rect fill="#E6F4F1" height="13" rx="2" width="12" x="86" y="66"></rect>
+<!-- GPS Location Pin Marker -->
+<g>
+<path d="M106 31C106 25.4772 101.523 21 96 21C90.4772 21 86 25.4772 86 31C86 38.5 96 49 96 49C96 49 106 38.5 106 31Z" fill="#14B8A6"></path>
+<circle cx="96" cy="31" fill="#FFFFFF" r="3.5"></circle>
+</g>
+
+</svg>

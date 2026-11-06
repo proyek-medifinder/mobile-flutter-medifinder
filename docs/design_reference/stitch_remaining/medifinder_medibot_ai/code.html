@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-fixed-dim": "#4edea3", "surface-container-lowest": "#ffffff", "line-border": "#E5E7EB", "secondary-container": "#6cf8bb", "teal-light": "#14B8A6", "on-secondary-container": "#00714d", "surface-dim": "#d9dadc", "on-surface-variant": "#3e4947", "primary-container": "#0f756b", "secondary": "#006c49", "surface-container-highest": "#e1e2e4", "surface-container-high": "#e7e8ea", "tertiary-fixed": "#ffdea3", "error": "#ba1a1a", "inverse-on-surface": "#f0f1f3", "on-error": "#ffffff", "status-open": "#1B8A5A", "surface-bright": "#f8f9fb", "on-primary": "#ffffff", "on-tertiary-container": "#ffe5b9", "on-tertiary": "#ffffff", "surface-container-low": "#f2f4f6", "primary-dark": "#0A5A52", "destructive-red": "#DC2626", "inverse-primary": "#80d6c9", "inverse-surface": "#2e3132", "error-container": "#ffdad6", "primary": "#005b52", "surface-variant": "#e1e2e4", "tertiary-container": "#876200", "on-primary-container": "#a2f8eb", "on-primary-fixed-variant": "#005049", "on-secondary": "#ffffff", "primary-fixed": "#9cf2e5", "on-tertiary-fixed": "#261900", "on-surface": "#191c1e", "on-error-container": "#93000a", "tertiary-fixed-dim": "#fabc2a", "on-tertiary-fixed-variant": "#5d4200", "scaffold-base": "#F7FBF9", "surface-white": "#FFFFFF", "secondary-fixed": "#6ffbbe", "outline-variant": "#bdc9c6", "on-secondary-fixed": "#002113", "status-closed": "#C0392B", "on-background": "#191c1e", "on-primary-fixed": "#00201d", "outline": "#6e7977", "surface-tint": "#006a61", "on-secondary-fixed-variant": "#005236", "primary-fixed-dim": "#80d6c9", "background": "#f8f9fb", "surface-container": "#edeef0", "surface": "#f8f9fb", "tertiary": "#684b00" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-mobile": "1.25rem", "space-sm": "0.5rem", "gutter-desktop": "1.5rem", "gutter": "0.75rem", "margin-tablet": "1.5rem", "margin": "1.25rem", "space-xl": "1.75rem", "space-xs": "0.375rem", "margin-desktop": "2rem", "space-md": "1rem", "space-lg": "1.375rem" }, fontFamily: { "headline-xl": ["Plus Jakarta Sans"], "caption": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"] }, fontSize: { "headline-xl": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "caption": ["10px", { lineHeight: "12px", letterSpacing: "0.02em", fontWeight: "500" }], "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.03em", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }], "headline-md": ["18px", { lineHeight: "24px", fontWeight: "700" }], "headline-lg-mobile": ["21px", { lineHeight: "28px", fontWeight: "700" }], "body-md": ["14px", { lineHeight: "22px", fontWeight: "400" }], "headline-xl-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "700" }], "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "title-md": ["17px", { lineHeight: "24px", fontWeight: "600" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-scaffold-base text-on-surface font-body-md text-body-md flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface-white/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-[68px] px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-sm"><button aria-label="Menu Drawer" class="w-11 h-11 flex items-center justify-center rounded-xl text-primary hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-[24px]">menu</span></button><div class="flex items-center gap-space-xs"><img alt="MediFinder Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTSyfJgq-sO0EROciQSCKHAdTFXZxJn2gz5CUh9soARo1VzcekbErk4zJOUV6aVGn0ysk043x8jvd8E89x2ejKhVu2-GiYHU732zpINNjIdbjmOPMDaMYvs-YyprqkZQxenLvakH3DplL4MKkG0Jz9WaEMDh4xDWwuy0TgDbTMO_vhaKeqkDoY_PbVzvTFTBbEZDoXYDh2kYKOvfcejwvyZteuiOZSWcwWbp2azvNJ"/><span class="font-headline-md text-headline-md text-primary tracking-tight">MediFinder</span></div></div><div class="flex items-center gap-space-sm"><span class="hidden">Medibot Ai</span><div class="relative flex items-center justify-center"><button aria-label="Profil Saya" class="w-11 h-11 flex items-center justify-center rounded-full"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5PTeuccXrMIJeIGSHHR1rx7laM7nY6CcZwhXV3OYbP-bl20iQsouzqa-zXRKSpqNCXsmeUgNcUTZ0rf9FGEqgwSOghhbn-2HO-9knyw5TeEgE3NVMhrrYiXM0iI_woxfb1z7gngr9ezteG56LX8FKQ4X5Ngw9LvbCRPzLzkAXxJg3VnRF5Nd-EqblV8NG4IZ8G9Vh8TIYhGOo0oJnwkz5GJoFLkMBm4NEIeHqSsWX"/></button><span class="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-status-open ring-2 ring-surface-white"></span></div></div></div></header><main class="flex flex-col relative w-full pt-[68px] pb-24 bg-scaffold-base flex-1"><div class="flex flex-col w-full">
+<!-- Bot Status & Identity Sub-Header -->
+<section class="px-margin-mobile pt-space-sm pb-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="relative flex items-center justify-center">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-teal-light flex items-center justify-center text-on-primary shadow-[0_4px_12px_rgba(20,184,166,0.25)]">
+<span class="material-symbols-outlined text-[22px]">smart_toy</span>
+</div>
+<span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-status-open ring-2 ring-surface-white"></span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">MediBot Asisten AI</h1>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-caption text-caption">
+<span class="material-symbols-outlined text-[12px]">auto_awesome</span>
+              Aktif
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Panduan cerdas kesehatan &amp; apotek sekitar</p>
+</div>
+</div>
+<button aria-label="Bersihkan Percakapan" class="w-9 h-9 rounded-xl flex items-center justify-center bg-surface-container hover:bg-surface-container-high text-on-surface-variant transition-colors" title="Percakapan Baru">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+</button>
+</div>
+</section>
+<!-- Educational Advisory Banner (Section 10 Recommendation 6) -->
+<section class="px-margin-mobile py-space-xs">
+<div class="bg-surface-container-lowest shadow-[0_4px_16px_-2px_rgba(10,90,82,0.06)] rounded-2xl p-3 flex items-start gap-2.5">
+<div class="w-6 h-6 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">info</span>
+</div>
+<div class="flex-1">
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">
+<span class="font-semibold text-on-surface">Catatan Medis:</span> Informasi AI bersifat edukatif &amp; panduan awal, bukan pengganti diagnosa dokter profesional.
+        </p>
+</div>
+</div>
+</section>
+<!-- Target Patient Age Selector -->
+<section class="px-margin-mobile py-space-xs">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">group</span>
+        Profil Pasien Konsultasi
+      </span>
+<span class="font-caption text-caption text-on-surface-variant">Dosis &amp; arahan disesuaikan</span>
+</div>
+<!-- Age Group Chips -->
+<div class="grid grid-cols-4 gap-2" id="ageSelector">
+<button class="group-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-surface-container-lowest shadow-[0_2px_8px_rgba(10,90,82,0.04)] text-on-surface-variant transition-all hover:bg-surface-container-low active:scale-95" data-group="balita" type="button">
+<span class="material-symbols-outlined text-[20px] mb-0.5">child_care</span>
+<span class="font-label-sm text-label-sm">Balita</span>
+<span class="font-caption text-[9px] text-on-surface-variant/80">0-4 thn</span>
+</button>
+<button class="group-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-surface-container-lowest shadow-[0_2px_8px_rgba(10,90,82,0.04)] text-on-surface-variant transition-all hover:bg-surface-container-low active:scale-95" data-group="anak" type="button">
+<span class="material-symbols-outlined text-[20px] mb-0.5">face</span>
+<span class="font-label-sm text-label-sm">Anak-anak</span>
+<span class="font-caption text-[9px] text-on-surface-variant/80">5-17 thn</span>
+</button>
+<!-- Active: Dewasa -->
+<button class="group-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-primary text-on-primary shadow-[0_4px_12px_rgba(0,91,82,0.25)] transition-all active:scale-95" data-group="dewasa" type="button">
+<span class="material-symbols-outlined text-[20px] mb-0.5 text-secondary-fixed">person</span>
+<span class="font-label-sm text-label-sm font-bold">Dewasa</span>
+<span class="font-caption text-[9px] text-secondary-fixed">18-59 thn</span>
+</button>
+<button class="group-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-surface-container-lowest shadow-[0_2px_8px_rgba(10,90,82,0.04)] text-on-surface-variant transition-all hover:bg-surface-container-low active:scale-95" data-group="lansia" type="button">
+<span class="material-symbols-outlined text-[20px] mb-0.5">elderly</span>
+<span class="font-label-sm text-label-sm">Lansia</span>
+<span class="font-caption text-[9px] text-on-surface-variant/80">60+ thn</span>
+</button>
+</div>
+</section>
+<!-- Interactive Chat Stream Area -->
+<section class="flex flex-col px-margin-mobile py-space-sm space-y-4">
+<!-- Message 1: User Query -->
+<div class="flex flex-col items-end w-full">
+<div class="flex items-end gap-2 max-w-[88%]">
+<div class="bg-primary text-on-primary rounded-2xl rounded-tr-sm p-3.5 shadow-[0_4px_16px_rgba(0,91,82,0.18)]">
+<p class="font-body-md text-body-md leading-relaxed text-on-primary">
+            Halo MediBot, saya demam dan pusing sejak kemarin malam. Obat apa yang aman dan apotek mana yang masih buka di dekat Tebet?
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-1 mt-1 pr-1">
+<span class="font-caption text-caption text-on-surface-variant">21.42 WIB</span>
+<span class="material-symbols-outlined text-[14px] text-primary">done_all</span>
+</div>
+</div>
+<!-- Message 2: MediBot AI Response with Nested Recommendation Card -->
+<div class="flex flex-col items-start w-full">
+<div class="flex items-start gap-2 max-w-full">
+<!-- Bot mini avatar badge -->
+<div class="w-7 h-7 rounded-lg bg-teal-light text-on-primary flex items-center justify-center shrink-0 mt-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">smart_toy</span>
+</div>
+<div class="flex-1 bg-surface-container-lowest rounded-2xl rounded-tl-sm p-4 shadow-[0_6px_16px_-2px_rgba(10,90,82,0.06)] space-y-3">
+<div class="flex items-center justify-between pb-1">
+<span class="font-label-md text-label-md text-primary font-bold">MediBot Care Intelligence</span>
+<span class="font-caption text-caption text-on-surface-variant">21.43 WIB</span>
+</div>
+<!-- Medical Response Text -->
+<div class="font-body-md text-body-md text-on-surface space-y-2.5 leading-relaxed">
+<p>
+              Halo! Berdasarkan keluhan demam dan pusing ringan untuk kelompok <strong class="font-bold text-primary">Dewasa</strong>, Anda dapat mempertimbangkan:
+            </p>
+<ol class="space-y-1.5 pl-1">
+<li class="flex items-start gap-2">
+<span class="w-5 h-5 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-label-sm text-caption shrink-0 mt-0.5">1</span>
+<span><strong class="font-bold text-on-surface">Paracetamol 500mg</strong> setiap 4–6 jam setelah makan jika demam berlanjut.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="w-5 h-5 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-label-sm text-caption shrink-0 mt-0.5">2</span>
+<span>Istirahat cukup dan perbanyak konsumsi air putih hangat.</span>
+</li>
+</ol>
+<p class="font-body-sm text-body-sm text-on-surface-variant italic bg-surface-container-low p-2 rounded-xl">
+              Segera hubungi faskes atau IGD jika demam melampaui 39°C atau disertai sesak napas.
+            </p>
+</div>
+<!-- Pharmacy Recommendation Section -->
+<div class="pt-2">
+<div class="flex items-center gap-1.5 mb-2.5">
+<span class="material-symbols-outlined text-[18px] text-primary">local_pharmacy</span>
+<h2 class="font-label-md text-label-md text-on-surface font-bold">Apotek Terdekat dengan Stok Tersedia &amp; Buka:</h2>
+</div>
+<div class="space-y-2.5">
+<!-- Pharmacy Card 1: Apotek K-24 Saharjo -->
+<div class="bg-surface-container-low rounded-xl p-3 flex flex-col gap-2.5">
+<div class="flex items-start justify-between">
+<div class="flex items-start gap-2.5">
+<img class="w-12 h-12 rounded-lg object-cover shrink-0" data-alt="Tampak depan apotek modern bersih dengan plang hijau bertuliskan Apotek K-24 Saharjo, etalase obat teratur rapi dengan pencahayaan hangat dan staf berseragam melayani pasien di malam hari bernuansa teal tenang." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7_-ks1oo--fV2b0RcB9lkxL_cQgB64z1u_qMeGyApYCMxht3F1Sf_5kUigve3goZLlF4R2aD1WSHxkPZjQJ29arF2KONx70TWLNDcru18oxyRWx-nlksI5UDs_SFg0hz3s2L-RG3SJQCNKHDYhT7PwIruv7PK-v44gQRRgPKLG1r1sv1ZnOaXz1nv4rf2NyO8P_ZZBj7Cb5Xa7cPhtGvFNazNbroMJzrO4P-vNU-N"/>
+<div>
+<h3 class="font-title-md text-body-lg text-on-surface font-bold leading-tight">Apotek K-24 Saharjo</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-open/15 text-status-open font-caption text-caption font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-status-open animate-pulse"></span>
+                          Buka 24 Jam
+                        </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">near_me</span>
+                          1.4 km
+                        </span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="font-label-sm text-label-sm font-semibold">Stok Paracetamol 500mg Ada</span>
+</div>
+<a class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-tertiary-fixed text-on-tertiary-fixed hover:bg-tertiary-fixed-dim transition-colors font-label-md text-label-md font-bold shadow-sm" href="#">
+                    Lihat Apotek
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Pharmacy Card 2: Apotek Kimia Farma Tebet Raya -->
+<div class="bg-surface-container-low rounded-xl p-3 flex flex-col gap-2">
+<div class="flex items-start justify-between">
+<div class="flex items-start gap-2.5">
+<img class="w-12 h-12 rounded-lg object-cover shrink-0" data-alt="Papan nama apotek Kimia Farma dengan interior klinis minimalis, rak obat tersusun rapi dengan dominasi warna putih teal, apoteker ramah berkonsultasi dengan pembeli di area Tebet Jakarta." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwR54FGrJufCC32KmfzRWvoINzl6xlBHIK1VR31XIPbE48uFW057OY1rqsxR4L_WjifpdtcY5F7HcKzS1HxtY334MwhruXLgScV403UwetGpHDwVVgGnl8OzdfYBKFPALmc47PvDCgTLZKP9QrOTbNUcT9xwcGu8Q35bPZGAwAxWKvJifFMzTpXbZL7_h5MFmvgpEJFlKVH4iEa96PuEB3UygO-wTA0reHwEuyVtGu"/>
+<div>
+<h3 class="font-title-md text-body-lg text-on-surface font-bold leading-tight">Apotek Kimia Farma Tebet Raya</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-open/15 text-status-open font-caption text-caption font-semibold">
+                          Buka s/d 23.00
+                        </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">near_me</span>
+                          0.8 km
+                        </span>
+</div>
+</div>
+</div>
+<button aria-label="Lihat Rute Apotek Kimia Farma" class="w-8 h-8 rounded-lg bg-surface-container-lowest text-primary flex items-center justify-center shadow-sm hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">directions</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Feedback Micro-Action -->
+<div class="flex items-center justify-between pt-1 text-on-surface-variant/80">
+<span class="font-caption text-caption">Apakah panduan ini membantu?</span>
+<div class="flex items-center gap-2">
+<button aria-label="Bermanfaat" class="w-7 h-7 rounded-lg hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">thumb_up</span>
+</button>
+<button aria-label="Kurang Bermanfaat" class="w-7 h-7 rounded-lg hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[16px]">thumb_down</span>
+</button>
+<button aria-label="Salin Jawaban" class="w-7 h-7 rounded-lg hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Complaint Suggestion Chips -->
+<section class="px-margin-mobile pt-space-xs pb-space-sm">
+<div class="flex items-center gap-1.5 mb-2">
+<span class="material-symbols-outlined text-[16px] text-teal-light">tips_and_updates</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Topik keluhan cepat:</span>
+</div>
+<div class="flex items-center gap-2 overflow-x-auto pb-1" id="quickChips">
+<button class="shrink-0 h-9 px-3.5 rounded-full bg-surface-container-lowest text-primary font-label-md text-label-md shadow-[0_2px_8px_rgba(10,90,82,0.05)] hover:bg-primary hover:text-on-primary active:scale-95 transition-all flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">healing</span>
+        Sakit Kepala
+      </button>
+<button class="shrink-0 h-9 px-3.5 rounded-full bg-surface-container-lowest text-primary font-label-md text-label-md shadow-[0_2px_8px_rgba(10,90,82,0.05)] hover:bg-primary hover:text-on-primary active:scale-95 transition-all flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">coronavirus</span>
+        Batuk &amp; Flu
+      </button>
+<button class="shrink-0 h-9 px-3.5 rounded-full bg-surface-container-lowest text-primary font-label-md text-label-md shadow-[0_2px_8px_rgba(10,90,82,0.05)] hover:bg-primary hover:text-on-primary active:scale-95 transition-all flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">spa</span>
+        Alergi / Gatal
+      </button>
+<button class="shrink-0 h-9 px-3.5 rounded-full bg-surface-container-lowest text-primary font-label-md text-label-md shadow-[0_2px_8px_rgba(10,90,82,0.05)] hover:bg-primary hover:text-on-primary active:scale-95 transition-all flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">medication</span>
+        Vitamin Imunitas
+      </button>
+</div>
+</section>
+<!-- Interactive Bottom Input Bar -->
+<section class="px-margin-mobile pb-space-sm pt-space-xs">
+<div class="bg-surface-container-lowest rounded-2xl p-2 shadow-[0_6px_20px_-2px_rgba(15,117,107,0.12)] flex items-center gap-2">
+<!-- Voice Input / Mic -->
+<button aria-label="Gunakan Pesan Suara" class="w-10 h-10 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center hover:bg-surface-container-high transition-colors active:scale-95 shrink-0" id="micBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+<!-- Text Input -->
+<div class="flex-1 relative flex items-center">
+<input class="w-full h-11 bg-transparent text-on-surface placeholder:text-on-surface-variant/70 font-body-md text-body-md px-1 focus:outline-none" id="userInput" placeholder="Tuliskan keluhan atau nama obat..." type="text"/>
+</div>
+<!-- Quick Camera / Image Analysis -->
+<button aria-label="Pindai Resep atau Kemasan Obat" class="w-10 h-10 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center hover:bg-surface-container-high transition-colors active:scale-95 shrink-0" type="button">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+</button>
+<!-- Teal Circular Send Button -->
+<button aria-label="Kirim Pesan" class="w-11 h-11 rounded-full bg-gradient-to-tr from-primary to-teal-light text-on-primary flex items-center justify-center shadow-[0_4px_14px_rgba(20,184,166,0.4)] active:scale-90 transition-transform shrink-0" id="sendBtn" type="button">
+<span class="material-symbols-outlined text-[20px] translate-x-0.5">send</span>
+</button>
+</div>
+<p class="font-caption text-caption text-center text-on-surface-variant/70 mt-1.5">
+      Data konsultasi terlindungi secara privat di MediFinder
+    </p>
+</section>
+</div>
+<script>
+  (function() {
+    // Interactive Age Group Selector
+    const ageButtons = document.querySelectorAll('#ageSelector .group-btn');
+    ageButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        ageButtons.forEach(b => {
+          b.className = 'group-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-surface-container-lowest shadow-[0_2px_8px_rgba(10,90,82,0.04)] text-on-surface-variant transition-all hover:bg-surface-container-low active:scale-95';
+          const icon = b.querySelector('.material-symbols-outlined');
+          const title = b.querySelector('.font-label-sm');
+          const sub = b.querySelector('.font-caption');
+          if (icon) icon.classList.remove('text-secondary-fixed');
+          if (title) title.classList.remove('font-bold');
+          if (sub) {
+            sub.classList.remove('text-secondary-fixed');
+            sub.classList.add('text-on-surface-variant/80');
+          }
+        });
+
+        // Set active styling
+        btn.className = 'group-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-primary text-on-primary shadow-[0_4px_12px_rgba(0,91,82,0.25)] transition-all active:scale-95';
+        const activeIcon = btn.querySelector('.material-symbols-outlined');
+        const activeTitle = btn.querySelector('.font-label-sm');
+        const activeSub = btn.querySelector('.font-caption');
+        if (activeIcon) activeIcon.classList.add('text-secondary-fixed');
+        if (activeTitle) activeTitle.classList.add('font-bold');
+        if (activeSub) {
+          activeSub.classList.remove('text-on-surface-variant/80');
+          activeSub.classList.add('text-secondary-fixed');
+        }
+      });
+    });
+
+    // Quick chip auto fill
+    const chips = document.querySelectorAll('#quickChips button');
+    const input = document.getElementById('userInput');
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        if (input) {
+          input.value = chip.textContent.trim();
+          input.focus();
+        }
+      });
+    });
+
+    // Mic button feedback state
+    const mic = document.getElementById('micBtn');
+    let isListening = false;
+    if (mic) {
+      mic.addEventListener('click', () => {
+        isListening = !isListening;
+        if (isListening) {
+          mic.classList.add('bg-error', 'text-on-error', 'animate-pulse');
+          mic.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        } else {
+          mic.classList.remove('bg-error', 'text-on-error', 'animate-pulse');
+          mic.classList.add('bg-surface-container', 'text-on-surface-variant');
+        }
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface-white/95 backdrop-blur-xl shadow-[0_-4px_20px_rgba(15,117,107,0.08)]" data-active-classes="text-primary-container font-label-sm"><div class="relative flex items-center justify-around h-16 px-space-xs max-w-lg mx-auto"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-all" data-path="beranda" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-sm text-label-sm mt-0.5">Beranda</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-all" data-path="cari-apotek" href="#"><span class="material-symbols-outlined text-[22px]">store</span><span class="font-label-sm text-label-sm mt-0.5">Cari Apotek</span></a><div class="relative flex flex-col items-center -top-4"><div class="w-[68px] h-[68px] rounded-full bg-surface-white flex items-center justify-center shadow-[0_4px_16px_rgba(15,117,107,0.12)]"><a aria-current="page" aria-label="MediBot AI" class="w-[52px] h-[52px] rounded-full bg-gradient-to-tr from-primary to-teal-light flex items-center justify-center shadow-[0_8px_20px_0_rgba(20,184,166,0.38)] active:scale-95 transition-transform text-primary-container font-label-sm" data-path="medibot-ai" href="#"><span class="material-symbols-outlined text-[26px]">smart_toy</span></a></div><span class="font-label-sm text-label-sm text-primary font-bold mt-0.5">MediBot</span></div><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-all" data-path="cari-obat" href="#"><span class="material-symbols-outlined text-[22px]">pill</span><span class="font-label-sm text-label-sm mt-0.5">Cari Obat</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-all" data-path="profil" href="#"><span class="material-symbols-outlined text-[22px]">person</span><span class="font-label-sm text-label-sm mt-0.5">Profil</span></a></div></nav></body></html>

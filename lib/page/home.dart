@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medifinder/page/app_shell.dart';
 
-
 class Home extends StatelessWidget {
   final int initialIndex;
 

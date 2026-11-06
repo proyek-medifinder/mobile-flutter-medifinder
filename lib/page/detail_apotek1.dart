@@ -1,725 +1,323 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:medifinder/page/chatbot.dart';
+import 'package:medifinder/page/widgets/apotek_card.dart';
+import 'package:medifinder/page/widgets/auth/auth_widgets.dart';
+import 'package:medifinder/page/widgets/clinical_widgets.dart';
 import 'package:medifinder/providers.dart';
 import 'package:medifinder/theme/app_ui.dart';
 import 'package:medifinder/utils/apotek_mapper.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class DetailApotek1 extends ConsumerWidget {
+class DetailApotek1 extends ConsumerStatefulWidget {
   const DetailApotek1({super.key, required this.idApotek, this.initialData});
-
   final String idApotek;
   final ApotekViewData? initialData;
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final detailAsync = ref.watch(apotekDetailProvider(idApotek));
+  ConsumerState<DetailApotek1> createState() => _DetailApotek1State();
+}
 
-    return Scaffold(
-      backgroundColor: AppUi.primary,
-      body: detailAsync.when(
-        loading: () => _buildContent(context, initialData, isRefreshing: true),
-        error:
-            (err, st) => _buildContent(
-              context,
-              initialData,
-              errorText:
-                  'Gagal memperbarui detail. Menampilkan data yang tersimpan.',
-            ),
-        data: (data) => _buildContent(context, ApotekViewData.fromMap(data)),
-      ),
-    );
+class _DetailApotek1State extends ConsumerState<DetailApotek1> {
+  final _search = TextEditingController();
+  String _keyword = '';
+  int _filter = 0;
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
   }
 
-  Widget _buildContent(
-    BuildContext context,
-    ApotekViewData? data, {
-    bool isRefreshing = false,
-    String? errorText,
-  }) {
-    final viewData =
-        data ??
-        initialData ??
-        ApotekViewData(
-          id: idApotek,
-          name: 'Detail Apotek',
-          address: 'Alamat tidak tersedia',
-          status: '',
-          hours: '',
-        );
+  Uri _map(ApotekViewData a) {
+    final lat = a.raw['latitude'], lng = a.raw['longitude'];
+    final query =
+        lat != null && lng != null ? '$lat,$lng' : '${a.name} ${a.address}';
+    return Uri.https('www.google.com', '/maps/dir/', {
+      'api': '1',
+      'destination': query,
+    });
+  }
 
-    final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 700;
-
-    return Stack(
-      children: [
-        CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            // 1. Hero Image / Sliver App Bar
-            SliverAppBar(
-              expandedHeight: isDesktop ? 320.0 : 250.0,
-              pinned: true,
-              backgroundColor: AppUi.primary,
-              elevation: 0,
-              leading: Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.35),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_rounded,
-                    color: Colors.white,
-                  ),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ),
-              flexibleSpace: FlexibleSpaceBar(
-                background: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    viewData.imageUrl != null
-                        ? Image.network(
-                          viewData.imageUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => _heroPlaceholder(),
-                        )
-                        : _heroPlaceholder(),
-                    // Overlay Gradient biar teks/tombol back tetap jelas
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.black.withValues(alpha: 0.5),
-                            Colors.transparent,
-                            AppUi.primary.withValues(alpha: 0.8),
-                          ],
-                          stops: const [0.0, 0.5, 1.0],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // 2. Main Content Body
-            SliverToBoxAdapter(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 800),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 32),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (errorText != null) ...[
-                          _noticeBanner(errorText),
-                          const SizedBox(height: 16),
-                        ],
-
-                        // Header Info Card (Nama, Status, Buka/Tutup)
-                        _buildHeaderCard(viewData),
-                        const SizedBox(height: 20),
-
-                        // Quick Actions (Telepon / Email)
-                        _buildQuickActionButtons(context, viewData),
-                        const SizedBox(height: 20),
-
-                        // Informasi Utama
-                        _sectionCard(
-                          title: 'Informasi Utama',
-                          child: Column(
-                            children: [
-                              _infoTile(
-                                Icons.location_on_rounded,
-                                'Alamat',
-                                viewData.address,
-                              ),
-                              if ((viewData.hours).isNotEmpty)
-                                _infoTile(
-                                  Icons.access_time_filled_rounded,
-                                  'Jam Operasional',
-                                  viewData.hours,
-                                ),
-                              if ((viewData.phone ?? '').isNotEmpty)
-                                _infoTile(
-                                  Icons.phone_rounded,
-                                  'Nomor Telepon',
-                                  viewData.phone!,
-                                ),
-                              if ((viewData.email ?? '').isNotEmpty)
-                                _infoTile(
-                                  Icons.email_rounded,
-                                  'Email',
-                                  viewData.email!,
-                                ),
-                            ],
-                          ),
-                        ),
-
-                        // Deskripsi jika ada
-                        if ((viewData.description ?? '').isNotEmpty) ...[
-                          const SizedBox(height: 20),
-                          _sectionCard(
-                            title: 'Deskripsi',
-                            child: Text(
-                              viewData.description!,
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                color: Colors.black87,
-                                height: 1.6,
-                              ),
-                            ),
-                          ),
-                        ],
-
-                        const SizedBox(height: 20),
-
-                        // Daftar Obat / Produk
-                        _sectionCard(
-                          title: 'Daftar Obat Tersedia',
-                          child:
-                              viewData.medicines.isEmpty
-                                  ? _buildEmptyMedicines()
-                                  : _buildMedicineGrid(
-                                    context,
-                                    viewData.medicines,
-                                  ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+  @override
+  Widget build(BuildContext context) {
+    final detail = ref.watch(apotekDetailProvider(widget.idApotek));
+    final data = detail.asData?.value;
+    final a = data != null ? ApotekViewData.fromMap(data) : widget.initialData;
+    return Scaffold(
+      backgroundColor: AppUi.colors(context).background,
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: Row(
+          children: [
+            const MediFinderLogo(width: 95),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Detail Apotek',
+                style: AppUi.text(fontSize: 15, fontWeight: FontWeight.w600),
               ),
             ),
           ],
         ),
-
-        // Indicator Loading Transparan saat Refreshing Data
-        if (isRefreshing)
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 12,
-            right: 20,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.5),
-                shape: BoxShape.circle,
-              ),
-              child: const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
+      ),
+      body:
+          a == null
+              ? Padding(
+                padding: const EdgeInsets.all(20),
+                child: DataState(
+                  title:
+                      detail.isLoading
+                          ? 'Memuat detail apotek...'
+                          : 'Detail belum bisa dimuat',
+                  loading: detail.isLoading,
+                  onRetry:
+                      detail.hasError
+                          ? () => ref.invalidate(
+                            apotekDetailProvider(widget.idApotek),
+                          )
+                          : null,
                 ),
-              ),
-            ),
-          ),
-      ],
+              )
+              : _content(a, detail.isLoading, detail.hasError),
     );
   }
 
-  // --- WIDGET HELPER ---
-
-  Widget _buildHeaderCard(ApotekViewData data) {
-    final statusColor = AppUi.statusColor(data.status);
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: AppUi.panelDecoration(radius: 24),
+  Widget _content(ApotekViewData a, bool loading, bool error) {
+    final medicines =
+        a.medicines
+            .where(
+              (m) =>
+                  '${m.name} ${m.description ?? ''}'.toLowerCase().contains(
+                    _keyword.toLowerCase(),
+                  ) &&
+                  (_filter == 0 || (_filter == 1 ? m.stock > 0 : m.stock == 0)),
+            )
+            .toList();
+    return SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  data.name,
-                  style: GoogleFonts.poppins(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
-                  ),
+          SizedBox(
+            height: 220,
+            width: double.infinity,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                ClinicalImage(
+                  url: a.imageUrl,
+                  icon: Icons.local_pharmacy_outlined,
                 ),
-              ),
-              if (data.status.isNotEmpty) ...[
-                const SizedBox(width: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(
-                      color: statusColor.withValues(alpha: 0.3),
+                Positioned(
+                  top: 14,
+                  left: 20,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppUi.colors(context).surface,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                    child: StatusPill(
+                      a.isBuka ? 'Buka Sekarang' : 'Sedang Tutup',
+                      color:
+                          a.isBuka
+                              ? const Color(0xFF1B8A5A)
+                              : const Color(0xFFC0392B),
+                      icon: Icons.circle,
                     ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: statusColor,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        data.status.toUpperCase(),
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: statusColor,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              const Icon(
-                Icons.location_on_outlined,
-                size: 16,
-                color: Colors.black54,
-              ),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  data.address,
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    color: Colors.black87,
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickActionButtons(BuildContext context, ApotekViewData data) {
-    final hasPhone = (data.phone ?? '').isNotEmpty;
-
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed:
-                hasPhone
-                    ? () async {
-                      final uri = Uri.parse('tel:${data.phone}');
-                      if (await canLaunchUrl(uri)) {
-                        await launchUrl(uri);
-                      }
-                    }
-                    : null,
-            icon: const Icon(Icons.call_rounded, size: 18),
-            label: Text(
-              'Hubungi Apotek',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0A5A52),
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: Colors.white24,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _sectionCard({required String title, required Widget child}) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: AppUi.panelDecoration(radius: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 16),
-          child,
-        ],
-      ),
-    );
-  }
-
-  Widget _infoTile(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE8F5F3),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, size: 20, color: AppUi.primary),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
-                  ),
                 ),
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMedicineGrid(
-    BuildContext context,
-    List<ObatViewData> medicines,
-  ) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final crossAxisCount = constraints.maxWidth > 500 ? 3 : 2;
-
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: medicines.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: constraints.maxWidth > 500 ? 0.72 : 0.63,
-          ),
-          itemBuilder: (context, index) {
-            final obat = medicines[index];
-            final inStock = obat.stock > 0;
-
-            return InkWell(
-              borderRadius: BorderRadius.circular(18),
-              onTap: () => _showObatDetail(context, obat),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppUi.mutedSurface,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
-                ),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            obat.imageUrl != null
-                                ? Image.network(
-                                  obat.imageUrl!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder:
-                                      (_, __, ___) => _miniPlaceholder(),
-                                )
-                                : _miniPlaceholder(),
-                            Positioned(
-                              top: 6,
-                              right: 6,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      inStock
-                                          ? const Color(0xFF10B981)
-                                          : const Color(0xFFEF4444),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  inStock ? 'Stok: ${obat.stock}' : 'Habis',
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
+                    if (loading)
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 16),
+                        child: LinearProgressIndicator(
+                          minHeight: 2,
+                          color: AppUi.colors(context).primaryText,
+                        ),
+                      ),
+                    if (error)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: DataState(
+                          title: 'Detail belum diperbarui',
+                          subtitle: 'Menampilkan informasi sebelumnya.',
+                          onRetry:
+                              () => ref.invalidate(
+                                apotekDetailProvider(widget.idApotek),
+                              ),
+                        ),
+                      ),
+                    ContentPanel(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            a.name,
+                            style: AppUi.text(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          if (a.distance != null) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              '${a.distance!.toStringAsFixed(1)} km dari lokasi Anda',
+                              style: AppUi.text(
+                                fontSize: 12,
+                                color: AppUi.colors(context).primaryText,
                               ),
                             ),
                           ],
-                        ),
+                          const SizedBox(height: 16),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              if (a.phone?.isNotEmpty == true)
+                                FilledButton.icon(
+                                  onPressed:
+                                      () => openExternal(
+                                        context,
+                                        Uri(scheme: 'tel', path: a.phone!),
+                                      ),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: AppUi.accent,
+                                    foregroundColor: AppUi.primaryDark,
+                                    minimumSize: const Size(48, 44),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.call_outlined,
+                                    size: 18,
+                                  ),
+                                  label: const Text('Hubungi Apotek'),
+                                ),
+                              OutlinedButton.icon(
+                                onPressed: () => openExternal(context, _map(a)),
+                                icon: const Icon(
+                                  Icons.directions_outlined,
+                                  size: 18,
+                                ),
+                                label: const Text('Rute'),
+                              ),
+                              if (a.email?.isNotEmpty == true)
+                                IconButton(
+                                  tooltip: 'Email apotek',
+                                  onPressed:
+                                      () => openExternal(
+                                        context,
+                                        Uri(scheme: 'mailto', path: a.email!),
+                                      ),
+                                  icon: Icon(
+                                    Icons.mail_outline_rounded,
+                                    color: AppUi.colors(context).primaryText,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      obat.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                    const SizedBox(height: 16),
+                    ContentPanel(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SectionHeading('Informasi Operasional'),
+                          _info(
+                            Icons.schedule_rounded,
+                            'Jam Operasional',
+                            a.hours.isEmpty ? 'Jam belum diatur' : a.hours,
+                          ),
+                          const SizedBox(height: 16),
+                          _info(
+                            Icons.location_on_outlined,
+                            'Alamat Lengkap',
+                            a.address,
+                          ),
+                          if (a.description?.isNotEmpty == true) ...[
+                            const SizedBox(height: 16),
+                            Text(
+                              a.description!,
+                              style: AppUi.text(
+                                fontSize: 13,
+                                color: AppUi.colors(context).secondary,
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 18),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: () => openExternal(context, _map(a)),
+                              icon: const Icon(Icons.map_outlined, size: 19),
+                              label: const Text('Buka di Google Maps'),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    if (obat.price != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        'Rp ${obat.price!.toStringAsFixed(0)}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF0E7067),
-                        ),
+                    const SizedBox(height: 24),
+                    SectionHeading(
+                      'Katalog Obat di Apotek Ini',
+                      subtitle: '${a.medicines.length} obat',
+                    ),
+                    AppSearchField(
+                      controller: _search,
+                      hint: 'Cari obat di apotek ini...',
+                      onChanged: (s) => setState(() => _keyword = s),
+                    ),
+                    const SizedBox(height: 12),
+                    FilterPills(
+                      labels: const ['Semua', 'Tersedia', 'Habis'],
+                      selected: _filter,
+                      onSelected: (i) => setState(() => _filter = i),
+                    ),
+                    const SizedBox(height: 16),
+                    if (medicines.isEmpty)
+                      const DataState(
+                        title: 'Belum ada obat yang sesuai',
+                        subtitle: 'Coba kata kunci atau filter lain.',
+                      )
+                    else
+                      LayoutBuilder(
+                        builder: (context, c) {
+                          final count = c.maxWidth > 500 ? 3 : 2;
+                          final width = (c.maxWidth - (count - 1) * 12) / count;
+                          return Wrap(
+                            spacing: 12,
+                            runSpacing: 12,
+                            children:
+                                medicines
+                                    .map(
+                                      (m) => SizedBox(
+                                        width: width,
+                                        child: _medicine(m),
+                                      ),
+                                    )
+                                    .toList(),
+                          );
+                        },
                       ),
-                    ],
-                    if (obat.description != null && obat.description!.isNotEmpty) ...[
-                      const SizedBox(height: 3),
-                      Text(
-                        obat.description!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          color: Colors.black54,
-                          height: 1.3,
-                        ),
-                      ),
-                    ],
+                    const SizedBox(height: 24),
+                    BotBanner(
+                      compact: true,
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ChatbotPage(),
+                            ),
+                          ),
+                    ),
+                    const SizedBox(height: 12),
                   ],
                 ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _showObatDetail(BuildContext context, ObatViewData obat) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 20),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            if (obat.imageUrl != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 180,
-                  child: Image.network(
-                    obat.imageUrl!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _heroPlaceholder(),
-                  ),
-                ),
-              ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    obat.name,
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: obat.stock > 0 ? const Color(0xFFECFDF5) : const Color(0xFFFEF2F2),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: obat.stock > 0 ? const Color(0xFF10B981) : const Color(0xFFEF4444),
-                    ),
-                  ),
-                  child: Text(
-                    obat.stock > 0 ? 'Stok: ${obat.stock}' : 'Habis',
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: obat.stock > 0 ? const Color(0xFF047857) : const Color(0xFFB91C1C),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (obat.price != null) ...[
-              const SizedBox(height: 6),
-              Text(
-                'Rp ${obat.price!.toStringAsFixed(0)}',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF0E7067),
-                ),
-              ),
-            ],
-            const SizedBox(height: 14),
-            Text(
-              'Deskripsi',
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              (obat.description != null && obat.description!.isNotEmpty)
-                  ? obat.description!
-                  : 'Tidak ada deskripsi tersedia untuk obat ini.',
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                color: Colors.black54,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyMedicines() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24),
-        child: Column(
-          children: [
-            const Icon(
-              Icons.medication_liquid_outlined,
-              size: 40,
-              color: Colors.black38,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Belum ada daftar obat di apotek ini.',
-              style: GoogleFonts.poppins(color: Colors.black54, fontSize: 13),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _heroPlaceholder() {
-    return Container(
-      color: const Color(0xFF0E7067),
-      child: const Center(
-        child: Icon(
-          Icons.local_pharmacy_rounded,
-          size: 64,
-          color: Colors.white30,
-        ),
-      ),
-    );
-  }
-
-  Widget _miniPlaceholder() {
-    return Container(
-      color: const Color(0xFFE5E7EB),
-      child: const Center(
-        child: Icon(Icons.medication_outlined, color: Colors.black38, size: 28),
-      ),
-    );
-  }
-
-  Widget _noticeBanner(String text) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: AppUi.glassDecoration(radius: 18),
-      child: Row(
-        children: [
-          const Icon(Icons.info_outline_rounded, color: Colors.white, size: 20),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -727,4 +325,179 @@ class DetailApotek1 extends ConsumerWidget {
       ),
     );
   }
+
+  Widget _info(IconData icon, String title, String value) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Container(
+        padding: const EdgeInsets.all(9),
+        decoration: BoxDecoration(
+          color: AppUi.colors(context).muted,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, size: 18, color: AppUi.colors(context).primaryText),
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: AppUi.text(
+                fontSize: 11,
+                color: AppUi.colors(context).secondary,
+              ),
+            ),
+            Text(value, style: AppUi.text(fontSize: 13)),
+          ],
+        ),
+      ),
+    ],
+  );
+  Widget _medicine(ObatViewData m) => Material(
+    color: AppUi.colors(context).surface,
+    borderRadius: BorderRadius.circular(20),
+    clipBehavior: Clip.antiAlias,
+    child: InkWell(
+      onTap: () => _showMedicine(m),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: SizedBox(
+                height: 125,
+                width: double.infinity,
+                child: ClinicalImage(url: m.imageUrl),
+              ),
+            ),
+            const SizedBox(height: 8),
+            StatusPill(
+              m.stock > 0 ? 'Tersedia (${m.stock})' : 'Habis',
+              color:
+                  m.stock > 0
+                      ? const Color(0xFF1B8A5A)
+                      : const Color(0xFFC0392B),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 44 * MediaQuery.textScalerOf(context).scale(1),
+              child: Text(
+                m.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppUi.text(fontSize: 13, fontWeight: FontWeight.w600),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    m.price == null ? 'Harga belum tersedia' : rupiah(m.price!),
+                    style: AppUi.text(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppUi.colors(context).primaryText,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Detail ${m.name}',
+                  onPressed: () => _showMedicine(m),
+                  icon: Icon(
+                    Icons.info_outline_rounded,
+                    color: AppUi.colors(context).primaryText,
+                    size: 21,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 36,
+                    minHeight: 44,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+  void _showMedicine(ObatViewData m) => showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    backgroundColor: AppUi.colors(context).surface,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+    ),
+    builder:
+        (ctx) => SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      m.name,
+                      style: AppUi.text(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Tutup',
+                    onPressed: () => Navigator.pop(ctx),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: SizedBox(
+                  height: 180,
+                  width: double.infinity,
+                  child: ClinicalImage(url: m.imageUrl),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                m.price == null ? 'Harga belum tersedia' : rupiah(m.price!),
+                style: AppUi.text(
+                  fontSize: 21,
+                  fontWeight: FontWeight.w700,
+                  color: AppUi.colors(context).primaryText,
+                ),
+              ),
+              const SizedBox(height: 8),
+              StatusPill(
+                m.stock > 0 ? 'Stok tersedia: ${m.stock}' : 'Stok habis',
+                color:
+                    m.stock > 0
+                        ? const Color(0xFF1B8A5A)
+                        : const Color(0xFFC0392B),
+              ),
+              if (m.description?.isNotEmpty == true) ...[
+                const SizedBox(height: 16),
+                Text(m.description!, style: AppUi.text(fontSize: 14)),
+              ],
+              const SizedBox(height: 16),
+              Text(
+                'Konfirmasi stok dan penggunaan obat kepada apotek.',
+                style: AppUi.text(
+                  fontSize: 12,
+                  color: AppUi.colors(context).secondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+  );
 }

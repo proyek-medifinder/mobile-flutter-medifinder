@@ -18,19 +18,34 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # Match the Android Gradle plugin's Java runtime requirement.
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       # 2. Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          # Keep CI on the same SDK version validated locally.
+          flutter-version: '3.29.2'
+          cache: true
+
+      - name: Show Toolchain Versions
+        run: |
+          flutter --version
+          java -version
 
       # 3. Install dependencies
       - name: Install Dependencies
         run: flutter pub get
 
       # 4. Run tests
-      #- name: Run Tests
-      #  run: flutter test
+      - name: Run Tests
+        run: flutter test
 
       # 5. Build APK
       - name: Build APK
@@ -42,6 +57,7 @@ jobs:
         with:
           name: app-release
           path: build/app/outputs/flutter-apk/*.apk
+          if-no-files-found: error
 
       # 7. Create GitHub Release (saat tag)
       - name: Create Release

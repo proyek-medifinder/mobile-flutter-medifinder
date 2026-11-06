@@ -108,7 +108,7 @@ class AppUi {
           side: BorderSide(color: c.line),
         ),
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: c.surface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
